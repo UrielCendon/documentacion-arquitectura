@@ -1,0 +1,51 @@
+name: Build & Publish Docs
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install dependencies
+        run: gem install asciidoctor asciidoctor-pdf
+
+      - name: Build HTML
+        run: asciidoctor -D build docs/index.adoc
+
+      - name: Build PDF
+        run: asciidoctor-pdf -o build/index.pdf docs/index.adoc
+
+      - name: Copy static assets (images)
+        run: |
+          if [ -d docs/images ]; then
+            mkdir -p build/images
+            cp -r docs/images/* build/images/
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
