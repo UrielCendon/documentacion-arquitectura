@@ -1,0 +1,113 @@
+== Propósito
+Definir el *límite del sistema* y describir *qué información intercambia* con cada actor externo.
+Esta vista permite validar el alcance con las áreas interesadas sin entrar aún en detalles de procesos internos ni de diseño.
+
+== Alcance y supuestos
+* Alcance:* gestión integral de reservaciones, ocupación, check‑in/out, catálogo de hoteles/habitaciones/servicios, y trazabilidad para auditoría.
+* Fuera de alcance:* pasarela de pagos externa, mensajería de terceros y sistemas contables (sólo se integran por interfaces).
+* Supuestos:*
+** La autenticación/autorización se aplica en todas las interacciones.
+** Las tarifas y disponibilidad se calculan con base en reglas cargadas por el Administrador.
+** Los reportes de Auditor no modifican datos productivos.
+
+== Diagrama de contexto general
+Visión global de los flujos de información entre el *Sistema de Hoteles* y los actores:
+Huésped, Recepcionista, Administrador y Auditor.
+
+image::Diagrama-contexto-general.png[Diagrama de Contexto General, width=900, align=center]
+
+=== Descripción de las interacciones
+*Huésped → Sistema*:: consultas de disponibilidad, creación/cancelación de reservaciones, y gestión de cuenta.
+*Sistema → Huésped*:: confirmaciones de reserva/pago y comprobantes.
+*Recepcionista → Sistema*:: check‑in/check‑out, modificaciones/cancelaciones de reservas, cobro de consumos.
+*Sistema → Recepcionista*:: disponibilidad por habitación y estado/total de la cuenta.
+*Administrador → Sistema*:: altas/bajas/cambios de *hoteles, tipos de habitación, habitaciones por hotel* y *precios de servicios/habitaciones*.
+*Sistema → Administrador*:: confirmación de cambios y consistencia de catálogos.
+*Auditor → Sistema*:: consultas de auditoría (accesos, ocupación, uso del sistema).
+*Sistema → Auditor*:: reportes, información de uso y *logs*.
+
+== Contexto por actor
+
+=== Huésped
+image::Diagrama-contexto-huesped.png[Contexto Huésped, width=900, align=center]
+
+==== Objetivo
+Permitir que el cliente final gestione su estancia de forma autoservicio.
+
+==== Entradas al sistema
+* *Consulta de disponibilidad o estado de reservación* (fechas, ocupantes, filtros).
+* *Datos de reservación* para crear/confirmar una reserva.
+* *Solicitud de cancelación* de reservación.
+* *Modificación de cuenta* (datos personales y preferencias).
+
+==== Salidas del sistema
+* *Información de disponibilidad/estado* de la reservación.
+* *Confirmaciones* (creación, cambios, pagos, cancelaciones).
+* *Comprobantes* (confirmación de reserva, cargos pagados).
+
+==== Reglas y consideraciones
+* Validaciones de fechas y capacidad por habitación.
+* Políticas de cancelación/penalización configuradas por el Administrador.
+* Privacidad y protección de datos personales conforme a normativa vigente.
+
+=== Recepcionista
+image::Diagrama-contexto-recepcionista.png[Contexto Recepcionista, width=900, align=center]
+
+==== Objetivo
+Operar el ciclo de vida presencial de la estancia y cargos asociados.
+
+==== Entradas al sistema
+* *Consulta de disponibilidad/estado* de reservación.
+* *Realizar check‑in/out* del huésped.
+* *Solicitud de cancelación o modificación* de una reservación.
+* *Cobro de consumos y servicios* durante la estancia.
+* *Reservar habitación con datos de cliente* (captura asistida).
+
+==== Salidas del sistema
+* *Disponibilidad de habitaciones* en tiempo real.
+* *Estado de la reservación* (vigente, modificada, cancelada, no‑show).
+* *Confirmación de check‑in/out, cancelación o modificación*.
+* *Total adeudado sumado a la cuenta* del cliente.
+
+==== Reglas y consideraciones
+* Control de sobreventa (overbooking) según políticas vigentes.
+* Bitácora de cambios para trazabilidad y conciliaciones.
+* Cierre de cuenta requiere liquidación de cargos y entregables (llaves, etc.).
+
+=== Administrador
+image::Diagrama-contexto-administrador.png[Contexto Administrador, width=900, align=center]
+
+==== Objetivo
+Gestionar la configuración maestra del negocio: catálogo y precios.
+
+==== Entradas al sistema
+* *Altas, bajas y modificaciones de hoteles*.
+* *Altas, bajas y modificaciones de tipos de habitaciones*.
+* *Altas, bajas y modificaciones de habitaciones por hotel*.
+* *Modificaciones a los precios* de servicios y habitaciones.
+
+==== Salidas del sistema
+* *Confirmación de cambios* aplicados.
+* *Información consolidada* de hoteles, habitaciones y servicios.
+
+==== Reglas y consideraciones
+* Versionado/fechas de vigencia para tarifas y catálogos.
+* Validación de integridad referencial (tipo de habitación ↔ hotel ↔ habitación).
+* Controles de acceso por rol y registro de actividades administrativas.
+
+=== Auditor
+image::Diagrama-contexto-auditor.png[Contexto Auditor, width=900, align=center]
+
+==== Objetivo
+Verificar cumplimiento, uso correcto del sistema y trazabilidad.
+
+==== Entradas al sistema
+* *Consulta de reportes* y métricas.
+* *Consulta de ocupación por hotel* (histórica y actual).
+* *Consulta de accesos* al sistema (autenticaciones, acciones relevantes).
+
+==== Salidas del sistema
+* *Reportes del sistema* (operativos y de cumplimiento).
+* *Información de uso de hoteles* (ocupación, cancelaciones, no‑show, etc.).
+* *Logs del sistema* para seguimiento de eventos críticos.
+
