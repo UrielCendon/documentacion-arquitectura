@@ -8,7 +8,7 @@ La vista funcional describe las capacidades del sistema desde la perspectiva de 
 El siguiente diagrama presenta una vista consolidada de alto nivel, mostrando todos los actores y los casos de uso asociados a cada uno para ofrecer un panorama completo de la funcionalidad del sistema.
 
 .Diagrama General de Casos de Uso
-image::diagramas-casos-uso.png[Diagrama General de Casos de Uso, width=800, align="center"]
+image::diagrama-casos-uso.png[Diagrama General de Casos de Uso, width=800, align="center"]
 
 
 === Casos de Uso por Actor
@@ -37,7 +37,7 @@ Los casos de uso específicos para el Huésped son:
 El Recepcionista es el personal del hotel que gestiona las reservas y la estancia de los huéspedes directamente en el establecimiento.
 
 .Casos de Uso del Actor Recepcionista
-image::casos-uso-recepcionista.png[Casos de Uso - Recepcionista, width=700, align="center"]
+image::casos-uso-Recepcionista.png[Casos de Uso - Recepcionista, width=700, align="center"]
 
 Los casos de uso para el Recepcionista son:
 *   *CU-08: Cancelar Reservación en recepción:* Permite al recepcionista anular la reserva de un huésped.
