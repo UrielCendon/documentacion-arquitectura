@@ -1,0 +1,78 @@
+[[functional-view]]
+== Vista Funcional
+
+La vista funcional describe las capacidades del sistema desde la perspectiva de sus usuarios (actores). Se define a través de los casos de uso, que muestran las interacciones entre los actores y el sistema para lograr un objetivo concreto.
+
+=== Diagrama de Casos de Uso General
+
+El siguiente diagrama presenta una vista consolidada de alto nivel, mostrando todos los actores y los casos de uso asociados a cada uno para ofrecer un panorama completo de la funcionalidad del sistema.
+
+.Diagrama General de Casos de Uso
+image::casos-uso-general.png[Diagrama General de Casos de Uso, width=800, align="center"]
+
+
+=== Casos de Uso por Actor
+
+A continuación, se desglosa la funcionalidad específica que cada actor puede realizar dentro del sistema.
+
+==== Actor: Huésped
+
+El Huésped es el cliente final que interactúa con el sistema para planificar y gestionar sus estancias en el hotel.
+
+.Casos de Uso del Actor Huésped
+image::casos-uso-huesped.png[Casos de Uso - Huésped, width=700, align="center"]
+
+Los casos de uso específicos para el Huésped son:
+*   *CU-01: Consultar disponibilidad:* Permite al huésped verificar qué habitaciones están libres en un rango de fechas específico.
+*   *CU-02: Realizar reservación en línea:* Permite al huésped completar el proceso de reserva de una o más habitaciones.
+*   *CU-03: Cancelar reservación:* Permite al huésped anular una reserva existente, sujeto a las políticas del hotel.
+*   *CU-04: Consultar estado de reservación:* Permite al huésped ver los detalles y el estado actual de su reserva.
+*   *CU-05: Seleccionar servicios adicionales en reservación:* (Extiende CU-02) Permite añadir extras como desayuno, spa, o tours durante el proceso de reserva.
+*   *CU-06: Gestionar cuenta de usuario:* Permite al huésped ver su historial de reservas y modificar sus datos personales.
+*   *CU-07: Pago en línea:* Permite al huésped realizar el pago seguro de su reservación a través de la plataforma.
+
+
+==== Actor: Recepcionista
+
+El Recepcionista es el personal del hotel que gestiona las reservas y la estancia de los huéspedes directamente en el establecimiento.
+
+.Casos de Uso del Actor Recepcionista
+image::casos-uso-recepcionista.png[Casos de Uso - Recepcionista, width=700, align="center"]
+
+Los casos de uso para el Recepcionista son:
+*   *CU-08: Cancelar Reservación en recepción:* Permite al recepcionista anular la reserva de un huésped.
+*   *CU-09: Registrar consumos y servicios:* Permite registrar cargos adicionales a la habitación de un huésped.
+*   *CU-10: Realizar reservación en recepción:* Permite crear una nueva reserva para un cliente de forma presencial o por teléfono.
+*   *CU-11: Check-out:* Procesa la salida de un huésped, calculando el total a pagar y liberando la habitación.
+*   *CU-12: Consultar disponibilidad local:* Permite al recepcionista ver el estado y disponibilidad de las habitaciones en tiempo real.
+*   *CU-13: Check-in:* Procesa la llegada de un huésped, asigna una habitación y entrega las llaves.
+*   *CU-14: Mover huésped de habitación:* (Extiende CU-13) Permite cambiar a un huésped de una habitación a otra durante el check-in o su estancia.
+*   *CU-15: Consultar estado de reservación:* Permite buscar y ver los detalles de la reserva de cualquier huésped.
+*   *CU-16: Extender estancia del huésped:* Permite modificar una reserva para alargar la estancia de un huésped.
+
+
+==== Actor: Administrador
+
+El Administrador tiene el control total sobre la configuración y parámetros generales del sistema hotelero.
+
+.Casos de Uso del Actor Administrador
+image::casos-uso-administrador.png[Casos de Uso - Administrador, width=700, align="center"]
+
+Los casos de uso para el Administrador son:
+*   *CU-17: Gestionar catálogo de hoteles:* Permite dar de alta, modificar o eliminar hoteles de la cadena.
+*   *CU-18: Administrar tipos de habitación:* Permite crear y configurar los diferentes tipos de habitación (sencilla, doble, suite, etc.).
+*   *CU-19: Gestionar habitaciones por hotel:* Permite asignar y administrar el inventario de habitaciones para cada hotel.
+*   *CU-20: Administrar precios:* Permite definir las tarifas base, de temporada y ofertas para las habitaciones.
+
+
+==== Actor: Auditor
+
+El Auditor es un rol con permisos de supervisión para consultar información sensible y registros del sistema con fines de control y análisis.
+
+.Casos de Uso del Actor Auditor
+image::casos-uso-auditor.png[Casos de Uso - Auditor, width=700, align="center"]
+
+Los casos de uso para el Auditor son:
+*   *CU-21: Generar reportes financieros:* Permite crear informes sobre ingresos, ocupación y otros indicadores clave.
+*   *CU-22: Consultar uso de hoteles:* Permite visualizar estadísticas sobre el rendimiento y ocupación de los hoteles.
+*   *CU-23: Ver logs de accesos al sistema:* Permite revisar un registro de quién ha accedido al sistema y qué acciones ha realizado.
