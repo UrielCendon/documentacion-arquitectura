@@ -8,7 +8,7 @@ La vista funcional describe las capacidades del sistema desde la perspectiva de 
 El siguiente diagrama presenta una vista consolidada de alto nivel, mostrando todos los actores y los casos de uso asociados a cada uno para ofrecer un panorama completo de la funcionalidad del sistema.
 
 .Diagrama General de Casos de Uso
-image::casos-uso-general.png[Diagrama General de Casos de Uso, width=800, align="center"]
+image::diagramas-casos-uso.png[Diagrama General de Casos de Uso, width=800, align="center"]
 
 
 === Casos de Uso por Actor
@@ -20,7 +20,7 @@ A continuación, se desglosa la funcionalidad específica que cada actor puede r
 El Huésped es el cliente final que interactúa con el sistema para planificar y gestionar sus estancias en el hotel.
 
 .Casos de Uso del Actor Huésped
-image::casos-uso-huesped.png[Casos de Uso - Huésped, width=700, align="center"]
+image::casos-uso-Huésped.png[Casos de Uso - Huésped, width=700, align="center"]
 
 Los casos de uso específicos para el Huésped son:
 *   *CU-01: Consultar disponibilidad:* Permite al huésped verificar qué habitaciones están libres en un rango de fechas específico.
@@ -56,7 +56,7 @@ Los casos de uso para el Recepcionista son:
 El Administrador tiene el control total sobre la configuración y parámetros generales del sistema hotelero.
 
 .Casos de Uso del Actor Administrador
-image::casos-uso-administrador.png[Casos de Uso - Administrador, width=700, align="center"]
+image::casos-uso-Administrador.png[Casos de Uso - Administrador, width=700, align="center"]
 
 Los casos de uso para el Administrador son:
 *   *CU-17: Gestionar catálogo de hoteles:* Permite dar de alta, modificar o eliminar hoteles de la cadena.
@@ -70,7 +70,7 @@ Los casos de uso para el Administrador son:
 El Auditor es un rol con permisos de supervisión para consultar información sensible y registros del sistema con fines de control y análisis.
 
 .Casos de Uso del Actor Auditor
-image::casos-uso-auditor.png[Casos de Uso - Auditor, width=700, align="center"]
+image::casos-uso-Auditor.png[Casos de Uso - Auditor, width=700, align="center"]
 
 Los casos de uso para el Auditor son:
 *   *CU-21: Generar reportes financieros:* Permite crear informes sobre ingresos, ocupación y otros indicadores clave.
