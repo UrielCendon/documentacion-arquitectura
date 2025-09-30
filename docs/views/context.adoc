@@ -111,3 +111,156 @@ Verificar cumplimiento, uso correcto del sistema y trazabilidad.
 * *Información de uso de hoteles* (ocupación, cancelaciones, no‑show, etc.).
 * *Logs del sistema* para seguimiento de eventos críticos.
 
+
+// =========================
+// 1. Contexto y Alcance del Sistema
+// =========================
+== 1. Contexto y Alcance del Sistema
+
+=== 1.1 Visión del Sistema
+El *Sistema de Reservaciones de la Cadena Hotelera* es una plataforma centralizada que integra en tiempo real la gestión de inventario (hoteles, tipos y unidades de habitación), tarifas dinámicas, reservaciones con pago, y operaciones de recepción (check‑in/out), ofreciendo una experiencia fluida al huésped y controles de administración y auditoría robustos. La visión es transformar la gestión de reservaciones de un *costo operativo* a una *ventaja competitiva*, posibilitando *precios dinámicos* y políticas de *overbooking controlado* por tipo de habitación, y garantizando *consistencia y trazabilidad* de extremo a extremo.
+
+El sistema se centra en: (a) *confianza y consistencia* —evitar dobles cobros y dobles reservaciones aún bajo alta concurrencia—; (b) *usabilidad operativa* —que recepcionistas novatos completen tareas con mínima capacitación—; y (c) *observabilidad* —métricas, registros y seguimiento transaccional—. Con ello se incrementa la ocupación y los ingresos, se reduce la curva de aprendizaje del personal y se eleva la satisfacción del cliente.
+
+=== 1.2 Alcance
+*Funcionalidades principales de la versión inicial:*
+
+* *Búsqueda y consulta de disponibilidad* mínima para iniciar la reservación.
+* *Reservación con pago en línea* (autorización y confirmación atómicas) y *cancelación* según política.
+* *Operaciones de recepción:* check‑in, check‑out y cambio de habitación.
+* *Registro de consumos y servicios* asociados a la estancia.
+* *Administración de catálogos y políticas:* hoteles, habitaciones, tipos de habitación, tarifas por día y overbooking.
+* *Backoffice básico* para operación centralizada.
+
+*Restricciones y supuestos relevantes:*
+
+* Canales de venta: web y app móvil oficiales.
+* Modelo de pago: *pago completo al reservar*.
+* Política de inventario: *overbooking* objetivo del 10% por tipo y fecha (con controles de no‑venta accidental).
+* Consistencia fuerte en operaciones de cobro/confirmación de reserva (priorizar exactitud sobre latencia extrema).
+* RDBMS como base transaccional para prevenir dobles cargos y doble asignación de inventario.
+
+*Resultados esperados y métricas de calidad (meta):*
+
+* *Confirmación de reserva* con latencias P95 ≤ 2.5 s y P99 ≤ 4.0 s bajo picos especificados; *consultas de disponibilidad* P95 ≤ 500 ms a 300 QPS.
+* *Flujo de reserva ≤ 5 pasos* con mensajes de error claros.
+* *Usabilidad en recepción:* 90% de éxito tras ~10 min de instrucción por tarea.
+
+=== 1.3 Audiencia del documento
+Este documento está dirigido a:
+
+* *Equipo de producto* (definición de alcance y prioridades).
+* *Arquitectura y desarrollo* (insumos para impulsores arquitectónicos y decisiones de diseño).
+* *Operaciones e infraestructura* (requisitos de desempeño, resiliencia y observabilidad).
+* *Seguridad y cumplimiento* (lineamientos de privacidad y controles de acceso).
+* *Áreas de negocio* (administración de precios, políticas y catálogos) y *auditoría*.
+
+El contenido establece un *lenguaje común* para alinear objetivos, responsabilidades y expectativas entre estas áreas.
+
+=== 1.4 Glosario
+* *Huésped:* Cliente final que consulta, reserva, paga y cancela.
+* *Recepcionista:* Personal de hotel que opera check‑in/out y gestiona cargos/consumos.
+* *Administrador (Backoffice):* Rol que gestiona catálogos, tarifas y políticas.
+* *Auditor:* Rol que consulta reportes, ocupación y *logs* para trazabilidad y cumplimiento.
+* *Disponibilidad:* Conjunto de opciones de habitación/tarifa factibles para fechas dadas, considerando inventario y políticas.
+* *Overbooking:* Política deliberada de sobreventa controlada por tipo de habitación, aplicada para maximizar ocupación sin sobreventa accidental.
+* *Política de cancelación:* Reglas de cargos o ventanas de cancelación sin penalización.
+* *Retención de inventario:* Bloqueo temporal/definitivo de unidades al crear/confirmar una reserva.
+* *Confirmación atómica:* Tratamiento transaccional de cobro y confirmación como un solo resultado consistente (todo‑o‑nada).
+* *Consistencia de precios:* Garantía de que el precio mostrado al inicio es el mismo cobrado al finalizar.
+* *Observabilidad:* Conjunto de métricas, registros y trazas que permiten entender el comportamiento del sistema.
+
+
+// =========================
+// 2. Justificación y Diseño (alto nivel)
+// =========================
+== 2.1 Planteamiento del problema
+Actualmente, cada hotel utiliza o heredó soluciones locales y heterogéneas para administrar reservaciones. Esto produce *inconsistencias de inventario*, *errores de asignación* y *doble cobro o doble confirmación* en escenarios de concurrencia, además de dificultar el *control centralizado* y la *operación estandarizada* en la cadena. La limitada observabilidad complica el diagnóstico de incidentes y la mejora continua. Asimismo, la curva de aprendizaje de herramientas no unificadas ralentiza la capacitación del personal de recepción y expone a errores operativos.
+
+La oportunidad de negocio consiste en *unificar* la gestión de reservaciones en una *plataforma centralizada y robusta*, con *precios dinámicos* y *políticas de overbooking* controladas, para *maximizar ocupación e ingresos* manteniendo *confianza transaccional*. Al ofrecer una experiencia de reserva *directa* y *en tiempo real* al huésped, y una operación *intuitiva* para recepción, la cadena convierte la función de reservaciones en un *motor de valor*: reduce pérdidas por errores, agiliza la operación, aporta trazabilidad auditable y habilita decisiones de precio/ocupación desde un único punto. En términos técnicos, la solución debe eliminar condiciones de carrera en la asignación de inventario, garantizar *idempotencia* en pagos y confirmaciones, y proporcionar *métricas y *logs* de extremo a extremo. Con ello se asegura que el *precio mostrado* coincida *exactamente* con el *precio cobrado*, que *cada intento de pago* se procese una sola vez, y que *toda transacción* deje rastro verificable para auditoría. Esta combinación de *confiabilidad*, *eficiencia operativa* y *observabilidad* permite escalar de forma predecible ante picos de demanda sin sacrificar la consistencia.
+
+== 2.2 Alcance y propósito del diseño
+El propósito del diseño es *formalizar las fronteras* del sistema y especificar *qué preocupa* a cada parte interesada (*stakeholder*) para derivar los *impulsores arquitectónicos* que guiarán decisiones posteriores.
+
+=== Stakeholders principales y sus *concerns*
+
+*Huésped (web/app)*::
+* *Experiencia fluida y confiable:* flujo corto (≤ 5 pasos) con mensajes claros.
+* *Precio consistente:* el importe mostrado al inicio debe ser idéntico al cobrado.
+* *Disponibilidad en tiempo real* y confirmación inmediata con comprobante.
+* *Privacidad y seguridad* de datos personales y de pago.
+
+*Recepcionista (hotel)*::
+* *Usabilidad operativa:* completar check‑in/out con ~10 minutos de instrucción por tarea.
+* *Rapidez en consulta de disponibilidad* y estado de reservaciones.
+* *Gestión de cambios* (cambios de habitación, extensiones, cancelaciones) con trazabilidad.
+* *Prevención de sobreventa* y soporte para *overbooking* controlado.
+
+*Administrador (cadena/hotel)*::
+* *Control centralizado* de tarifas diarias y políticas de overbooking desde un solo punto.
+* *Integridad referencial* del catálogo (hotel ↔ tipo ↔ habitación) y versionado/vigencia de tarifas.
+* *Observabilidad y gobierno de datos:* reportes de ocupación, cancelaciones y desempeño.
+
+*Auditoría*::
+* *Trazabilidad* completa de transacciones (reservas, pagos, cambios).
+* *Reportes de cumplimiento* y acceso a *logs* con inmutabilidad.
+
+*Pasarela de pago (tercero)*::
+* *Idempotencia* de cobros y conciliación de referencias.
+* *Manejo de fallos* y reintentos sin duplicidad.
+
+*Sistemas externos (contabilidad, mensajería)*::
+* *Integración desacoplada* por interfaces estables.
+* *Garantía de entrega* y *evitación de efectos colaterales* ante reenvíos.
+
+=== Fronteras del sistema (*scope* del diseño)
+
+*Dentro del límite:*
+
+* Servicios de *inventario y tarifas* (consulta y administración).
+* *Disponibilidad* y *motor de reglas* para políticas de reserva/cancelación/overbooking.
+* *Orquestación de reserva* (retención de inventario + pago + confirmación atómica).
+* *Gestión de estancia* (check‑in/out, cambios, consumos).
+* *Backoffice* (catálogos, tarifas, políticas) y *auditoría/observabilidad* (métricas, *logs*, trazas).
+
+*Fuera del límite (por integración):*
+
+* *Pasarela de pagos* (autorización/captura, antifraude) —se usa por API segura.
+* *Mensajería de terceros* (correo/SMS/push) para notificaciones.
+* *Sistemas contables* y de *fidelidad* —por interfaces asíncronas o batch.
+
+=== Impulsores arquitectónicos derivados
+
+* *Confiabilidad transaccional:* evitar dobles cobros/dobles reservas → requiere *idempotencia* end‑to‑end, llaves de *idempotency*, y transacciones que unan *retención de inventario* con *confirmación de pago* (todo‑o‑nada).
+* *Aislamiento de concurrencia:* control integrado en disponibilidad/confirmación para evitar condiciones de carrera, *locks* o comparaciones‑y‑intercambio optimistas, y *lease* temporal del inventario.
+* *Consistencia de precios:* congelar cotización por ventana breve y validar que *precio mostrado = precio cobrado* al confirmar; firma de cotización.
+* *Rendimiento predecible:* objetivos de P95/P99 para confirmación y P95 para disponibilidad; *back‑pressure* y degradación controlada ante picos.
+* *Observabilidad y auditoría:* correlación de transacciones, *trace IDs* por flujo, tableros de latencia/errores, y *event sourcing* o *journaling* selectivo para cambios críticos.
+* *Usabilidad operativa:* interfaces guiadas, validaciones en contexto, *shortcuts* y accesibilidad; *undo/redo* seguro para operaciones de recepción donde aplique.
+* *Seguridad y cumplimiento:* controles por rol, *least privilege*, cifrado en tránsito y reposo, manejo de PII y retención de datos según normativa.
+
+=== Criterios de aceptación de alto nivel
+
+* *Disponibilidad en tiempo real* y confirmación con comprobante en ≤ 4 s (P99) bajo condiciones pico definidas.
+* *Cero incidentes* de doble cobro o doble reservación en producción (medido mensualmente).
+* *90%* de recepcionistas novatos completan check‑in/out sin asistencia tras ~10 min de instrucción.
+* *Trazabilidad completa* de cada reserva y cobro (desde solicitud hasta confirmación/cancelación), con *logs* y métricas consultables por auditoría.
+
+=== Riesgos y mitigaciones (alto nivel)
+
+* *Picos de demanda no previstos:* aplicar *auto‑scaling*, *circuit breakers* y colas para amortiguar ráfagas; estrategias de *rate limiting* por actor.
+* *Curva de aprendizaje mayor a la esperada:* diseño centrado en tareas, asistencia contextual y entrenamiento en *sandbox*.
+* *Dependencia de terceros (pasarela):* tiempos de espera y reintentos con *timeouts* configurables, *dead‑letter queues* y conciliación diferida.
+
+=== Métricas de éxito (operacionales y de producto)
+
+* Confirmación P95/P99, disponibilidad P95, tasa de abandonos del flujo, errores por paso, *SLOs* y *SLIs* por servicio.
+* Indicadores de negocio: ocupación, ingresos por habitación disponible, cancelaciones/no‑shows, y tiempo medio de capacitación en recepción.
+
+=== Supuestos y dependencias del diseño
+
+* Reglas de negocio de tarifas/cancelaciones son *insumos configurables* provistos por negocio.
+* La pasarela de pagos proporciona *webhooks* confiables para conciliación y reembolsos.
+* Las estimaciones de carga (QPS/TPS) son punto de partida; el diseño contemplará *márgenes de escalabilidad* y *pruebas de estrés* regulares.
+
+
