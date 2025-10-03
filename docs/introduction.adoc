@@ -1,0 +1,67 @@
+= Documento de Diseño — Sistema de Reservaciones Centralizado
+:sectnums:
+:sectnums-depth: 2
+:toc: left
+:toclevels: 2
+
+== Introducción
+Este capítulo resume la visión, el alcance, la audiencia y el glosario del sistema.
+
+=== Visión del Sistema
+Hoy cada hotel usa su propia solución de reservas. Eso provoca datos inconsistentes, cobros y reservaciones duplicadas y reglas diferentes en cada sede. La propuesta es un sistema centralizado, confiable y escalable que unifique reservas, tarifas e inventarios para una red de >5,000 hoteles (≈1,000,000 habitaciones).
+
+Objetivo:
+* Que el huésped pueda reservar en tiempo real de forma segura y sencilla.
+* Que el personal de recepción tenga herramientas intuitivas para check-in, check-out y cambios de habitación.
+* A nivel negocio, operar precios dinámicos, overbooking controlado (con políticas claras) y trazabilidad completa para reducir errores y maximizar ingresos.
+
+=== Alcance
+El sistema (v1) prioriza confiabilidad, trazabilidad y facilidad de uso. Entregamos lo esencial y dejamos lo complementario para fases posteriores.
+
+==== Funcionalidades incluidas (v1)
+* Reservación con pago completo y opción de cancelación con penalización según política.
+* Consulta de disponibilidad en tiempo real (habitaciones y tarifas).
+* Gestión de estancias: check-in, check-out y cambio de habitación.
+* Registro de consumos/servicios durante la estancia.
+* Administración de inventario y tarifas (altas, bajas y modificaciones).
+* Gestión centralizada de overbooking (hasta 10% por tipo de habitación y fecha).
+* Precios dinámicos como palanca de optimización.
+* Backoffice básico: hoteles, habitaciones, tipos y reglas de negocio.
+* Trazabilidad de operaciones relevantes (auditoría y cumplimiento).
+
+==== Fuera de alcance (v1)
+* Reporte de problemas internos y sanciones.
+* Integraciones con otros sistemas hoteleros en caso de falta de disponibilidad.
+* Descuentos/promociones personalizadas y programas de lealtad/membresías.
+
+==== Limitaciones y restricciones
+* Canales: solo web oficial y app móvil de la cadena.
+* Pago: 100% al reservar (no hay anticipos parciales).
+* Overbooking: máximo 10% por tipo de habitación y fecha.
+* UX: flujo de reserva en máximo 5 pasos (≤5 clics).
+* Datos: consideracion para poder soportar concurrencia.
+
+=== Audiencia del documento
+* **Administración de la cadena**: control central de inventario, overbooking y tarifas dinámicas para maximizar ingresos y satisfacción.
+* **Huéspedes/Clientes**: reservar, pagar y cancelar de forma simple, segura y en pocos pasos.
+* **Personal operativo (recepción y staff)**: ejecutar check-in/out, cambios y consumos con una herramienta clara y rápida.
+* **Administradores del sistema**: configurar inventario, tarifas y políticas con trazabilidad robusta.
+* **Equipo de desarrollo y soporte**: implementar y mantener la solución, asegurando disponibilidad, seguridad y escalabilidad.
+
+=== Glosario
+* **Reservación**: apartar una habitación por fechas, confirmada al pagar el total.
+* **Check-in**: registro formal de entrada del huésped.
+* **Check-out**: salida del huésped y liquidación de consumos.
+* **Overbooking**: aceptar reservas por encima del inventario (hasta 10%) para cubrir cancelaciones/no-shows.
+* **Pago completo al reservar**: cobro del 100% al confirmar la reservación.
+* **Penalización por cancelación**: cargo aplicado según la política vigente.
+* **Precios dinámicos**: tarifas que cambian según demanda, temporada y ocupación.
+* **Exclusión mutua**: una habitación no puede reservarse para dos clientes a la vez.
+* **Cliente/Huésped**: usuario final que realiza la reservación y consume servicios del hotel.
+* **Inventario**: habitaciones y servicios disponibles para reservación.
+* **Backoffice**: interfaz administrativa para catálogo, tarifas y políticas.
+* **Latencia**: tiempo de respuesta del sistema ante una operación.
+* **TPS (Transactions Per Second)**: transacciones procesadas por segundo.
+* **QPS (Queries Per Second)**: consultas de disponibilidad por segundo.
+* **RDBMS**: gestor de bases de datos relacional para garantizar consistencia y confiabilidad.
+* **Restricción (Constraint)**: límite tecnológico u operativo que condiciona decisiones de diseño (p. ej., uso obligatorio de RDBMS o canales web/app).
