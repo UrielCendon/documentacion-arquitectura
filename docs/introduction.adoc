@@ -1,4 +1,3 @@
-= Descripción de la Arquitectura de Software: {project-title}
 :project-title: Sistema de Gestión de una Cadena Hotelera
 :authors: Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
 :revdate: 7 de diciembre del 2025
@@ -8,10 +7,12 @@
 :period: AGOSTO 2025 - ENERO 2026
 :repo_url: https://github.com/UrielCendon/documentacion-arquitectura
 
+= {project-title}
+
 :doctype: book
 :toc: left
 :icons: font
-:sectnums: // Añadido para numerar las secciones, es una buena práctica.
+:sectnums:
 
 [role="cover-page", align="center"]
 ====
