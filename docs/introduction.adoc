@@ -1,4 +1,4 @@
-= Documento de Diseño — Sistema de Reservaciones Centralizado
+= Documento de Diseño — Contexto y Alcance del Sistema
 
 == 1.1 Visión del Sistema
 Hoy la cadena opera con múltiples soluciones locales por hotel. Ese esquema fragmentado provoca datos inconsistentes, cobros y reservaciones duplicadas, reglas que cambian de un lugar a otro y una experiencia de huésped poco predecible. Además, complica la toma de decisiones: es difícil ver la ocupación real, ajustar tarifas de forma coordinada o aplicar políticas comunes sin fricción. El impacto no es menor: pérdidas económicas, esfuerzo operativo extra, riesgos reputacionales y freno a la innovación.
@@ -25,15 +25,17 @@ La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y us
 
 
 === 1.2.2 Fuera de alcance (v1)
-- **Reporte de problemas y sanciones internas** del huésped o del personal.
-- **Integraciones con otros sistemas hoteleros/OTAs** para redistribuir demanda por falta de disponibilidad.
+- **Buesquedas avanzadas (filtros avanzados) y recomendaciones**.
+- **Integraciones con otros sistemas hoteleros/agencias de viaje** para redistribuir demanda por falta de disponibilidad.
 - **Descuentos/promociones personalizadas** y **programas de fidelidad** (membresías, puntos, beneficios).
 
 === 1.2.3 Limitaciones y restricciones
+- **Canales de venta**: Solo se implementara para la web y la aplicación móvil oficial de la cadena.
 - **Política de pago**: 100% del total al confirmar la reservación (no hay anticipos parciales).
 - **Overbooking**: máximo **10%** por tipo de habitación y fecha, definido centralmente.
 - **Experiencia de reserva**: máximo **5 pasos** (≤5 clics) desde búsqueda hasta confirmación.
 - **Consistencia de precios**: el precio mostrado al iniciar la reserva se respeta hasta la confirmación dentro de la sesión.
+- **Base de datos**: se debe usar un RDBMS.
 
 === 1.2.4 Suposiciones y dependencias
 - **Pasarela de pago confiable** con autorización/captura, manejo de reintentos e idempotencia para evitar cargos duplicados.
@@ -79,4 +81,4 @@ Este documento está dirigido a los grupos que intervienen en la definición, us
 - **Trazabilidad**: Capacidad de seguir cada operación con identificadores y bitácoras para auditar y resolver disputas.
 - **Política de cancelación**: Conjunto de reglas que define costos, plazos y condiciones para cancelar o modificar una reservación.
 - **Degradación controlada**: Modo de operación con funciones limitadas para mantener el servicio activo durante picos o fallos parciales.
-
+- **RDBMS (Relational Database Management System)**: Sistema de gestión de bases de datos relacionales.
