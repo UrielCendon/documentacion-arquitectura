@@ -1,58 +1,35 @@
+= Descripción de la Arquitectura de Software: {project-title}
 :project-title: Sistema de Gestión de una Cadena Hotelera
 :authors: Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
 :revdate: 7 de diciembre del 2025
 :revnumber: 1.0
 :version-label: Versión
-:doctype: book
-:toc: left
-:icons: font
-:sourcenumbering:
-
 :course: Diseño de Software
 :period: AGOSTO 2025 - ENERO 2026
 :repo_url: https://github.com/UrielCendon/documentacion-arquitectura
 
+:doctype: book
+:toc: left
+:icons: font
+:sectnums: // Añadido para numerar las secciones, es una buena práctica.
 
 [role="cover-page", align="center"]
---
+====
 image::UV-LOGO-PNG.png[width=150]
-
-pass:[<br><br>]
 
 *UNIVERSIDAD VERACRUZANA* +
 *FACULTAD DE ESTADÍSTICA E INFORMÁTICA* +
 LIC. INGENIERÍA DE SOFTWARE
 
-pass:[<br><br>]
-
-'''
-
-pass:[<br><br>]
-
-== Descripción de la Arquitectura de Software
-
-=== {project-title}
-
-pass:[<br><br>]
-
-'''
-
-pass:[<br><br>]
-
 *REALIZADO POR:* +
 {authors}
-
-pass:[<br><br>]
 
 *CURSO:* +
 {course}
 
-pass:[<br><br>]
-
 *FECHA DE ENTREGA:* +
 {revdate}
-
---
+====
 
 <<<
 
@@ -69,8 +46,8 @@ pass:[<br><br>]
 
 | 0.2
 | 21/09/2025
-| Alan Raziel Filobello Aguilar, Uriel Cendón Díaz
-| Elaboración de las primeras versiones de los diagramas de clases y casos de uso, incluyendo la corrección de imágenes y su nombrado.
+| Alan Raziel Filobello Aguilar, Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara
+| Elaboración de las primeras versiones de los diagramas de clases, diagramas de contexto y casos de uso, incluyendo la corrección de imágenes y su nombrado.
 
 | 0.3
 | 22/09/2025
