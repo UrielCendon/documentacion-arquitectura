@@ -11,3 +11,6 @@ build/
 # Archivos de sistema
 .DS_Store
 Thumbs.db
+
+# Ignorar toda la carpeta de contribuciones
+contributions/
