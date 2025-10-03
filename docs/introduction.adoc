@@ -1,18 +1,60 @@
-= Sistema de Gestión de una Cadena Hotelera
+:project-title: Sistema de Gestión de una Cadena Hotelera
 :authors: Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
 :revdate: 7 de diciembre del 2025
 :revnumber: 1.0
+:version-label: Versión
 :doctype: book
 :toc: left
 :icons: font
 :sourcenumbering:
+
 :course: Diseño de Software
 :period: AGOSTO 2025 - ENERO 2026
+:repo_url: https://github.com/UrielCendon/documentacion-arquitectura
 
-*Curso:* {course}
-*Periodo:* {period}
-*Fecha de Entrega:* {revdate}
-*Repositorio del Proyecto:* link:https://github.com/UrielCendon/documentacion-arquitectura[documentacion-arquitectura]
+
+[role="cover-page", align="center"]
+--
+image::UV-LOGO-PNG.png[width=150]
+
+pass:[<br><br>]
+
+*UNIVERSIDAD VERACRUZANA* +
+*FACULTAD DE ESTADÍSTICA E INFORMÁTICA* +
+LIC. INGENIERÍA DE SOFTWARE
+
+pass:[<br><br>]
+
+'''
+
+pass:[<br><br>]
+
+== Descripción de la Arquitectura de Software
+
+=== {project-title}
+
+pass:[<br><br>]
+
+'''
+
+pass:[<br><br>]
+
+*REALIZADO POR:* +
+{authors}
+
+pass:[<br><br>]
+
+*CURSO:* +
+{course}
+
+pass:[<br><br>]
+
+*FECHA DE ENTREGA:* +
+{revdate}
+
+--
+
+<<<
 
 == Historial de Versiones
 
