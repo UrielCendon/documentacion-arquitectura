@@ -20,5 +20,106 @@ Centralizar reservas, tarifas e inventario en una sola plataforma abre varias me
 === En pocas palabras
 El proyecto convierte muchas “islas” en una sola plataforma confiable. Con datos consistentes y procesos unificados, la cadena puede vender mejor, operar con menos errores y ofrecer una experiencia pareja y transparente. No hacerlo significa seguir pagando costos ocultos (errores, fricción, abandono) y perder ingresos que hoy no se capturan.
 
+== 2.2 Alcance y propósito del diseño
+
+=== 2.2.1 Objetivo de esta sección
+Este capítulo fija de forma práctica dónde empieza y dónde termina el diseño del sistema, quiénes participan y qué les preocupa. Con esto evitamos malentendidos, reducimos “alcance elástico” y obtenemos una lista clara de temas que más adelante se traducirán en impulsores arquitectónicos (atributos de calidad, restricciones y prioridades).
+
+=== 2.2.2 Fronteras del diseño (qué sí y qué no)
+**Incluido en el diseño (v1):**
+- **Canales**: sitio web oficial y app móvil de la cadena.
+- **Usuarios**: huéspedes (reservan, pagan y cancelan), personal de recepción (check-in, check-out, cambio de habitación), administradores (inventario, tarifas, políticas).
+- **Funciones clave**: búsqueda de disponibilidad en tiempo real; creación, confirmación y cancelación de reservas con pago total y penalización según políticas; registro de consumos; administración de catálogos (hoteles, tipos y habitaciones); **overbooking controlado** (hasta 10% por tipo/fecha); **precios dinámicos**; trazabilidad/auditoría de operaciones.
+- **Datos**: catálogos, tarifas, disponibilidad, reservas, eventos de negocio y auditoría; referencias a pagos (tokens/identificadores), no almacenamiento de datos sensibles de tarjetas.
+- **Integraciones**: pasarela de pago (autorización/captura, idempotencia), servicios de notificaciones (correo, push), monitoreo/observabilidad y gestión de secretos.
+- **No funcionales base**: consistencia transaccional en confirmación de reservas; tiempos razonables de respuesta; seguridad de datos; observabilidad y capacidad de diagnóstico.
+
+**Fuera de alcance (v1):**
+- Programas de lealtad, descuentos personalizados o motores de promociones complejas.
+- Integraciones con OTAs u otros sistemas hoteleros para redistribuir demanda.
+- Reporte de incidentes/sanciones internas.
+- Anticipos parciales o modalidades de pago distintas al pago total.
+- Canales de terceros (sitios afiliados, kioscos, etc.).
+
+Estas fronteras no impiden planear una **v2** con integraciones y beneficios adicionales; solo acotan lo que debe estar listo y operando en la primera entrega.
+
+=== 2.2.3 Interesados (stakeholders) y lo que les preocupa
+A continuación, los grupos clave y los temas que típicamente les importan. Esta lista guía decisiones y prioriza compromisos cuando dos objetivos chocan (p. ej., latencia vs. consistencia).
+
+- **Dirección / Administración de la cadena**  
+  *Preocupaciones*: ingresos, ocupación, coherencia de políticas entre hoteles, riesgos reputacionales, cumplimiento de reglas internas. Quieren ver resultados comparables y tomar decisiones con datos confiables.
+
+- **Revenue Management / Comercial / Marketing**  
+  *Preocupaciones*: control fino de tarifas, calendarios de temporada, elasticidad de la demanda, reglas de overbooking por tipo/fecha, visibilidad de KPIs (conversión, cancelación, no-shows). Necesitan mover palancas sin depender de desarrollo.
+
+- **Finanzas / Contabilidad**  
+  *Preocupaciones*: conciliación de cobros, devoluciones y penalizaciones; evitar cobros duplicados; cierres mensuales sin “persecución” de diferencias; reportes auditables y exportables.
+
+- **Operación (recepción y staff)**  
+  *Preocupaciones*: flujos claros, mínima curva de aprendizaje, mensajes útiles, control de cupos y cambios de habitación sin errores. Buscan rapidez, pero sobre todo **certeza**.
+
+- **Huéspedes / Clientes**  
+  *Preocupaciones*: proceso simple (≤5 pasos), precio consistente entre lo mostrado y lo cobrado, confirmación inmediata, reglas transparentes de cancelación, seguridad de su información.
+
+- **Atención al cliente / Service Desk**  
+  *Preocupaciones*: historial completo de la reserva (quién cambió qué y cuándo), herramientas para resolver disputas, tiempos de respuesta y plantillas de comunicación coherentes.
+
+- **Seguridad / Legal / Cumplimiento**  
+  *Preocupaciones*: protección de datos personales y de pago, mínimos privilegios, cifrado, retención de datos, bitácoras y evidencia para auditoría y cumplimiento normativo.
+
+- **TI Corporativo / Infra / SRE**  
+  *Preocupaciones*: disponibilidad, recuperación ante fallos, capacidad de escalar en picos, monitoreo accionable, estandarización de despliegues y costos de operación.
+
+- **Producto / UX / Desarrollo**  
+  *Preocupaciones*: alcance claro, criterios de aceptación, mantenibilidad, modularidad, contratos estables y telemetría para aprender y mejorar.
+
+- **Datos / BI / Analytics**  
+  *Preocupaciones*: calidad y puntualidad de datos, eventos de negocio bien definidos, acceso controlado a fuentes confiables para tableros y modelos.
+
+=== 2.2.4 Resumen rápido (stakeholders → concerns)
+|===
+| Stakeholder | Lo que más le preocupa (resumen)
+
+| Dirección/Administración | Ingresos, coherencia de políticas, riesgos, comparabilidad de resultados
+| Revenue/Marketing | Tarifas, temporadas, overbooking, KPIs de conversión y cancelación
+| Finanzas | Conciliación, devoluciones, no duplicar cobros, evidencias auditables
+| Operación (recepción) | Simplicidad, mensajes claros, rapidez con certeza, control de cupos
+| Huéspedes | Flujo corto, precio consistente, confirmación inmediata, reglas claras
+| Atención al cliente | Historial completo, tiempos de respuesta, comunicaciones coherentes
+| Seguridad/Legal | Protección de datos, cifrado, mínimos privilegios, trazabilidad
+| TI/Infra/SRE | Disponibilidad, escalado en picos, monitoreo, costos operativos
+| Producto/UX/Dev | Alcance y criterios claros, mantenibilidad, modularidad, telemetría
+| Datos/BI | Datos correctos y puntuales, eventos estandarizados, accesos controlados
+|===
+
+Esta tabla no sustituye la lista detallada, pero ayuda a tener a la vista las prioridades cuando surgen decisiones difíciles.
+
+=== 2.2.5 Criterios de corte y supuestos prácticos
+Para que el alcance sea manejable y entregable, aplicamos estos cortes:
+
+- **Reservas “de punta a punta”** con pago total: si la autorización falla, no hay reserva; si se confirma, el inventario queda bloqueado y la transacción es trazable e idempotente.  
+- **Precio mostrado = precio cobrado**: el precio al inicio del flujo se respeta hasta la confirmación dentro de la sesión.  
+- **Overbooking controlado** a nivel tipo/fecha (tope 10%): medible y auditable.  
+- **Sin OTAs en v1**: el diseño prevé APIs para futuras integraciones, pero no se comprometen para la primera versión.  
+- **Datos de pago**: no se almacenan PANs ni CVV; solo referencias seguras de la pasarela.  
+- **Capacidad y picos**: se dimensiona para la demanda estimada y se instrumenta para escalar con datos reales.
+
+Temas abiertos que requieren decisión del negocio y que impactan diseño: ventanas de cancelación/modificación por tarifa, reglas de “no-show”, umbrales de degradación aceptables en picos y políticas de retención de logs/eventos.
+
+=== 2.2.6 Cómo estas preocupaciones se traducen en impulsores arquitectónicos
+Esta sección no define aún la arquitectura, pero deja listos los insumos que la guiarán:
+
+- **Consistencia transaccional primero** (Dirección, Finanzas, Operación): evitar dobles cobros y dobles reservas pesa más que exprimir milisegundos en confirmación. Impulsa diseños con locks lógicos, idempotencia y transacciones atómicas.
+- **Disponibilidad con degradación controlada** (TI/SRE, Operación, Huéspedes): en picos, el sistema debe seguir vendiendo, aunque desactive funciones no críticas (p. ej., filtros avanzados). Impulsa circuit breakers, colas y límites por ruta.
+- **Seguridad y cumplimiento** (Seguridad/Legal, Finanzas): cifrado en tránsito y reposo, mínimos privilegios, rotación de secretos, datos de pago fuera del sistema. Impulsa separación de responsabilidades y vaults/secret managers.
+- **Usabilidad y accesibilidad** (Huéspedes, Operación, Producto/UX): flujo de ≤5 pasos, mensajes accionables, validaciones en línea, soporte para teclado/lectores. Impulsa diseño de UI simple, consistencia visual y telemetry de UX.
+- **Observabilidad y auditoría** (Atención al cliente, BI, Dirección): eventos de negocio estandarizados, trazas end-to-end, logs con correlación por transacción y tableros accionables. Impulsa estandarizar IDs, esquemas de eventos y SLIs/SLOs.
+- **Evolutividad y modularidad** (Producto/Dev, TI): poder agregar OTAs/lealtad en v2 sin reescribir v1. Impulsa APIs claras, dominios bien separados y contratos versionados.
+- **Control de tarifas y políticas por negocio** (Revenue/Marketing): cambios sin despliegues. Impulsa reglas configurables, feature flags y catálogos administrables con auditoría.
+- **Datos confiables para BI** (Datos/BI, Dirección): una sola fuente de verdad con latencia razonable. Impulsa eventos consistentes, ETLs/streams con contratos y permisos granulares.
+
+**Resultado esperado:** con estas fronteras y preocupaciones mapeadas, el equipo puede priorizar qué atributos de calidad y restricciones deben “ganar” cuando haya trade-offs, y avanzar a la definición de la arquitectura con un marco común y validado por negocio.
+
+
 
 
