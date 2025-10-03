@@ -1,67 +1,83 @@
 = Documento de Diseño — Sistema de Reservaciones Centralizado
-:sectnums:
-:sectnums-depth: 2
-:toc: left
-:toclevels: 2
 
-== Introducción
-Este capítulo resume la visión, el alcance, la audiencia y el glosario del sistema.
+== 1.1 Visión del Sistema
+Hoy la cadena opera con múltiples soluciones locales por hotel. Ese esquema fragmentado provoca datos inconsistentes, cobros y reservaciones duplicadas, reglas que cambian de un lugar a otro y una experiencia de huésped poco predecible. Además, complica la toma de decisiones: es difícil ver la ocupación real, ajustar tarifas de forma coordinada o aplicar políticas comunes sin fricción. El impacto no es menor: pérdidas económicas, esfuerzo operativo extra, riesgos reputacionales y freno a la innovación.
 
-=== Visión del Sistema
-Hoy cada hotel usa su propia solución de reservas. Eso provoca datos inconsistentes, cobros y reservaciones duplicadas y reglas diferentes en cada sede. La propuesta es un sistema centralizado, confiable y escalable que unifique reservas, tarifas e inventarios para una red de >5,000 hoteles (≈1,000,000 habitaciones).
+La propuesta es construir un sistema centralizado, confiable y escalable que unifique la gestión de reservaciones, tarifas e inventarios para más de 5,000 hoteles (aprox. 1,000,000 de habitaciones). La plataforma brindará a los huéspedes procesos simples y seguros para reservar en tiempo real; al personal operativo, herramientas claras para check-in, check-out y cambios de habitación; y a la administración, control total sobre políticas y métricas clave del negocio.
 
-Objetivo:
-* Que el huésped pueda reservar en tiempo real de forma segura y sencilla.
-* Que el personal de recepción tenga herramientas intuitivas para check-in, check-out y cambios de habitación.
-* A nivel negocio, operar precios dinámicos, overbooking controlado (con políticas claras) y trazabilidad completa para reducir errores y maximizar ingresos.
+Este sistema no es solo “otra herramienta”: se concibe como un activo estratégico. Con la centralización se habilitan capacidades como precios dinámicos basados en demanda, temporada u ocupación; un overbooking controlado (hasta 10% por tipo de habitación y fecha) para compensar cancelaciones o inasistencias; y trazabilidad de punta a punta para auditar cada operación. Así se reducen errores, se optimizan ingresos y se gana agilidad para lanzar mejoras sin reconfigurar sitio por sitio.
 
-=== Alcance
-El sistema (v1) prioriza confiabilidad, trazabilidad y facilidad de uso. Entregamos lo esencial y dejamos lo complementario para fases posteriores.
+La experiencia del usuario es prioridad. La reservación deberá completarse en un flujo corto (máximo cinco pasos), con mensajes claros y recuperables ante errores. También se cuidará la consistencia entre lo que se muestra y lo que se cobra: el precio ofrecido en el momento de reservar será el precio final al confirmar. En lo técnico, se favorecerán decisiones que mantengan la coherencia transaccional en escenarios de alta concurrencia, priorizando “acertar” antes que “acelerar y fallar”.
 
-==== Funcionalidades incluidas (v1)
-* Reservación con pago completo y opción de cancelación con penalización según política.
-* Consulta de disponibilidad en tiempo real (habitaciones y tarifas).
-* Gestión de estancias: check-in, check-out y cambio de habitación.
-* Registro de consumos/servicios durante la estancia.
-* Administración de inventario y tarifas (altas, bajas y modificaciones).
-* Gestión centralizada de overbooking (hasta 10% por tipo de habitación y fecha).
-* Precios dinámicos como palanca de optimización.
-* Backoffice básico: hoteles, habitaciones, tipos y reglas de negocio.
-* Trazabilidad de operaciones relevantes (auditoría y cumplimiento).
+== 1.2 Alcance
+La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y usable. Incluye lo indispensable para operar reservas de punta a punta, gestionar inventario/tarifas y soportar la operación diaria en recepción. Funcionalidades complementarias —como programas de lealtad o integraciones externas— se evaluarán en fases posteriores.
 
-==== Fuera de alcance (v1)
-* Reporte de problemas internos y sanciones.
-* Integraciones con otros sistemas hoteleros en caso de falta de disponibilidad.
-* Descuentos/promociones personalizadas y programas de lealtad/membresías.
+=== 1.2.1 Funcionalidades incluidas (v1)
+- **Reservación con pago completo** y **cancelación con penalización** según política vigente.
+- **Consulta de disponibilidad en tiempo real** de habitaciones y tarifas, con información precisa y actualizada.
+- **Gestión de estancias**: check-in, check-out y cambio de habitación con control de cupos.
+- **Registro de consumos y servicios adicionales** durante la estancia (por ejemplo, alimentos o extras).
+- **Administración de inventario y tarifas** (altas, bajas y modificaciones) con bitácora de cambios.
+- **Gestión centralizada de overbooking** (hasta 10% por tipo de habitación y fecha), con reglas auditable.
+- **Precios dinámicos** como palanca de optimización del negocio y diferenciador competitivo.
+- **Backoffice básico** para catálogos de hoteles, tipos de habitación, habitaciones y reglas de negocio.
+- **Trazabilidad completa** de operaciones relevantes (auditoría, seguridad y cumplimiento).
 
-==== Limitaciones y restricciones
-* Canales: solo web oficial y app móvil de la cadena.
-* Pago: 100% al reservar (no hay anticipos parciales).
-* Overbooking: máximo 10% por tipo de habitación y fecha.
-* UX: flujo de reserva en máximo 5 pasos (≤5 clics).
-* Datos: consideracion para poder soportar concurrencia.
+=== 1.2.2 Fuera de alcance (v1)
+- **Reporte de problemas y sanciones internas** del huésped o del personal.
+- **Integraciones con otros sistemas hoteleros/OTAs** para redistribuir demanda por falta de disponibilidad.
+- **Descuentos/promociones personalizadas** y **programas de fidelidad** (membresías, puntos, beneficios).
 
-=== Audiencia del documento
-* **Administración de la cadena**: control central de inventario, overbooking y tarifas dinámicas para maximizar ingresos y satisfacción.
-* **Huéspedes/Clientes**: reservar, pagar y cancelar de forma simple, segura y en pocos pasos.
-* **Personal operativo (recepción y staff)**: ejecutar check-in/out, cambios y consumos con una herramienta clara y rápida.
-* **Administradores del sistema**: configurar inventario, tarifas y políticas con trazabilidad robusta.
-* **Equipo de desarrollo y soporte**: implementar y mantener la solución, asegurando disponibilidad, seguridad y escalabilidad.
+=== 1.2.3 Limitaciones y restricciones
+- **Canales soportados**: sitio web oficial y aplicación móvil de la cadena (no se contempla canal físico/terceros).
+- **Política de pago**: 100% del total al confirmar la reservación (no hay anticipos parciales).
+- **Overbooking**: máximo **10%** por tipo de habitación y fecha, definido centralmente.
+- **Experiencia de reserva**: máximo **5 pasos** (≤5 clics) desde búsqueda hasta confirmación.
+- **Base de datos**: uso obligatorio de **RDBMS** con **escalamiento horizontal** en rutas críticas para soportar concurrencia y garantizar consistencia.
+- **Consistencia de precios**: el precio mostrado al iniciar la reserva se respeta hasta la confirmación dentro de la sesión.
 
-=== Glosario
-* **Reservación**: apartar una habitación por fechas, confirmada al pagar el total.
-* **Check-in**: registro formal de entrada del huésped.
-* **Check-out**: salida del huésped y liquidación de consumos.
-* **Overbooking**: aceptar reservas por encima del inventario (hasta 10%) para cubrir cancelaciones/no-shows.
-* **Pago completo al reservar**: cobro del 100% al confirmar la reservación.
-* **Penalización por cancelación**: cargo aplicado según la política vigente.
-* **Precios dinámicos**: tarifas que cambian según demanda, temporada y ocupación.
-* **Exclusión mutua**: una habitación no puede reservarse para dos clientes a la vez.
-* **Cliente/Huésped**: usuario final que realiza la reservación y consume servicios del hotel.
-* **Inventario**: habitaciones y servicios disponibles para reservación.
-* **Backoffice**: interfaz administrativa para catálogo, tarifas y políticas.
-* **Latencia**: tiempo de respuesta del sistema ante una operación.
-* **TPS (Transactions Per Second)**: transacciones procesadas por segundo.
-* **QPS (Queries Per Second)**: consultas de disponibilidad por segundo.
-* **RDBMS**: gestor de bases de datos relacional para garantizar consistencia y confiabilidad.
-* **Restricción (Constraint)**: límite tecnológico u operativo que condiciona decisiones de diseño (p. ej., uso obligatorio de RDBMS o canales web/app).
+=== 1.2.4 Suposiciones y dependencias
+- **Pasarela de pago confiable** con autorización/captura, manejo de reintentos e idempotencia para evitar cargos duplicados.
+- **Políticas de negocio definidas** (cancelaciones, cambios, ventanas de tiempo) provistas por la administración antes de la salida a producción.
+- **Cargas operativas** estimadas (QPS/TPS) sujetas a revisión con telemetría para ajustar capacidad.
+
+=== 1.2.5 Requisitos no funcionales (resumen)
+- **Disponibilidad y resiliencia**: degradación controlada ante picos; recuperación rápida ante fallos parciales.
+- **Rendimiento**: confirmación de reservación rápida y estable; búsquedas de disponibilidad con latencias acotadas.
+- **Seguridad**: cifrado en tránsito y en reposo, mínimos privilegios, rotación de secretos, cumplimiento normativo local y de pagos.
+- **Observabilidad**: métricas, trazas de extremo a extremo y logs correlacionados por transacción para auditar y diagnosticar.
+- **Mantenibilidad**: arquitectura modular y estándares claros de calidad para facilitar evolución y soporte.
+
+== 1.3 Audiencia del documento
+Este documento está dirigido a los grupos que intervienen en la definición, uso u operación del sistema. Cada grupo encontrará aquí una guía clara de qué esperar y qué se espera de él.
+
+- **Administración de la cadena**: Necesita una vista centralizada para gobernar inventario, tarifas y políticas (incluido el overbooking). Su objetivo es maximizar ingresos sin sacrificar satisfacción del huésped ni control de riesgos. Este documento les da criterios de alcance, reglas y métricas para evaluar resultados y pedir cambios con base en datos.
+
+- **Huéspedes / Clientes**: Usuarios finales que reservan, pagan y cancelan a través de web o app. Buscan claridad, seguridad y pasos mínimos. Aunque no consumirán el documento, su voz está representada en los requisitos de usabilidad, consistencia de precios y tiempos de respuesta.
+
+- **Personal operativo (recepción y staff)**: Usará el sistema para check-in/out, cambios y registro de consumos. Requiere una interfaz simple, mensajes comprensibles y flujos guiados. El documento delimita qué casos cubre v1 y qué reglas aplican para manejar excepciones sin ambigüedades.
+
+- **Administradores del sistema**: Configuran inventario, tarifas y políticas globales. Necesitan trazabilidad, control de cambios y auditoría. Aquí se establecen catálogos, reglas y restricciones que deben custodiar.
+
+- **Equipo de desarrollo y soporte**: Implementará y mantendrá la solución. Requiere límites claros, supuestos, NFR y criterios de éxito para tomar decisiones técnicas alineadas al negocio. El documento fija esas bases y prioriza consistencia transaccional bajo concurrencia.
+
+== 1.4 Glosario
+- **Reservación**: Proceso de apartar una habitación para fechas definidas; se confirma al realizar el pago completo.
+- **Check-in**: Registro de entrada del huésped en el hotel, con validación de identidad y asignación de habitación.
+- **Check-out**: Proceso de salida del huésped, que incluye la liquidación de consumos y la liberación de la habitación.
+- **Overbooking**: Aceptar más reservaciones que habitaciones disponibles (hasta 10%) para cubrir cancelaciones/no-shows bajo control central.
+- **Pago completo al reservar**: Cobro del 100% del importe de la estancia en el momento de confirmar.
+- **Penalización por cancelación**: Cargo aplicado al cancelar una reservación confirmada, conforme a la política vigente.
+- **Precios dinámicos**: Ajuste de tarifas en función de demanda, temporada, ocupación u otros factores del negocio.
+- **Exclusión mutua**: Garantía de que una misma habitación no puede confirmarse a dos clientes a la vez.
+- **Inventario**: Conjunto de habitaciones y, cuando aplique, servicios disponibles para reservación.
+- **Backoffice**: Interfaz administrativa para gestionar catálogos, tarifas y políticas.
+- **Latencia**: Tiempo que tarda el sistema en responder a una operación del usuario.
+- **TPS (Transactions Per Second)**: Número de transacciones (por ejemplo, confirmaciones de reservación) procesadas por segundo.
+- **QPS (Queries Per Second)**: Número de consultas de disponibilidad atendidas por segundo.
+- **RDBMS**: Sistema gestor de bases de datos relacional usado para asegurar consistencia y confiabilidad.
+- **Idempotencia**: Propiedad que evita efectos duplicados ante reintentos (p. ej., no se generan cargos repetidos).
+- **Trazabilidad**: Capacidad de seguir cada operación con identificadores y bitácoras para auditar y resolver disputas.
+- **Política de cancelación**: Conjunto de reglas que define costos, plazos y condiciones para cancelar o modificar una reservación.
+- **Degradación controlada**: Modo de operación con funciones limitadas para mantener el servicio activo durante picos o fallos parciales.
+
