@@ -1,0 +1,45 @@
+== CU-13 Actualizar hotel
+[cols="25,~",options="header"]
+|===
+| ID | CU-13
+| Nombre | Actualizar hotel
+| Autor | Miguel Eduardo Escobar Ladron De Guevara
+| Fecha de actualización | 03 de octubre de 2025
+| Descripción | Permite modificar la información de un hotel, cambiar su Gerente y gestionar sus servicios adicionales (agregar, editar, desactivar).
+| Actor(es) | Administrador
+| Disparador | El administrador da clic en Actualizar hotel.
+| Precondiciones | -PRE-01 El administrador está autenticado.  +
+-PRE-02 El hotel a actualizar existe.  +
+-PRE-03 El nuevo Gerente a asignar (si se cambia) está registrado y activo.
+| Flujo normal |
+1.- El sistema muestra la búsqueda/lista de hoteles. +
+2.- El administrador selecciona el hotel que desea actualizar. +
+3.- El sistema muestra el formulario con datos actuales, incluyendo el Gerente asignado, y la pestaña Servicios adicionales con la lista vigente. +
+4.- El administrador puede cambiar el Gerente mediante un selector de gerentes activos. (Ver EX 4) +
+5.- El administrador edita datos generales y gestiona servicios: agregar del catálogo o Agregar servicio personalizado; editar (nombre, descripción, unidad, precio, horario, impuestos, estatus); activar/desactivar. +
+6.- El sistema valida cambios (unicidad de código, Gerente válido, precios válidos, etc.). (Ver EX 2) (Ver EX 3) +
+7.- El sistema guarda la actualización y muestra mensaje de éxito. (Ver EX 1) +
+8.- Termina el caso de uso.
+| Flujos alternos |
+FA 5.1 Cancelación de edición. +
+1.- El sistema solicita confirmación. +
+2.- Si confirma, descarta cambios y regresa a la ficha del hotel. +
+3.- Termina el caso de uso.
+| Excepciones |
+EX 1 - El sistema no puede conectarse a la base de datos. +
+1.- Mensaje de error; intentar más tarde. +
+2.- Termina el caso de uso. +
+EX 2 - Datos inválidos o duplicados. +
+1.- Código de hotel duplicado o servicio con parámetros inválidos. +
+2.- Mensaje de error. +
+3.- Regresa al paso 5 del flujo normal. +
+EX 3 - Desactivación de servicio con dependencias. +
+1.- Existen reservaciones futuras que incluyen el servicio a desactivar. +
+2.- El sistema muestra No puede desactivarse el servicio porque existen reservaciones futuras asociadas. +
+3.- Regresa al paso 5 del flujo normal. +
+EX 4 - Gerente no válido o inactivo. +
+1.- El sistema muestra El gerente seleccionado no es válido o no está activo. +
+2.- Regresa al paso 4 del flujo normal.
+| Postcondiciones | POST-01 La información del hotel, su Gerente y su configuración de servicios quedan actualizadas.
+|Reglas de negocio|
+|===
