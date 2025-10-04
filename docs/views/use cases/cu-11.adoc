@@ -1,5 +1,4 @@
 == CU-11 Registrar hotel
-
 [cols="25,~",options="header"]
 |===
 |Campo|Valor
@@ -10,11 +9,10 @@
 |Descripción|Permite registrar un nuevo hotel de la cadena y configurar sus *servicios adicionales* (p. ej., spa, estacionamiento, desayuno).
 |Actor(es)|Administrador
 |Disparador|El administrador da clic en la opción *Registrar hotel*.
-|Precondiciones|
+|Precondiciones|a|
 - El administrador está autenticado en el sistema.
-|===
 
-=== Flujo normal
+|Flujo normal|a|
 . El sistema muestra el formulario para registrar hotel (código, nombre comercial, razón social opcional, dirección, ciudad, país, zona horaria, teléfono, correo, políticas de check-in/check-out).
 . El administrador captura los datos generales del hotel.
 . El sistema muestra el panel *Servicios adicionales* con: listado de servicios del catálogo y la opción *Agregar servicio personalizado* (nombre, descripción, unidad de cobro: por noche/por estancia, precio, horario, impuestos, estatus).
@@ -23,23 +21,25 @@
 . El sistema registra el hotel y asocia los servicios configurados; muestra mensaje de éxito. (Ver *EX 1*)
 . Termina el caso de uso.
 
-=== Flujos alternos
-*FA 4.1 El administrador decide no configurar servicios ahora*
-. El sistema permite continuar sin servicios y muestra un recordatorio de que pueden configurarse después en *Actualizar hotel*.
-. Regresa al paso 5 del flujo normal.
+|Flujos alternos|a|
+* *FA 4.1 El administrador decide no configurar servicios ahora*
+** El sistema permite continuar sin servicios y muestra un recordatorio de que pueden configurarse después en *Actualizar hotel*.
+** Regresa al paso 5 del flujo normal.
 
-=== Excepciones
-*EX 1 – El sistema no puede conectarse a la base de datos*
-. El sistema muestra mensaje de error e indica intentar nuevamente más tarde.
-. Termina el caso de uso.
+|Excepciones|a|
+* *EX 1 – El sistema no puede conectarse a la base de datos*
+** El sistema muestra mensaje de error e indica intentar nuevamente más tarde.
+** Termina el caso de uso.
+* *EX 2 – Datos inválidos o duplicados*
+** Código de hotel duplicado o valores de servicio inválidos (precio no numérico, unidad no permitida, etc.).
+** El sistema muestra el detalle del error.
+** Regresa al paso 2 (datos del hotel) o 4 (servicios), según corresponda.
 
-*EX 2 – Datos inválidos o duplicados*
-. Código de hotel duplicado o valores de servicio inválidos (precio no numérico, unidad no permitida, etc.).
-. El sistema muestra el detalle del error.
-. Regresa al paso 2 (datos del hotel) o 4 (servicios), según corresponda.
-
-=== Postcondiciones
+|Postcondiciones|a|
 - El hotel queda registrado y, si se configuraron, los servicios adicionales quedan asociados y activos.
 
-=== Reglas de negocio
-- RN-10, RN-11, RN-12.
+|Reglas de negocio|a|
+- RN-10
+- RN-11
+- RN-12
+|===
