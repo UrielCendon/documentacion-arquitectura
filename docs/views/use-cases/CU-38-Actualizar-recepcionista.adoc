@@ -1,0 +1,42 @@
+== CU-38 Actualizar recepcionista
+[cols="25,~",options="header"]
+|===
+| ID | CU-38
+| Nombre | Actualizar recepcionista
+| Autor | Uriel Cendón Díaz
+| Fecha de actualización | 03 de octubre de 2025
+| Descripción | El gerente actualiza datos de un recepcionista asociado a uno de sus hoteles.
+| Actor(es) | Gerente
+| Disparador | El gerente selecciona actualizar un recepcionista.
+| Precondiciones | -PRE-01 El gerente está autenticado en el sistema. +
+-PRE-02 El gerente tiene al menos un hotel relacionado. +
+-PRE-03 El recepcionista existe y pertenece a uno de los hoteles del gerente.
+| Flujo normal |
+1.- El sistema solicita el identificador de trabajador del recepcionista y registra la solicitud. +
+2.- El gerente proporciona el identificador de trabajador del recepcionista. +
+3.- El sistema recupera la información actual y solicita los campos a actualizar. (Ver FA 3.1) (Ver EX 1) +
+4.- El gerente proporciona los cambios. +
+5.- El sistema valida los datos, aplica la actualización y registra la operación. (Ver EX 2) (Ver EX 3) (Ver EX 4) +
+6.- El sistema confirma la actualización realizada. +
+7.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 El gerente canceló antes de actualizar. +
+1.- El sistema cancela la operación a petición del gerente. +
+2.- Termina el caso de uso.
+| Excepciones |
+EX 1 - El recepcionista no se encontró en los hoteles del gerente. +
+1.- El sistema informa que no existe el recepcionista indicado para los hoteles del gerente. +
+2.- Termina el caso de uso. +
+EX 2 - Los nuevos datos ya están en uso por otro recepcionista. +
+1.- El sistema informa que los datos ingresados están registrados en otro recepcionista actualmente. +
+2.- Termina el caso de uso. +
+EX 3 - No se pudo actualizar el recepcionista. +
+1.- El sistema informa error al actualizar y registra el incidente. +
+2.- Termina el caso de uso. +
+EX 4 - El sistema no puede conectarse a la base de datos. +
+1.- El sistema muestra un mensaje de error solicitando intentar más tarde y registra el suceso. +
+2.- Termina el caso de uso.
+| Postcondiciones | POST-01 Los datos del recepcionista quedan actualizados. +
+POST-02 Se guarda el registro de los cambios.
+|Reglas de negocio|
+|===
