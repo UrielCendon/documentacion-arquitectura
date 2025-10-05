@@ -30,9 +30,9 @@
 |(H, M)
 |===
 
-=== Escenarios de Atributos de Calidad (ASR) – Cadena Hotelera
+== Escenarios de Atributos de Calidad (ASR) – Cadena Hotelera
 
-=== 1) **Disponibilidad**
+=== 1) Disponibilidad
 * *Enunciado (estímulo -> respuesta):* Falla un servidor mientras el sistema está en uso -> el sistema redirige automáticamente las solicitudes a otros servidores y sigue funcionando sin que las personas usuarias lo noten.
 * *Fuente:* Un servidor que ejecuta la función de confirmar reservaciones.
 * *Estímulo:* El servidor se apaga de forma inesperada (crash).
@@ -41,7 +41,7 @@
 * *Respuesta:* El sistema detecta el servidor caído, deja de enviarle solicitudes y las envía a servidores sanos; recupera la capacidad automáticamente y avisa al personal responsable.
 * *Medida:* MTTR < 30 s; indisponibilidad total mensual ≤ 4 min (≈ 99.99% disponibilidad); detección del fallo < 5 s; cero operaciones perdidas.
 
-=== 2) **Rendimiento**
+=== 2) Rendimiento
 * *Enunciado (estímulo -> respuesta):* Se presenta un pico de solicitudes en pocos segundos -> el sistema confirma reservaciones dentro de los tiempos objetivo y sin errores significativos.
 * *Fuente:* Muchas personas usuarias usando la aplicación y el sitio web a la vez, con comunicación al servicio de pagos.
 * Estímulo: Llegan 2,000 solicitudes de confirmación en 30 s y, en paralelo, consultas de disponibilidad sostenidas.
@@ -50,7 +50,7 @@
 * *Respuesta:* El sistema procesa solicitudes de forma ordenada para evitar choques de inventario y, si es necesario, aplica control de entrada para mantener estabilidad.
 * *Medida:* Confirmaciones P95 ≤ 2.5 s y P99 ≤ 4.0 s; disponibilidad P95 ≤ 500 ms en alta demanda; tasa de errores < 0.1%; uso de CPU < 70%.
 
-=== 3) **Seguridad**
+=== 3) Seguridad
 * *Enunciado (estímulo -> respuesta):* Alguien intenta acceder o modificar datos de reservas o pagos sin permiso -> el sistema bloquea la acción, registra lo ocurrido y restablece el estado correcto.
 * *Fuente:* Persona externa no autorizada o alguien interno actuando de forma indebida.
 * *Estímulo:* Intento de leer o cambiar información sensible (reservas o pagos) o provocar una falla del servicio.
@@ -59,7 +59,7 @@
 * *Respuesta:* Se detecta el patrón sospechoso, se bloquea el acceso, se registra el evento con evidencia, se notifica al equipo responsable y se restaura el estado correcto sin exponer datos personales.
 * *Medida:* Detección < 10 s; recuperación < 15 min; cero datos personales expuestos; evidencias completas para auditoría.
 
-=== 4) **Usabilidad**
+=== 4) Usabilidad
 * *Enunciado* (estímulo -> respuesta): Un recepcionista con poca experiencia intenta hacer un check-in -> completa el proceso a la primera gracias a una interfaz guiada y a mensajes claros.
 * *Fuente:* Recepcionista que opera el sistema en el hotel.
 * *Estímulo:* Necesita aprender y realizar check-in y check-out con rapidez y sin errores.
@@ -68,7 +68,7 @@
 * *Respuesta:* La interfaz anticipa la información necesaria, valida campos, muestra mensajes útiles y permite deshacer pasos sin perder datos.
 * *Medida:* ≥ 90% de nuevas personas usuarias completan el proceso a la primera tras ≤ 10 min de explicación; tiempo de tarea dentro del objetivo; errores críticos = 0; alta satisfacción reportada.
 
-=== 5) **Modificabilidad**
+=== 5) Modificabilidad
 * *Enunciado (estímulo -> respuesta):* El negocio cambia el porcentaje de sobreventa permitido por tipo de habitación -> se ajusta por configuración, sin reinstalar ni apagar el sistema.
 * *Fuente:* Administrador del negocio o del sistema.
 * *Estímulo:* Cambiar el porcentaje de sobreventa (p. ej., de 10% a 12% para un evento regional).
