@@ -61,10 +61,25 @@ LIC. INGENIERÍA DE SOFTWARE
 | Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar, Uriel Cendón Díaz
 | Actualización del diagrama de contexto y correcciones en los diagramas de casos de uso. Avances en la redacción del documento funcional (`functional.adoc`).
 
-| 1.0
+| 0.5
 | 02/10/2025
 | Miguel Eduardo Escobar Ladrón de Guevara, Uriel Cendón Díaz
-| Desarrollo y actualización completa de la sección de Introducción, Contexto y Alcance del Sistema. Ajustes en la configuración del repositorio.
+| Desarrollo y actualización de la sección de Introducción, Contexto y Alcance del Sistema. Ajustes en la configuración del repositorio.
+
+| 0.6
+| 03/10/2025
+| Miguel Eduardo Escobar Ladrón de Guevara, Uriel Cendón Díaz
+| Agregar descripciones de casos de uso, diagramas de paquetes (el general y por subsistema).
+
+| 0.7
+| 04/10/2025
+| Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
+| Corrección de la sección de Introducción, Contexto y Alcance del Sistema, adición de las descripciones de casos de uso faltantes.
+
+| 1.0
+| 05/10/2025
+| Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar, Uriel Cendón Díaz
+| Adición del diagrama de contexto, Utility tree junto con descripciones e importancia de los atributos de calidad, y los ASRs de los atributos significativos para el sistema.
 |===
 
 :sectnums:
@@ -85,7 +100,7 @@ Finalmente, el alcance funcional apunta a cubrir lo esencial de punta a punta: r
 === Alcance
 La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y usable. Incluye lo indispensable para operar reservas de punta a punta, gestionar inventario/tarifas y soportar la operación diaria en recepción. Funcionalidades complementarias como programas de lealtad o integraciones externas se evaluarán en fases posteriores.
 
-==== Funcionalidades incluidas (v1)
+==== Funcionalidades incluidas
 - **Consulta de disponibilidad en tiempo real** de habitaciones y tarifas, con información precisa y actualizada.
 - **Gestión de estancias**: check-in, check-out y cambio de habitación con control de ocupación.
 - **Reservación con pago completo** y **cancelación con penalización** según política vigente.
@@ -97,7 +112,7 @@ La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y us
 - **Gestión de overbooking** (hasta 10% por tipo de habitación y fecha), con reglas auditable.
 
 
-==== Fuera de alcance (v1)
+==== Fuera de alcance
 - **Buesquedas avanzadas (filtros avanzados) y recomendaciones**.
 - **Integraciones con otros sistemas hoteleros/agencias de viaje** para redistribuir demanda por falta de disponibilidad.
 - **Descuentos/promociones personalizadas** y **programas de fidelidad** (membresías, puntos, beneficios).
