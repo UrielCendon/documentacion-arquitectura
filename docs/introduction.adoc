@@ -34,6 +34,7 @@ LIC. INGENIERÍA DE SOFTWARE
 
 <<<
 
+:sectnums!:
 == Historial de Versiones
 
 [options="header"]
@@ -66,9 +67,10 @@ LIC. INGENIERÍA DE SOFTWARE
 | Desarrollo y actualización completa de la sección de Introducción, Contexto y Alcance del Sistema. Ajustes en la configuración del repositorio.
 |===
 
+:sectnums:
 == Contexto y Alcance del Sistema
 
-=== 1.1 Visión del Sistema
+=== Visión del Sistema
 Hoy la cadena opera con múltiples soluciones locales por hotel. Ese esquema fragmentado provoca datos inconsistentes, cobros y reservaciones duplicadas, reglas que cambian de un lugar a otro y una experiencia de huésped poco predecible. Además, complica la toma de decisiones: es difícil ver la ocupación real, ajustar tarifas de forma coordinada o aplicar políticas comunes sin fricción. El impacto no es menor: pérdidas económicas, esfuerzo operativo extra, riesgos reputacionales y freno a la innovación.
 
 La propuesta es construir un sistema centralizado, confiable y escalable que unifique la gestión de reservaciones, tarifas e inventarios para más de 5,000 hoteles (aprox. 1,000,000 de habitaciones). La plataforma brindará a los huéspedes procesos simples y seguros para reservar en tiempo real; al personal operativo, herramientas claras para check-in, check-out y cambios de habitación; y a la administración, control total sobre políticas y métricas clave del negocio.
@@ -77,10 +79,10 @@ Este sistema no es solo “otra herramienta”: se concibe como un activo estrat
 
 La experiencia del usuario es prioridad. La reservación deberá completarse en un flujo corto (máximo cinco pasos), con mensajes claros y recuperables ante errores. También se cuidará la consistencia entre lo que se muestra y lo que se cobra: el precio ofrecido en el momento de reservar será el precio final al confirmar. En lo técnico, se favorecerán decisiones que mantengan la coherencia transaccional en escenarios de alta concurrencia, priorizando “acertar” antes que “acelerar y fallar”.
 
-=== 1.2 Alcance
+=== Alcance
 La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y usable. Incluye lo indispensable para operar reservas de punta a punta, gestionar inventario/tarifas y soportar la operación diaria en recepción. Funcionalidades complementarias como programas de lealtad o integraciones externas se evaluarán en fases posteriores.
 
-==== 1.2.1 Funcionalidades incluidas (v1)
+==== Funcionalidades incluidas (v1)
 - **Consulta de disponibilidad en tiempo real** de habitaciones y tarifas, con información precisa y actualizada.
 - **Gestión de estancias**: check-in, check-out y cambio de habitación con control de ocupación.
 - **Reservación con pago completo** y **cancelación con penalización** según política vigente.
@@ -92,12 +94,12 @@ La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y us
 - **Gestión de overbooking** (hasta 10% por tipo de habitación y fecha), con reglas auditable.
 
 
-==== 1.2.2 Fuera de alcance (v1)
+==== Fuera de alcance (v1)
 - **Buesquedas avanzadas (filtros avanzados) y recomendaciones**.
 - **Integraciones con otros sistemas hoteleros/agencias de viaje** para redistribuir demanda por falta de disponibilidad.
 - **Descuentos/promociones personalizadas** y **programas de fidelidad** (membresías, puntos, beneficios).
 
-==== 1.2.3 Limitaciones y restricciones
+==== Limitaciones y restricciones
 - **Canales de venta**: Solo se implementara para la web y la aplicación móvil oficial de la cadena.
 - **Política de pago**: 100% del total al confirmar la reservación (no hay anticipos parciales).
 - **Overbooking**: máximo **10%** por tipo de habitación y fecha, definido centralmente.
@@ -105,12 +107,12 @@ La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y us
 - **Consistencia de precios**: el precio mostrado al iniciar la reserva se respeta hasta la confirmación dentro de la sesión.
 - **Base de datos**: se debe usar un RDBMS.
 
-==== 1.2.4 Suposiciones y dependencias
+==== Suposiciones y dependencias
 - **Pasarela de pago confiable** con autorización/captura, manejo de reintentos e idempotencia para evitar cargos duplicados.
 - **Políticas de negocio definidas** (cancelaciones, cambios, ventanas de tiempo) provistas por la administración antes de la salida a producción.
 - **Cargas operativas** estimadas (QPS/TPS) sujetas a revisión con telemetría para ajustar capacidad.
 
-==== 1.2.5 Requisitos no funcionales (resumen)
+==== Requisitos no funcionales (resumen)
 - **Usabilidad**: la reserva debe completarse en ≤5 pasos, con mensajes comprensibles, validaciones en línea y rutas de recuperación claras. Buscamos que personal nuevo en recepción complete tareas clave tras una inducción breve y que los huéspedes entiendan “qué sigue” sin instrucciones externas.
 - **Rendimiento y capacidad**: confirmación de reservación con latencias estables aun en picos; búsquedas de disponibilidad con tiempos acotados y cachés/estrategias de lectura adecuadas. Objetivo de respuesta rápida sin sacrificar integridad.
 - **Disponibilidad y resiliencia**: degradación controlada ante picos; recuperación rápida ante fallos parciales.
@@ -119,7 +121,7 @@ La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y us
 - **Observabilidad**: métricas, trazas de extremo a extremo y logs correlacionados por transacción para auditar y diagnosticar.
 - **Mantenibilidad**: arquitectura modular y estándares claros de calidad para facilitar evolución y soporte.
 
-=== 1.3 Audiencia del documento
+=== Audiencia del documento
 Este documento está dirigido a los grupos que intervienen en la definición, uso u operación del sistema. Cada grupo encontrará aquí una guía clara de qué esperar y qué se espera de él.
 
 - **Administración de la cadena**: Necesita una vista centralizada para manejar el inventario, tarifas y políticas (incluido el overbooking). Su objetivo es maximizar el rendimiento de estos, asi como reducir costos y tiempos.
@@ -132,7 +134,7 @@ Este documento está dirigido a los grupos que intervienen en la definición, us
 
 - **Equipo de desarrollo y soporte**: Implementará y mantendrá la solución. Requiere límites claros, supuestos y criterios de éxito para tomar decisiones técnicas alineadas al negocio.
 
-=== 1.4 Glosario
+=== Glosario
 - **Reservación**: Proceso de apartar una habitación para fechas definidas; se confirma al realizar el pago completo.
 - **Check-in**: Registro de entrada del huésped en el hotel, con validación de identidad y asignación de habitación.
 - **Check-out**: Proceso de salida del huésped, que incluye la liquidación de consumos y la liberación de la habitación.

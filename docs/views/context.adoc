@@ -46,34 +46,34 @@ Estas fronteras no impiden planear una **v2** con integraciones y beneficios adi
 === 2.2.3 Interesados (stakeholders) y lo que les preocupa
 A continuación, los grupos clave y los temas que típicamente les importan. Esta lista guía decisiones y prioriza compromisos cuando dos objetivos chocan (p. ej., latencia vs. consistencia).
 
-- **Dirección / Administración de la cadena**  
+- **Dirección / Administración de la cadena**
   *Preocupaciones*: ingresos, ocupación, coherencia de políticas entre hoteles, riesgos reputacionales, cumplimiento de reglas internas. Quieren ver resultados comparables y tomar decisiones con datos confiables.
 
-- **Revenue Management / Comercial / Marketing**  
+- **Revenue Management / Comercial / Marketing**
   *Preocupaciones*: control fino de tarifas, calendarios de temporada, elasticidad de la demanda, reglas de overbooking por tipo/fecha, visibilidad de KPIs (conversión, cancelación, no-shows). Necesitan mover palancas sin depender de desarrollo.
 
-- **Finanzas / Contabilidad**  
+- **Finanzas / Contabilidad**
   *Preocupaciones*: conciliación de cobros, devoluciones y penalizaciones; evitar cobros duplicados; cierres mensuales sin “persecución” de diferencias; reportes auditables y exportables.
 
-- **Operación (recepción y staff)**  
+- **Operación (recepción y staff)**
   *Preocupaciones*: flujos claros, mínima curva de aprendizaje, mensajes útiles, control de cupos y cambios de habitación sin errores. Buscan rapidez, pero sobre todo **certeza**.
 
-- **Huéspedes / Clientes**  
+- **Huéspedes / Clientes**
   *Preocupaciones*: proceso simple (≤5 pasos), precio consistente entre lo mostrado y lo cobrado, confirmación inmediata, reglas transparentes de cancelación, seguridad de su información.
 
-- **Atención al cliente / Service Desk**  
+- **Atención al cliente / Service Desk**
   *Preocupaciones*: historial completo de la reserva (quién cambió qué y cuándo), herramientas para resolver disputas, tiempos de respuesta y plantillas de comunicación coherentes.
 
-- **Seguridad / Legal / Cumplimiento**  
+- **Seguridad / Legal / Cumplimiento**
   *Preocupaciones*: protección de datos personales y de pago, mínimos privilegios, cifrado, retención de datos, bitácoras y evidencia para auditoría y cumplimiento normativo.
 
-- **TI Corporativo / Infra / SRE**  
+- **TI Corporativo / Infra / SRE**
   *Preocupaciones*: disponibilidad, recuperación ante fallos, capacidad de escalar en picos, monitoreo accionable, estandarización de despliegues y costos de operación.
 
-- **Producto / UX / Desarrollo**  
+- **Producto / UX / Desarrollo**
   *Preocupaciones*: alcance claro, criterios de aceptación, mantenibilidad, modularidad, contratos estables y telemetría para aprender y mejorar.
 
-- **Datos / BI / Analytics**  
+- **Datos / BI / Analytics**
   *Preocupaciones*: calidad y puntualidad de datos, eventos de negocio bien definidos, acceso controlado a fuentes confiables para tableros y modelos.
 
 === 2.2.4 Resumen rápido (stakeholders → concerns)
@@ -97,11 +97,11 @@ Esta tabla no sustituye la lista detallada, pero ayuda a tener a la vista las pr
 === 2.2.5 Criterios de corte y supuestos prácticos
 Para que el alcance sea manejable y entregable, aplicamos estos cortes:
 
-- **Reservas “de punta a punta”** con pago total: si la autorización falla, no hay reserva; si se confirma, el inventario queda bloqueado y la transacción es trazable e idempotente.  
-- **Precio mostrado = precio cobrado**: el precio al inicio del flujo se respeta hasta la confirmación dentro de la sesión.  
-- **Overbooking controlado** a nivel tipo/fecha (tope 10%): medible y auditable.  
-- **Sin OTAs en v1**: el diseño prevé APIs para futuras integraciones, pero no se comprometen para la primera versión.  
-- **Datos de pago**: no se almacenan PANs ni CVV; solo referencias seguras de la pasarela.  
+- **Reservas “de punta a punta”** con pago total: si la autorización falla, no hay reserva; si se confirma, el inventario queda bloqueado y la transacción es trazable e idempotente.
+- **Precio mostrado = precio cobrado**: el precio al inicio del flujo se respeta hasta la confirmación dentro de la sesión.
+- **Overbooking controlado** a nivel tipo/fecha (tope 10%): medible y auditable.
+- **Sin OTAs en v1**: el diseño prevé APIs para futuras integraciones, pero no se comprometen para la primera versión.
+- **Datos de pago**: no se almacenan PANs ni CVV; solo referencias seguras de la pasarela.
 - **Capacidad y picos**: se dimensiona para la demanda estimada y se instrumenta para escalar con datos reales.
 
 Temas abiertos que requieren decisión del negocio y que impactan diseño: ventanas de cancelación/modificación por tarifa, reglas de “no-show”, umbrales de degradación aceptables en picos y políticas de retención de logs/eventos.

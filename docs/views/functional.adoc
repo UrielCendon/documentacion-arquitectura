@@ -3,7 +3,7 @@
 
 La vista funcional describe las capacidades del sistema desde la perspectiva de sus usuarios (actores). Se define a través de los casos de uso, que muestran las interacciones entre los actores y el sistema para lograr un objetivo concreto.
 
-=== Diagrama de Paquetes de Casos de Uso
+=== 2.3 Diagrama de Paquetes de Casos de Uso
 El siguiente diagrama presenta una vista consolidada de alto nivel, mostrando los principales subsistemas funcionales y los actores que interactúan con el sistema.
 
 .Diagrama de Paquetes de Casos de Uso
@@ -12,7 +12,7 @@ image::diagrama-casos-uso.png[Diagrama de Paquetes de Casos de Uso, width=800, a
 === Casos de Uso por Subsistema
 A continuación, se desglosa la funcionalidad de cada subsistema y se especifican los actores involucrados.
 
-==== Subsistema: Reservaciones
+==== 2.3.1 Subsistema: Reservaciones
 Este subsistema agrupa las funcionalidades previas a la estancia del huésped: consulta, creación y gestión del pago/cancelación de reservaciones.
 
 .Casos de Uso del Subsistema Reservaciones
@@ -30,7 +30,7 @@ Los casos de uso específicos son: +
 
 *Actor involucrado*: **Huésped**.
 
-==== Subsistema: Estancias (Operaciones de Estancia de un Hotel)
+==== 2.3.2 Subsistema: Estancias (Operaciones de Estancia de un Hotel)
 Este subsistema cubre las operaciones durante la estancia del huésped en el hotel.
 
 .Casos de Uso del Subsistema Estancias
@@ -50,7 +50,7 @@ Los casos de uso son: +
 
 *Actor involucrado*: **Recepcionista**.
 
-==== Subsistema: Administración de Hotel
+==== 2.3.3 Subsistema: Administración de Hotel
 Este subsistema contiene la configuración de hoteles de la cadena, así como sus tarifas y políticas.
 
 .Casos de Uso del Subsistema Administración de Hotel
@@ -80,7 +80,7 @@ Los casos de uso son: +
 
 *Actor involucrado*: **Administrador**.
 
-==== Subsistema: Administración de Habitaciones
+==== 2.3.4 Subsistema: Administración de Habitaciones
 Este subsistema gestiona el inventario de habitaciones y sus tipos.
 
 .Casos de Uso del Subsistema Administración de Habitaciones
@@ -108,7 +108,7 @@ Los casos de uso son: +
 
 *Actores involucrados*: **Administrador** para tipos de habitación, y **Gerente** para habitaciones.
 
-==== Subsistema: Administración de Actores
+==== 2.3.5 Subsistema: Administración de Actores
 Este subsistema permite gestionar las cuentas/roles de los usuarios del sistema según su jerarquía.
 
 .Casos de Uso del Subsistema Administración de Actores
