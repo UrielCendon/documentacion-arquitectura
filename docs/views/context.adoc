@@ -9,10 +9,10 @@ No tener un sistema central significa que los datos no están en un solo lugar n
 === Oportunidad de negocio
 Centralizar reservas, tarifas e inventario en una sola plataforma abre varias mejoras:
 
-* **Más ingresos:** podemos ajustar precios según demanda y temporada, y aplicar **overbooking controlado** (hasta 10% por tipo y fecha) para reducir noches vacías sin caer en sobreventa.
+* **Más ingresos:** podemos ajustar precios según demanda y temporada, y aplicar overbooking controlado (hasta 10% por tipo y fecha) para reducir noches vacías sin caer en sobreventa.
 * **Menos costos:** procesos y pantallas iguales para todos los hoteles; menos retrabajo y conciliaciones; capacitación más corta porque la interfaz es consistente y fácil de usar.
-* **Mejor conversión:** un flujo de compra claro y corto (máximo cinco pasos), con mensajes simples y **precio que se respeta** desde que el huésped inicia la reserva hasta que paga. Eso aumenta la tasa de finalización y la satisfacción.
-* **Más control y confianza:** un **registro único** de todos los movimientos (reservas, cambios, cobros, cancelaciones) facilita auditorías y solución de disputas, y ayuda a cumplir con las reglas de datos y pagos.
+* **Mejor conversión:** un flujo de compra claro y corto (máximo cinco pasos), con mensajes simples y precio que se respeta desde que el huésped inicia la reserva hasta que paga. Eso aumenta la tasa de finalización y la satisfacción.
+* **Más control y confianza:** un registro único de todos los movimientos (reservas, cambios, cobros, cancelaciones) facilita auditorías y solución de disputas, y ayuda a cumplir con las reglas de datos y pagos.
 * **Mayor rapidez para el negocio:** abrir un hotel nuevo, lanzar una promo, cambiar políticas de cancelación o ajustar tarifas deja de ser un esfuerzo “por hotel” y pasa a ser una configuración central, rápida y segura.
 
 == Alcance y propósito del diseño
@@ -21,7 +21,7 @@ Centralizar reservas, tarifas e inventario en una sola plataforma abre varias me
 Este capítulo fija de forma práctica dónde empieza y dónde termina el diseño del sistema, quiénes participan y qué les preocupa. Con esto evitamos malentendidos, reducimos “alcance elástico” y obtenemos una lista clara de temas que más adelante se traducirán en impulsores arquitectónicos (atributos de calidad, restricciones y prioridades).
 
 === Fronteras del diseño (qué sí y qué no)
-**Incluido en el diseño (v1):** +
+**Incluido en el diseño:** +
 - **Canales**: sitio web oficial y app móvil de la cadena. +
 - **Usuarios**: huéspedes (reservan, pagan y cancelan), personal de recepción (check-in, check-out, cambio de habitación), administradores (inventario, tarifas, políticas). +
 - **Funciones clave**: búsqueda de disponibilidad en tiempo real; creación, confirmación y cancelación de reservas con pago total y penalización según políticas; registro de consumos; administración de catálogos (hoteles, tipos y habitaciones); overbooking controlado (hasta 10% por tipo/fecha); precios dinámicos; trazabilidad/auditoría de operaciones. +
@@ -29,46 +29,46 @@ Este capítulo fija de forma práctica dónde empieza y dónde termina el diseñ
 - **Integraciones**: pasarela de pago (autorización/captura, idempotencia), servicios de notificaciones (correo, push), monitoreo/observabilidad y gestión de secretos. +
 - **No funcionales base**: consistencia transaccional en confirmación de reservas; tiempos razonables de respuesta; seguridad de datos; observabilidad y capacidad de diagnóstico.
 
-**Fuera de alcance (v1):** +
+**Fuera de alcance:** +
 - Programas de lealtad, descuentos personalizados o motores de promociones complejas. +
 - Integraciones con OTAs u otros sistemas hoteleros para redistribuir demanda. +
 - Reporte de incidentes/sanciones internas. +
 - Anticipos parciales o modalidades de pago distintas al pago total. +
 - Canales de terceros (sitios afiliados, kioscos, etc.).
 
-Estas fronteras no impiden planear una **v2** con integraciones y beneficios adicionales; solo acotan lo que debe estar listo y operando en la primera entrega.
+Estas fronteras solo acotan lo que debe estar listo y operando en la primera entrega.
 
 === Interesados (stakeholders) y lo que les preocupa
 A continuación, los grupos clave y los temas que típicamente les importan. Esta lista guía decisiones y prioriza compromisos cuando dos objetivos chocan (p. ej., latencia vs. consistencia).
 
-- **Dirección / Administración de la cadena**
+- **Dirección / Administración de la cadena:** +
   *Preocupaciones*: ingresos, ocupación, coherencia de políticas entre hoteles, riesgos reputacionales, cumplimiento de reglas internas. Quieren ver resultados comparables y tomar decisiones con datos confiables.
 
-- **Revenue Management / Comercial / Marketing**
+- **Revenue Management / Comercial / Marketing:** +
   *Preocupaciones*: control fino de tarifas, calendarios de temporada, elasticidad de la demanda, reglas de overbooking por tipo/fecha, visibilidad de KPIs (conversión, cancelación, no-shows). Necesitan mover palancas sin depender de desarrollo.
 
-- **Finanzas / Contabilidad**
+- **Finanzas / Contabilidad:** +
   *Preocupaciones*: conciliación de cobros, devoluciones y penalizaciones; evitar cobros duplicados; cierres mensuales sin “persecución” de diferencias; reportes auditables y exportables.
 
-- **Operación (recepción y staff)**
+- **Operación (recepción y staff): ** +
   *Preocupaciones*: flujos claros, mínima curva de aprendizaje, mensajes útiles, control de cupos y cambios de habitación sin errores. Buscan rapidez, pero sobre todo **certeza**.
 
-- **Huéspedes / Clientes**
+- **Huéspedes / Clientes: ** +
   *Preocupaciones*: proceso simple (≤5 pasos), precio consistente entre lo mostrado y lo cobrado, confirmación inmediata, reglas transparentes de cancelación, seguridad de su información.
 
-- **Atención al cliente / Service Desk**
+- **Atención al cliente / Service Desk:** +
   *Preocupaciones*: historial completo de la reserva (quién cambió qué y cuándo), herramientas para resolver disputas, tiempos de respuesta y plantillas de comunicación coherentes.
 
-- **Seguridad / Legal / Cumplimiento**
+- **Seguridad / Legal / Cumplimiento:** +
   *Preocupaciones*: protección de datos personales y de pago, mínimos privilegios, cifrado, retención de datos, bitácoras y evidencia para auditoría y cumplimiento normativo.
 
-- **TI Corporativo / Infra / SRE**
+- **TI Corporativo / Infra / SRE:** +
   *Preocupaciones*: disponibilidad, recuperación ante fallos, capacidad de escalar en picos, monitoreo accionable, estandarización de despliegues y costos de operación.
 
-- **Producto / UX / Desarrollo**
+- **Producto / UX / Desarrollo:** +
   *Preocupaciones*: alcance claro, criterios de aceptación, mantenibilidad, modularidad, contratos estables y telemetría para aprender y mejorar.
 
-- **Datos / BI / Analytics**
+- **Datos / BI / Analytics:** +
   *Preocupaciones*: calidad y puntualidad de datos, eventos de negocio bien definidos, acceso controlado a fuentes confiables para tableros y modelos.
 
 === Criterios de corte y supuestos prácticos

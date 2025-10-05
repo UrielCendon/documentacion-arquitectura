@@ -98,7 +98,7 @@ Finalmente, el alcance funcional apunta a cubrir lo esencial de punta a punta: r
 
 
 === Alcance
-La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y usable. Incluye lo indispensable para operar reservas de punta a punta, gestionar inventario/tarifas y soportar la operación diaria en recepción. Funcionalidades complementarias como programas de lealtad o integraciones externas se evaluarán en fases posteriores.
+La versión inicial se enfoca en entregar un núcleo robusto, trazable y usable. Incluye lo indispensable para operar reservas de punta a punta, gestionar inventario/tarifas y soportar la operación diaria en recepción. Funcionalidades complementarias como programas de lealtad o integraciones externas se evaluarán en fases posteriores.
 
 ==== Funcionalidades incluidas
 - **Consulta de disponibilidad en tiempo real** de habitaciones y tarifas, con información precisa y actualizada.
@@ -120,8 +120,8 @@ La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y us
 ==== Limitaciones y restricciones
 - **Canales de venta**: Solo se implementara para la web y la aplicación móvil oficial de la cadena.
 - **Política de pago**: 100% del total al confirmar la reservación (no hay anticipos parciales).
-- **Overbooking**: máximo **10%** por tipo de habitación y fecha, definido centralmente.
-- **Experiencia de reserva**: máximo **5 pasos** (≤5 clics) desde búsqueda hasta confirmación.
+- **Overbooking**: máximo 10% por tipo de habitación y fecha, definido centralmente.
+- **Experiencia de reserva**: máximo 5 pasos (≤5 clics) desde búsqueda hasta confirmación.
 - **Consistencia de precios**: el precio mostrado al iniciar la reserva se respeta hasta la confirmación dentro de la sesión.
 - **Base de datos**: se debe usar un RDBMS.
 
