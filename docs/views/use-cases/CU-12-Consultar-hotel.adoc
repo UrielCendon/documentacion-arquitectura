@@ -4,26 +4,26 @@
 | ID | CU-12
 | Nombre | Consultar hotel
 | Autor | Miguel Eduardo Escobar Ladron De Guevara
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | Permite buscar y visualizar hoteles registrados, incluyendo su Gerente y sus servicios adicionales.
 | Actor(es) | Administrador
 | Disparador | El administrador accede a Consultar hotel.
-| Precondiciones | PRE-01 El administrador está autenticado en el sistema.
+| Precondiciones | PRE-01: El administrador está autenticado en el sistema.
 | Flujo normal |
-1.- El sistema muestra filtros (código, nombre, ciudad/país, estatus). +
+1.- El sistema muestra filtros cómo el código, nombre, ciudad/país, etc. +
 2.- El administrador ingresa criterios y ejecuta la búsqueda. +
-3.- El sistema muestra resultados (código, nombre, ubicación, estatus, Gerente asignado, #habitaciones, #servicios). (Ver FA 3.1) (Ver EX 1) +
+3.- El sistema muestra resultados con base en los filtros aplicados, así como el número de habitaciones y los servicios. (Ver FA 3.1) (Ver EX 1) +
 4.- El administrador selecciona un hotel para ver el detalle. +
-5.- El sistema muestra el detalle del hotel con el Gerente asignado y la pestaña Servicios adicionales (lista con nombre, unidad, precio, estatus). +
+5.- El sistema muestra el detalle del hotel con el Gerente asignado y la pestaña Servicios adicionales con una lista con nombre, unidad, el precio, etc. +
 6.- Termina el caso de uso.
 | Flujos alternos |
-FA 3.1 Sin resultados. +
+FA 3.1 No hay resultados por mostrar. +
 1.- El sistema muestra No se encontraron hoteles con los criterios indicados. +
 2.- Regresa al paso 2 del flujo normal.
 | Excepciones |
 EX 1 - El sistema no puede conectarse a la base de datos. +
 1.- Mensaje de error; intentar más tarde. +
 2.- Termina el caso de uso.
-| Postcondiciones | POST-01 Sin cambios en el sistema.
+| Postcondiciones | POST-01: Sin cambios en el sistema.
 |Reglas de negocio|
 |===

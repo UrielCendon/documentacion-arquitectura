@@ -4,35 +4,33 @@
 | ID | CU-01
 | Nombre | Consultar disponibilidad
 | Autor | Uriel Cendón Díaz
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El huésped consulta la disponibilidad por tipo de habitación de un hotel. El sistema devuelve cantidades por tipo de habitación, la descripción del tipo de habitación y referencia a un mapa del hotel con la ubicación de tipos y habitaciones.
 | Actor(es) | Huésped
 | Disparador | El huésped solicita consultar disponibilidad.
-| Precondiciones | -PRE-01 Existen hoteles activos en el sistema. +
--PRE-02 Existen tipos de habitación activos en el sistema.
+| Precondiciones | -PRE-01: Existen hoteles activos en el sistema. +
+-PRE-02: Existen tipos de habitación activos en el sistema.
 | Flujo normal |
 1.- El sistema solicita parámetros de búsqueda para el hotel, como la fecha en la que desea ver la disponibilidad y el tipo de habitación en un hotel específico. +
 2.- El huésped ingresa el hotel, la fecha en la que busca realizar su estancia y selecciona el tipo de habitación que desea. +
 3.- El sistema valida las entradas y consulta su inventario; posteriormente presenta los tipos de habitación con su descripción y cantidad disponible, además de la referencia al mapa del hotel solicitado. (Ver FA 3.1) (Ver EX 1) (Ver EX 2) (Ver EX 3) +
-4.- El huésped decide continuar con una reserva o finalizar la consulta. (Ver FA 4.1) +
+4.- El huésped decide continuar con una reserva o finalizar la consulta. +
 5.- Termina el caso de uso.
 | Flujos alternos |
-FA 3.1 Sin disponibilidad. +
+FA 3.1 No hay disponibilidad. +
 1.- El sistema informa indisponibilidad y ofrece fechas u hoteles alternos. +
 2.- El usuario decide si ingresar otros parámetros o finalizar la consulta. +
 3.- Termina el caso de uso. +
-FA 4.1 El usuario decide continuar con una reserva. +
-1.- Regresa al paso 2 del flujo normal.
+FA 3.2 - Mapa no disponible. +
+1.- El sistema continúa sólo con la lista de disponibilidad y registra el error de disponibilidad del mapa. +
+2.- Regresa al paso 4 del flujo normal.
 | Excepciones |
 EX 1 - Falla al consultar inventario. +
 1.- El sistema informa al huésped que existe indisponibilidad temporal del servicio y se registra el incidente. +
 2.- Termina el caso de uso. +
-EX 2 - Mapa no disponible. +
-1.- El sistema continúa sólo con la lista de disponibilidad y registra el error de disponibilidad del mapa. +
-2.- Regresa al paso 4 del flujo normal. +
-EX 3 - El sistema no puede conectarse a la base de datos. +
+EX 2 - El sistema no puede conectarse a la base de datos. +
 1.- El sistema muestra un mensaje de error al huésped solicitándole volver a intentar más tarde y registra este suceso. +
 2.- Termina el caso de uso.
-| Postcondiciones | POST-01 Se realizó correctamente la consulta de la disponibilidad de un tipo de habitación en un hotel en específico.
+| Postcondiciones | POST-01: Se realizó correctamente la consulta de la disponibilidad de un tipo de habitación en un hotel en específico.
 |Reglas de negocio|
 |===

@@ -4,32 +4,31 @@
 | ID | CU-23
 | Nombre | Actualizar tipo de habitación
 | Autor | Miguel Eduardo Escobar Ladron De Guevara
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | Permite modificar información de un tipo de habitación vigente.
 | Actor(es) | Administrador
 | Disparador | El administrador da clic en Actualizar tipo de habitación.
-| Precondiciones | -PRE-01 El administrador está autenticado en el sistema. +
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema. +
 -PRE-02 El tipo a actualizar existe.
 | Flujo normal |
 1.- El sistema muestra la búsqueda/lista de tipos. +
 2.- El administrador selecciona el tipo que desea actualizar. +
 3.- El sistema muestra el formulario con los datos actuales habilitando su edición. +
 4.- El administrador edita los campos y confirma la actualización. +
-5.- El sistema valida los nuevos valores y verifica unicidad cuando aplique. (Ver EX 2) +
-6.- El sistema actualiza la información y muestra un mensaje de éxito. (Ver EX 1) +
-7.- Termina el caso de uso.
+5.- El sistema valida los nuevos valores y verifica unicidad cuando aplique, así como actualiza la información y muestra un mensaje de éxito. (Ver FA 5.1) (Ver EX 1) +
+6.- Termina el caso de uso.
 | Flujos alternos |
 FA 4.1 El administrador desea cancelar la edición. +
 1.- El sistema muestra mensaje de confirmación de cancelación. +
 2.- Si confirma, descarta cambios y regresa a la lista. +
-3.- Termina el caso de uso.
+3.- Termina el caso de uso. +
+FA 5.1 - Código o nombre duplicado tras edición. +
+1.- El sistema muestra un mensaje de error, no se guardan cambios. +
+2.- Regresa al paso 4 del flujo normal.
 | Excepciones |
 EX 1 - El sistema no puede conectarse a la base de datos. +
 1.- Mensaje de error; intentar más tarde. +
 2.- Termina el caso de uso. +
-EX 2 - Código o nombre duplicado tras edición. +
-1.- Mensaje de error; no se guardan cambios. +
-2.- Regresa al paso 4 del flujo normal.
-| Postcondiciones | POST-01 El tipo seleccionado queda actualizado.
-|Reglas de negocio|
+| Postcondiciones | POST-01: El tipo seleccionado queda actualizado.
+| Reglas de negocio |
 |===

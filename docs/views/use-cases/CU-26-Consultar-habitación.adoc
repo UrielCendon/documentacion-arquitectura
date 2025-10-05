@@ -8,7 +8,7 @@
 | Descripción | Permite al gerente buscar y visualizar habitaciones de sus hoteles.
 | Actor(es) | Gerente
 | Disparador | El gerente accede a Consultar habitaciones.
-| Precondiciones | -PRE-01 El gerente está autenticado. +
+| Precondiciones | -PRE-01: El gerente está autenticado. +
 -PRE-02 Tiene al menos un hotel asignado.
 | Flujo normal |
 1.- El sistema muestra filtros (Hotel, número, piso, tipo, estatus). (Ver FA 1.1) +
@@ -26,8 +26,8 @@ FA 3.1 No se encuentran habitaciones. +
 2.- Regresa al paso 2 del flujo normal.
 | Excepciones |
 EX 1 - El sistema no puede conectarse a la base de datos. +
-1.- Mensaje de error; intentar más tarde. +
+1.- El sistema muestra un mensaje de error y sugiere intentar más tarde, así como registra el incidente. +
 2.- Termina el caso de uso.
-| Postcondiciones | POST-01 Sin cambios en el sistema.
+| Postcondiciones | POST-01: Sin cambios en el sistema.
 |Reglas de negocio|
 |===

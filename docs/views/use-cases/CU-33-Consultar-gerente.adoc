@@ -8,7 +8,7 @@
 | Descripción | El administrador consulta gerentes registrados en el sistema con filtros opcionales.
 | Actor(es) | Administrador
 | Disparador | El administrador selecciona consultar gerentes.
-| Precondiciones | -PRE-01 El administrador está autenticado en el sistema.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema.
 | Flujo normal |
 1.- El sistema solicita filtros de búsqueda, así como muestra los gerentes registrados. +
 2.- El administrador llena los filtros y busca un gerente. +
@@ -25,6 +25,6 @@ EX 1 - Hubo un fallo de consulta. +
 EX 2 - El sistema no puede conectarse a la base de datos. +
 1.- El sistema muestra un mensaje de error solicitando intentar más tarde y registra el suceso. +
 2.- Termina el caso de uso.
-| Postcondiciones | POST-01 El administrador logró consultar a los gerentes registrados en el sistema.
+| Postcondiciones | POST-01: El administrador logró consultar a los gerentes registrados en el sistema.
 |Reglas de negocio|
 |===

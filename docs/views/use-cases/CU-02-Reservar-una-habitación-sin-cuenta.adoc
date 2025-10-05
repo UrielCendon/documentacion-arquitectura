@@ -4,21 +4,19 @@
 | ID | CU-02
 | Nombre | Reservar una habitación sin cuenta
 | Autor | Uriel Cendón Díaz
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El huésped, sin autenticarse en el sistema, solicita reservar una habitación indicando hotel, fechas y tipo de habitación. El sistema solicita los datos del huésped y el método de pago, valida la disponibilidad y envía la reservación a pago.
 | Actor(es) | Huésped
 | Disparador | El huésped elige reservar sin cuenta.
-| Precondiciones | -PRE-01 Existen hoteles activos en el sistema. +
--PRE-02 Existen tipos de habitación activos en el sistema.
+| Precondiciones | -PRE-01: Existen hoteles activos en el sistema. +
+-PRE-02: Existen tipos de habitación activos en el sistema.
 | Flujo normal |
 1.- El sistema solicita el hotel, las fechas de estancia y el tipo de habitación a reservar. +
 2.- El huésped ingresa hotel, fechas y tipo de habitación. +
 3.- El sistema valida las entradas y consulta su inventario. Si hay cupo, solicita los datos del huésped y su método de pago. (Ver FA 3.1) (Ver EX 1) (Ver EX 2) (Ver EX 3) +
 4.- El huésped captura sus datos y selecciona método de pago. (Ver FA 4.1) +
-5.- El sistema valida la información. +
-6.- El sistema extiende a CU-04 Realizar el pago de la reservación. (Ver FA 6.1) +
-7.- Al retornar con pago aprobado, el sistema confirma la reservación, asigna un folio único, comunica la política de cancelación y registra la operación. (Ver EX 4) +
-8.- Termina el caso de uso.
+5.- El sistema valida la informaciónm y extiende a CU-04 Realizar el pago de la reservación. Si se retorna con un pago aprobado, confirma la reservación, asigna un folio único, comunica la política de cancelación y registra la operación. (Ver FA 5.1) (Ver EX 4) +
+6.- Termina el caso de uso.
 | Flujos alternos |
 FA 3.1 No hay disponibilidad. +
 1.- El sistema informa indisponibilidad y ofrece fechas u hoteles alternos. +
@@ -27,9 +25,9 @@ FA 3.1 No hay disponibilidad. +
 FA 4.1 El huésped cancela la acción antes de realizar el pago. +
 1.- El sistema cancela la operación. +
 2.- Termina el caso de uso. +
-FA 6.1 El pago no se completó. +
+FA 5.1 El pago no se completó. +
 1.- El sistema mantiene la reservación por un tiempo límite y ofrece reintentar el pago o cancelar la misma. +
-2.- El huésped elige reintentar (regresa al paso 6 del flujo normal) o cancelar. +
+2.- El huésped elige reintentar (regresa al paso 5 del flujo normal) o cancelar. +
 3.- Termina el caso de uso.
 | Excepciones |
 EX 1 - Se superó el límite de overbooking. +
@@ -44,6 +42,6 @@ EX 3 - El servicio de inventario no está disponible. +
 EX 4 - Hubo un fallo al crear la reservación. +
 1.- El sistema informa error temporal, realiza un reembolso automático del dinero pagado (si aplica), registra el error y solicita intentar más tarde. +
 2.- Termina el caso de uso.
-| Postcondiciones | POST-01 Se crea una reservación pagada con un folio único.
+| Postcondiciones | POST-01: Se crea una reservación pagada con un folio único.
 |Reglas de negocio|
 |===

@@ -8,8 +8,8 @@
 | Descripción | El gerente consulta recepcionistas de uno de sus hoteles. El sistema presenta resultados para el hotel seleccionado con filtros opcionales.
 | Actor(es) | Gerente
 | Disparador | El gerente selecciona consultar recepcionistas.
-| Precondiciones | -PRE-01 El gerente está autenticado en el sistema. +
--PRE-02 El gerente tiene al menos un hotel relacionado.
+| Precondiciones | -PRE-01: El gerente está autenticado en el sistema. +
+-PRE-02: El gerente tiene al menos un hotel relacionado.
 | Flujo normal |
 1.- El sistema solicita seleccionar un hotel del gerente y filtros de búsqueda. +
 2.- El gerente proporciona el hotel y los criterios de búsqueda para los filtros. +
@@ -26,6 +26,6 @@ EX 1 - El sistema no puede conectarse a la base de datos. +
 EX 2 - Hubo un fallo de consulta. +
 1.- El sistema informa error al consultar y registra el incidente. +
 2.- Termina el caso de uso.
-| Postcondiciones | POST-01 La consulta queda registrada.
+| Postcondiciones | POST-01: La consulta queda registrada.
 |Reglas de negocio|
 |===

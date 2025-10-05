@@ -4,36 +4,35 @@
 | ID | CU-25
 | Nombre | Registrar habitación
 | Autor | Miguel Eduardo Escobar Ladron De Guevara
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | Permite registrar una nueva habitación en un hotel y asignarle un tipo de habitación.
 | Actor(es) | Gerente
 | Disparador | El gerente da clic en Registrar habitación.
-| Precondiciones | -PRE-01 El gerente está autenticado. +
--PRE-02 El gerente tiene al menos un hotel asignado.
+| Precondiciones | -PRE-01: El gerente está autenticado. +
+-PRE-02: El gerente tiene al menos un hotel asignado.
 | Flujo normal |
-1.- El sistema muestra el formulario de registro con selector de Hotel y de Tipo de habitación activos. (Ver FA 1.1) +
+1.- El sistema muestra el formulario de registro con selector de Hotel y de Tipo de habitación activos. (Ver FA 1.1) (Ver FA 1.2) +
 2.- El gerente selecciona el hotel (si aplica), el tipo de habitación y captura los datos: número/identificador, piso, características, estado inicial. (Ver FA 2.1) +
-3.- El sistema valida datos y unicidad del número de habitación dentro del hotel seleccionado. (Ver EX 2) +
-4.- El sistema registra la habitación asociada al hotel y al tipo elegido y muestra un mensaje de éxito. (Ver EX 1) +
-5.- Termina el caso de uso.
+3.- El sistema valida datos y unicidad del número de habitación dentro del hotel seleccionado, registra la habitación asociada al hotel y al tipo elegido, así como muestra un mensaje de éxito. (Ver FA 3.1) (Ver EX 1) +
+4.- Termina el caso de uso.
 | Flujos alternos |
 FA 1.1 El gerente tiene varios hoteles asignados. +
 1.- El sistema muestra un selector de hoteles. +
 2.- El gerente elige el hotel y continúa en el paso 2 del flujo normal. +
+FA 1.2 El hotel no tiene tipos de habitación activos. +
+1.- El sistema muestra No hay tipos activos disponibles para este hotel. +
+2.- Termina el caso de uso. +
 FA 2.1 El gerente cancela el registro. +
 1.- Confirmación de cancelación. +
 2.- Si confirma, el sistema descarta los cambios y vuelve a la lista. +
 3.- Termina el caso de uso. +
-FA 1.2 El hotel no tiene tipos de habitación activos. +
-1.- El sistema muestra No hay tipos activos disponibles para este hotel. +
-2.- Termina el caso de uso.
+FA 3.1 - Se intentó registrar un número de habitación duplicado en el hotel. +
+1.- El sistema muestra un mensaje de error, así como no se registra la habitación. +
+2.- Regresa al paso 2 del flujo normal.
 | Excepciones |
 EX 1 - El sistema no puede conectarse a la base de datos. +
 1.- Mensaje de error; intentar más tarde. +
 2.- Termina el caso de uso. +
-EX 2 - Número de habitación duplicado en el hotel. +
-1.- Mensaje de error; no se registra la habitación. +
-2.- Regresa al paso 2 del flujo normal.
-| Postcondiciones | POST-01 La nueva habitación queda registrada y asociada a un tipo en un hotel.
+| Postcondiciones | POST-01: La nueva habitación queda registrada y asociada a un tipo en un hotel.
 |Reglas de negocio|
 |===

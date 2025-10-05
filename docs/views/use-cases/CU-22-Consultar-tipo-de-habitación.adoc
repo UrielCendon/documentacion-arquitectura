@@ -8,7 +8,7 @@
 | Descripción | Permite buscar y visualizar tipos de habitación.
 | Actor(es) | Administrador
 | Disparador | El administrador accede a Consultar tipos de habitación.
-| Precondiciones | PRE-01 El administrador está autenticado en el sistema.
+| Precondiciones | PRE-01: El administrador está autenticado en el sistema.
 | Flujo normal |
 1.- El sistema muestra filtros de búsqueda (código, nombre, estatus). +
 2.- El administrador ingresa criterios y confirma la búsqueda. +
@@ -24,6 +24,6 @@ FA 3.1 No se encuentran resultados. +
 EX 1 - El sistema no puede conectarse a la base de datos. +
 1.- Mensaje de error; intentar más tarde. +
 2.- Termina el caso de uso.
-| Postcondiciones | POST-01 Sin cambios en el sistema.
-|Reglas de negocio|
+| Postcondiciones | POST-01: Sin cambios en el sistema.
+| Reglas de negocio |
 |===
