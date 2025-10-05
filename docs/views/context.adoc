@@ -1,6 +1,4 @@
-= Documento de Diseño — Definición de requerimientos
-
-== 2.1 Planteamiento del problema
+== Planteamiento del problema
 
 === Situación actual
 Hoy cada hotel usa su propio sistema para manejar reservas, precios e inventario. Eso hace que la información no coincida entre sedes: a veces el inventario que ve el huésped no es el real, las tarifas no están alineadas y las reglas cambian según el hotel. En recepción, el personal se enfrenta a interfaces distintas y procesos poco claros, lo que aumenta errores y tiempo de atención. Del lado del cliente, la experiencia no es pareja: puede encontrar precios distintos en canales diferentes o toparse con que “había” disponibilidad y al final no, lo que reduce la confianza y provoca que abandone la compra.
@@ -20,12 +18,12 @@ Centralizar reservas, tarifas e inventario en una sola plataforma abre varias me
 === En pocas palabras
 El proyecto convierte muchas “islas” en una sola plataforma confiable. Con datos consistentes y procesos unificados, la cadena puede vender mejor, operar con menos errores y ofrecer una experiencia pareja y transparente. No hacerlo significa seguir pagando costos ocultos (errores, fricción, abandono) y perder ingresos que hoy no se capturan.
 
-== 2.2 Alcance y propósito del diseño
+== Alcance y propósito del diseño
 
-=== 2.2.1 Objetivo de esta sección
+=== Objetivo de esta sección
 Este capítulo fija de forma práctica dónde empieza y dónde termina el diseño del sistema, quiénes participan y qué les preocupa. Con esto evitamos malentendidos, reducimos “alcance elástico” y obtenemos una lista clara de temas que más adelante se traducirán en impulsores arquitectónicos (atributos de calidad, restricciones y prioridades).
 
-=== 2.2.2 Fronteras del diseño (qué sí y qué no)
+=== Fronteras del diseño (qué sí y qué no)
 **Incluido en el diseño (v1):**
 - **Canales**: sitio web oficial y app móvil de la cadena.
 - **Usuarios**: huéspedes (reservan, pagan y cancelan), personal de recepción (check-in, check-out, cambio de habitación), administradores (inventario, tarifas, políticas).
@@ -43,7 +41,7 @@ Este capítulo fija de forma práctica dónde empieza y dónde termina el diseñ
 
 Estas fronteras no impiden planear una **v2** con integraciones y beneficios adicionales; solo acotan lo que debe estar listo y operando en la primera entrega.
 
-=== 2.2.3 Interesados (stakeholders) y lo que les preocupa
+=== Interesados (stakeholders) y lo que les preocupa
 A continuación, los grupos clave y los temas que típicamente les importan. Esta lista guía decisiones y prioriza compromisos cuando dos objetivos chocan (p. ej., latencia vs. consistencia).
 
 - **Dirección / Administración de la cadena**
@@ -76,7 +74,7 @@ A continuación, los grupos clave y los temas que típicamente les importan. Est
 - **Datos / BI / Analytics**
   *Preocupaciones*: calidad y puntualidad de datos, eventos de negocio bien definidos, acceso controlado a fuentes confiables para tableros y modelos.
 
-=== 2.2.4 Resumen rápido (stakeholders → concerns)
+=== Resumen rápido (stakeholders → concerns)
 |===
 | Stakeholder | Lo que más le preocupa (resumen)
 
@@ -94,7 +92,7 @@ A continuación, los grupos clave y los temas que típicamente les importan. Est
 
 Esta tabla no sustituye la lista detallada, pero ayuda a tener a la vista las prioridades cuando surgen decisiones difíciles.
 
-=== 2.2.5 Criterios de corte y supuestos prácticos
+=== Criterios de corte y supuestos prácticos
 Para que el alcance sea manejable y entregable, aplicamos estos cortes:
 
 - **Reservas “de punta a punta”** con pago total: si la autorización falla, no hay reserva; si se confirma, el inventario queda bloqueado y la transacción es trazable e idempotente.
@@ -106,7 +104,7 @@ Para que el alcance sea manejable y entregable, aplicamos estos cortes:
 
 Temas abiertos que requieren decisión del negocio y que impactan diseño: ventanas de cancelación/modificación por tarifa, reglas de “no-show”, umbrales de degradación aceptables en picos y políticas de retención de logs/eventos.
 
-=== 2.2.6 Cómo estas preocupaciones se traducen en impulsores arquitectónicos
+=== Cómo estas preocupaciones se traducen en impulsores arquitectónicos
 Esta sección no define aún la arquitectura, pero deja listos los insumos que la guiarán:
 
 - **Consistencia transaccional primero** (Dirección, Finanzas, Operación): evitar dobles cobros y dobles reservas pesa más que exprimir milisegundos en confirmación. Impulsa diseños con locks lógicos, idempotencia y transacciones atómicas.
@@ -119,7 +117,3 @@ Esta sección no define aún la arquitectura, pero deja listos los insumos que l
 - **Datos confiables para BI** (Datos/BI, Dirección): una sola fuente de verdad con latencia razonable. Impulsa eventos consistentes, ETLs/streams con contratos y permisos granulares.
 
 **Resultado esperado:** con estas fronteras y preocupaciones mapeadas, el equipo puede priorizar qué atributos de calidad y restricciones deben “ganar” cuando haya trade-offs, y avanzar a la definición de la arquitectura con un marco común y validado por negocio.
-
-
-
-
