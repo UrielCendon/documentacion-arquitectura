@@ -4,7 +4,7 @@
 | ID | CU-30
 | Nombre | Crear cuenta
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El huésped crea una cuenta en el sistema. El sistema valida unicidad y verifica identidad, luego registra el alta y la deja trazada en la bitácora de auditoría.
 | Actor(es) | Huésped
 | Disparador | El huésped selecciona crear cuenta.
@@ -13,24 +13,23 @@
 | Flujo normal |
 1.- El sistema solicita datos de registro (identificadores, datos personales mínimos, credenciales y aceptación de términos). +
 2.- El huésped proporciona los datos solicitados. +
-3.- El sistema valida integridad y unicidad; envía/solicita verificación del canal elegido y pide ingresar el código. (Ver FA 3.1) (Ver EX 1) +
+3.- El sistema valida integridad y unicidad; envía/solicita verificación del canal elegido y pide ingresar el código. (Ver FA 3.1) (Ver FA 3.2) +
 4.- El huésped ingresa el código de verificación y confirma el alta. +
-5.- El sistema crea la cuenta, establece estado "activa", genera el identificador y registra el alta en la bitácora de auditoría. (Ver EX 2) +
+5.- El sistema crea la cuenta, establece estado "activa", genera el identificador y registra el alta en la bitácora de auditoría. (Ver EX 1) +
 6.- El huésped acusa recibo de la confirmación. +
 7.- El sistema entrega el identificador de cuenta y datos esenciales del perfil. +
-8.- El huésped finaliza la interacción. +
-9.- Termina el caso de uso.
+8.- Termina el caso de uso.
 | Flujos alternos |
 FA 3.1 Cuenta existente. +
 1.- El sistema detecta duplicidad del identificador y propone recuperar acceso. +
 2.- El huésped elige recuperar acceso o usar otro identificador. +
-3.- El sistema registra la decisión en auditoría y regresa al paso 1 o finaliza.
-| Excepciones |
-EX 1 – Datos inválidos (contraseña débil, formato incorrecto). +
+3.- El sistema registra la decisión en auditoría y regresa al paso 1 o finaliza. +
+FA 3.2 – Datos inválidos (contraseña débil, formato incorrecto). +
 1.- El sistema detalla las inconsistencias y solicita corrección. +
 2.- El huésped corrige o desiste. +
-3.- El sistema registra el evento y regresa al paso 1 o finaliza. +
-EX 2 – Falla de persistencia/conectividad. +
+3.- El sistema registra el evento y regresa al paso 1 o finaliza.
+| Excepciones |
+EX 1 – Falla de persistencia/conectividad. +
 1.- El sistema informa el error y registra el incidente en auditoría. +
 2.- El huésped decide reintentar más tarde. +
 3.- Termina el caso de uso.

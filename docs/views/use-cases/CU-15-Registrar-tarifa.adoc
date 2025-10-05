@@ -4,7 +4,7 @@
 | ID | CU-15
 | Nombre | Registrar tarifa
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El Administrador registra una nueva tarifa para un hotel indicando su alcance y vigencia. El sistema valida consistencia y unicidad, y registra el alta en la bitácora de auditoría.
 | Actor(es) | Administrador
 | Disparador | El administrador selecciona registrar una tarifa.

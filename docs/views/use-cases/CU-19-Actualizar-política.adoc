@@ -4,7 +4,7 @@
 | ID | CU-19
 | Nombre | Actualizar política
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El Administrador actualiza una política vigente o programa su reemplazo mediante nueva versión. Se controlan compatibilidad y concurrencia, registrando diferencias en la bitácora de auditoría.
 | Actor(es) | Administrador
 | Disparador | El administrador selecciona actualizar una política.
@@ -18,8 +18,7 @@
 5.- El sistema valida compatibilidad y versión; presenta el resumen y solicita confirmar actualización o nueva versión. (Ver FA 5.1) (Ver EX 2) +
 6.- El administrador confirma la acción propuesta. +
 7.- El sistema aplica la actualización (o crea la nueva versión) y registra las diferencias en la bitácora de auditoría. +
-8.- El administrador recibe la confirmación y concluye la operación. +
-9.- Termina el caso de uso.
+8.- Termina el caso de uso.
 | Flujos alternos |
 FA 5.1 Requiere nueva versión por vigencia/alcance. +
 1.- El sistema propone crear una nueva versión y ajustar la anterior. +

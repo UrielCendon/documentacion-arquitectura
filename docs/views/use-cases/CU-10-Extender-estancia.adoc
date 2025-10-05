@@ -4,7 +4,7 @@
 | ID | CU-10
 | Nombre | Extender estancia
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El recepcionista extiende la fecha/hora de salida de una estancia activa. El sistema valida disponibilidad, políticas y tarifas aplicables, actualiza la vigencia y registra la acción en auditoría.
 | Actor(es) | Recepcionista
 | Disparador | El recepcionista selecciona extender estancia.
@@ -18,8 +18,7 @@
 5.- El sistema aplica la extensión, actualiza tarifas/fechas, procesa garantía, emite confirmación y registra en auditoría. (Ver EX 2) +
 6.- El recepcionista acusa recibo de la confirmación. +
 7.- El sistema muestra el nuevo detalle de la estancia. +
-8.- El recepcionista cierra la atención. +
-9.- Termina el caso de uso.
+8.- Termina el caso de uso.
 | Flujos alternos |
 FA 3.1 Habitación no disponible para todo el periodo. +
 1.- El sistema ofrece alternativas (otra habitación o acortar la extensión) y solicita decisión. +

@@ -4,7 +4,7 @@
 | ID | CU-06
 | Nombre | Realizar check-in
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El recepcionista realiza el check-in de un huésped a partir de una reserva o estancia programada. El sistema valida elegibilidad, garantías y disponibilidad, actualiza el estado de la habitación y deja trazabilidad en la bitácora de auditoría.
 | Actor(es) | Recepcionista
 | Disparador | El recepcionista selecciona realizar check-in.
@@ -19,8 +19,7 @@
 5.- El sistema registra el check-in, cambia la habitación a "ocupada", genera credenciales/llaves y registra la operación en auditoría. (Ver EX 2) +
 6.- El recepcionista confirma recepción de credenciales y la entrega al huésped. +
 7.- El sistema muestra el identificador de la estancia activa y la hora oficial de salida. +
-8.- El recepcionista acusa recibo de la información y cierra la atención. +
-9.- Termina el caso de uso.
+8.- Termina el caso de uso.
 | Flujos alternos |
 FA 3.1 Habitación no lista o no disponible. +
 1.- El sistema informa el estado de la habitación y propone alternativas de asignación. +

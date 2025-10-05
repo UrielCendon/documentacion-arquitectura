@@ -4,7 +4,7 @@
 | ID | CU-16
 | Nombre | Consultar tarifa
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El Administrador consulta tarifas de uno o varios hoteles con filtros por alcance, estado y vigencia. Cada consulta se registra en la bitácora de auditoría.
 | Actor(es) | Administrador
 | Disparador | El administrador selecciona consultar tarifas.
@@ -17,8 +17,7 @@
 3.- El sistema valida los criterios, ejecuta la búsqueda y presenta un resumen; solicita seleccionar una tarifa o pedir detalle. (Ver FA 3.1) (Ver EX 1) +
 4.- El administrador selecciona una tarifa o solicita exportar resultados. +
 5.- El sistema muestra el detalle solicitado o prepara la exportación y registra la consulta en la bitácora de auditoría. +
-6.- El administrador indica que finaliza la consulta. +
-7.- Termina el caso de uso.
+6.- Termina el caso de uso.
 | Flujos alternos |
 FA 3.1 Sin resultados. +
 1.- El sistema informa que no se encontraron tarifas con los criterios y sugiere ajustar filtros. +

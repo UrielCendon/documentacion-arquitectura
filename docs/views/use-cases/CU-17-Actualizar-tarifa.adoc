@@ -4,7 +4,7 @@
 | ID | CU-17
 | Nombre | Actualizar tarifa
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El Administrador actualiza una tarifa existente controlando consistencia, vigencias y concurrencia. La operación registra diferencias antes/después en la bitácora de auditoría.
 | Actor(es) | Administrador
 | Disparador | El administrador selecciona actualizar una tarifa.
@@ -18,8 +18,7 @@
 5.- El sistema valida integridad, vigencias y versión; muestra el resumen de cambios y solicita confirmación. (Ver FA 5.1) (Ver EX 2) +
 6.- El administrador confirma la actualización. +
 7.- El sistema aplica los cambios y registra las diferencias en la bitácora de auditoría. +
-8.- El administrador recibe la confirmación y concluye la operación. +
-9.- Termina el caso de uso.
+8.- Termina el caso de uso.
 | Flujos alternos |
 FA 5.1 Conflicto por vigencias/alcance. +
 1.- El sistema detalla el conflicto y propone ajustar o crear una nueva tarifa. +

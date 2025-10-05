@@ -4,7 +4,7 @@
 | ID | CU-09
 | Nombre | Registrar consumo o servicio
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El recepcionista registra un consumo/servicio a cargo de una estancia (p. ej., minibar, spa, lavandería). El sistema valida disponibilidad y precios vigentes, impacta la cuenta y registra la operación en auditoría.
 | Actor(es) | Recepcionista
 | Disparador | El recepcionista selecciona registrar consumo o servicio.
@@ -18,8 +18,7 @@
 5.- El sistema registra el consumo, actualiza la cuenta, emite comprobante si aplica y registra en auditoría. (Ver EX 2) +
 6.- El recepcionista confirma recepción/entrega del comprobante. +
 7.- El sistema muestra el nuevo saldo de la estancia. +
-8.- El recepcionista acusa recibo y finaliza la atención. +
-9.- Termina el caso de uso.
+8.- Termina el caso de uso.
 | Flujos alternos |
 FA 3.1 Cargo directo a tarjeta. +
 1.- El sistema ofrece procesar el cargo sin pasar por la cuenta y solicita confirmación. +

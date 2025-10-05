@@ -4,7 +4,7 @@
 | ID | CU-18
 | Nombre | Registrar política
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El Administrador registra una política del hotel (p. ej., cancelación, no-show, mascotas) indicando tipo, alcance y vigencia. El sistema valida compatibilidad y registra el alta en la bitácora de auditoría.
 | Actor(es) | Administrador
 | Disparador | El administrador selecciona registrar una política.
@@ -18,8 +18,7 @@
 5.- El sistema crea la política, la asocia al hotel y registra la operación en la bitácora de auditoría. +
 6.- El administrador recibe la confirmación y solicita el identificador. +
 7.- El sistema entrega el identificador de la política y finaliza la operación. +
-8.- El administrador concluye la interacción. +
-9.- Termina el caso de uso.
+8.- Termina el caso de uso.
 | Flujos alternos |
 FA 3.1 Duplicidad o traslape. +
 1.- El sistema informa el conflicto y propone ajustar vigencias o reemplazar. +

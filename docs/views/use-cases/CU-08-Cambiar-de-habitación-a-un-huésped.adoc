@@ -4,7 +4,7 @@
 | ID | CU-08
 | Nombre | Cambiar de habitación a un huésped
 | Autor | Alan Raziel Filobello Aguilar
-| Fecha de actualización | 03 de octubre de 2025
+| Fecha de actualización | 04 de octubre de 2025
 | Descripción | El recepcionista cambia la habitación de una estancia activa. El sistema verifica disponibilidad, políticas y posibles diferencias tarifarias, actualiza asignaciones y registra la acción en auditoría.
 | Actor(es) | Recepcionista
 | Disparador | El recepcionista selecciona cambiar de habitación a un huésped.
@@ -18,8 +18,7 @@
 5.- El sistema actualiza la asignación, recalcula la tarifa, libera/ocupa habitaciones y registra en auditoría. (Ver EX 2) +
 6.- El recepcionista entrega/activa nuevas credenciales y confirma el cambio con el huésped. +
 7.- El sistema muestra el nuevo detalle de la estancia. +
-8.- El recepcionista acusa recibo y cierra la atención. +
-9.- Termina el caso de uso.
+8.- Termina el caso de uso.
 | Flujos alternos |
 FA 3.1 No hay disponibilidad del mismo tipo. +
 1.- El sistema ofrece alternativas de otro tipo con diferencia tarifaria y solicita decisión. +
