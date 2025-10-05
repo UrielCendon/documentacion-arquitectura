@@ -1,4 +1,4 @@
-= Descripción de la Arquitectura de Software
+  = Descripción de la Arquitectura de Software
 :doctype: book
 :toc: left
 :sectnums:
