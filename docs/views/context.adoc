@@ -15,28 +15,25 @@ Centralizar reservas, tarifas e inventario en una sola plataforma abre varias me
 * **Más control y confianza:** un **registro único** de todos los movimientos (reservas, cambios, cobros, cancelaciones) facilita auditorías y solución de disputas, y ayuda a cumplir con las reglas de datos y pagos.
 * **Mayor rapidez para el negocio:** abrir un hotel nuevo, lanzar una promo, cambiar políticas de cancelación o ajustar tarifas deja de ser un esfuerzo “por hotel” y pasa a ser una configuración central, rápida y segura.
 
-=== En pocas palabras
-El proyecto convierte muchas “islas” en una sola plataforma confiable. Con datos consistentes y procesos unificados, la cadena puede vender mejor, operar con menos errores y ofrecer una experiencia pareja y transparente. No hacerlo significa seguir pagando costos ocultos (errores, fricción, abandono) y perder ingresos que hoy no se capturan.
-
 == Alcance y propósito del diseño
 
 === Objetivo de esta sección
 Este capítulo fija de forma práctica dónde empieza y dónde termina el diseño del sistema, quiénes participan y qué les preocupa. Con esto evitamos malentendidos, reducimos “alcance elástico” y obtenemos una lista clara de temas que más adelante se traducirán en impulsores arquitectónicos (atributos de calidad, restricciones y prioridades).
 
 === Fronteras del diseño (qué sí y qué no)
-**Incluido en el diseño (v1):**
-- **Canales**: sitio web oficial y app móvil de la cadena.
-- **Usuarios**: huéspedes (reservan, pagan y cancelan), personal de recepción (check-in, check-out, cambio de habitación), administradores (inventario, tarifas, políticas).
-- **Funciones clave**: búsqueda de disponibilidad en tiempo real; creación, confirmación y cancelación de reservas con pago total y penalización según políticas; registro de consumos; administración de catálogos (hoteles, tipos y habitaciones); **overbooking controlado** (hasta 10% por tipo/fecha); **precios dinámicos**; trazabilidad/auditoría de operaciones.
-- **Datos**: catálogos, tarifas, disponibilidad, reservas, eventos de negocio y auditoría; referencias a pagos (tokens/identificadores), no almacenamiento de datos sensibles de tarjetas.
-- **Integraciones**: pasarela de pago (autorización/captura, idempotencia), servicios de notificaciones (correo, push), monitoreo/observabilidad y gestión de secretos.
+**Incluido en el diseño (v1):** +
+- **Canales**: sitio web oficial y app móvil de la cadena. +
+- **Usuarios**: huéspedes (reservan, pagan y cancelan), personal de recepción (check-in, check-out, cambio de habitación), administradores (inventario, tarifas, políticas). +
+- **Funciones clave**: búsqueda de disponibilidad en tiempo real; creación, confirmación y cancelación de reservas con pago total y penalización según políticas; registro de consumos; administración de catálogos (hoteles, tipos y habitaciones); overbooking controlado (hasta 10% por tipo/fecha); precios dinámicos; trazabilidad/auditoría de operaciones. +
+- **Datos**: catálogos, tarifas, disponibilidad, reservas, eventos de negocio y auditoría; referencias a pagos (tokens/identificadores), no almacenamiento de datos sensibles de tarjetas. +
+- **Integraciones**: pasarela de pago (autorización/captura, idempotencia), servicios de notificaciones (correo, push), monitoreo/observabilidad y gestión de secretos. +
 - **No funcionales base**: consistencia transaccional en confirmación de reservas; tiempos razonables de respuesta; seguridad de datos; observabilidad y capacidad de diagnóstico.
 
-**Fuera de alcance (v1):**
-- Programas de lealtad, descuentos personalizados o motores de promociones complejas.
-- Integraciones con OTAs u otros sistemas hoteleros para redistribuir demanda.
-- Reporte de incidentes/sanciones internas.
-- Anticipos parciales o modalidades de pago distintas al pago total.
+**Fuera de alcance (v1):** +
+- Programas de lealtad, descuentos personalizados o motores de promociones complejas. +
+- Integraciones con OTAs u otros sistemas hoteleros para redistribuir demanda. +
+- Reporte de incidentes/sanciones internas. +
+- Anticipos parciales o modalidades de pago distintas al pago total. +
 - Canales de terceros (sitios afiliados, kioscos, etc.).
 
 Estas fronteras no impiden planear una **v2** con integraciones y beneficios adicionales; solo acotan lo que debe estar listo y operando en la primera entrega.
@@ -74,24 +71,6 @@ A continuación, los grupos clave y los temas que típicamente les importan. Est
 - **Datos / BI / Analytics**
   *Preocupaciones*: calidad y puntualidad de datos, eventos de negocio bien definidos, acceso controlado a fuentes confiables para tableros y modelos.
 
-=== Resumen rápido (stakeholders → concerns)
-|===
-| Stakeholder | Lo que más le preocupa (resumen)
-
-| Dirección/Administración | Ingresos, coherencia de políticas, riesgos, comparabilidad de resultados
-| Revenue/Marketing | Tarifas, temporadas, overbooking, KPIs de conversión y cancelación
-| Finanzas | Conciliación, devoluciones, no duplicar cobros, evidencias auditables
-| Operación (recepción) | Simplicidad, mensajes claros, rapidez con certeza, control de cupos
-| Huéspedes | Flujo corto, precio consistente, confirmación inmediata, reglas claras
-| Atención al cliente | Historial completo, tiempos de respuesta, comunicaciones coherentes
-| Seguridad/Legal | Protección de datos, cifrado, mínimos privilegios, trazabilidad
-| TI/Infra/SRE | Disponibilidad, escalado en picos, monitoreo, costos operativos
-| Producto/UX/Dev | Alcance y criterios claros, mantenibilidad, modularidad, telemetría
-| Datos/BI | Datos correctos y puntuales, eventos estandarizados, accesos controlados
-|===
-
-Esta tabla no sustituye la lista detallada, pero ayuda a tener a la vista las prioridades cuando surgen decisiones difíciles.
-
 === Criterios de corte y supuestos prácticos
 Para que el alcance sea manejable y entregable, aplicamos estos cortes:
 
@@ -104,7 +83,7 @@ Para que el alcance sea manejable y entregable, aplicamos estos cortes:
 
 Temas abiertos que requieren decisión del negocio y que impactan diseño: ventanas de cancelación/modificación por tarifa, reglas de “no-show”, umbrales de degradación aceptables en picos y políticas de retención de logs/eventos.
 
-=== Cómo estas preocupaciones se traducen en impulsores arquitectónicos
+=== Impulsos arquitectónicos
 Esta sección no define aún la arquitectura, pero deja listos los insumos que la guiarán:
 
 - **Consistencia transaccional primero** (Dirección, Finanzas, Operación): evitar dobles cobros y dobles reservas pesa más que exprimir milisegundos en confirmación. Impulsa diseños con locks lógicos, idempotencia y transacciones atómicas.
@@ -121,4 +100,4 @@ Esta sección no define aún la arquitectura, pero deja listos los insumos que l
 === Diagrama de contexto
 El siguiente diagrama muestra una vista general del sistema propuesto y su interacción con actores externos y componentes clave. Sirve como punto de partida para entender los límites del sistema y las principales integraciones.
 
-image::...images/Diagrama-contexto-general.png[Diagrama de contexto general, width=800, align=center]
+image::images/Diagrama-contexto-general.png[Diagrama de contexto general, width=800, align=center]
