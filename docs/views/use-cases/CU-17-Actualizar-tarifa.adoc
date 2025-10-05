@@ -1,0 +1,40 @@
+== CU-17 Actualizar tarifa
+[cols="25,~",options="header"]
+|===
+| ID | CU-17
+| Nombre | Actualizar tarifa
+| Autor | Alan Raziel Filobello Aguilar
+| Fecha de actualización | 03 de octubre de 2025
+| Descripción | El Administrador actualiza una tarifa existente controlando consistencia, vigencias y concurrencia. La operación registra diferencias antes/después en la bitácora de auditoría.
+| Actor(es) | Administrador
+| Disparador | El administrador selecciona actualizar una tarifa.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema. +
+-PRE-02: La tarifa a actualizar existe.
+| Flujo normal |
+1.- El sistema solicita el identificador de la tarifa a actualizar. +
+2.- El administrador proporciona el identificador. +
+3.- El sistema recupera los valores actuales y solicita los cambios. (Ver EX 1) +
+4.- El administrador ingresa los cambios solicitados. +
+5.- El sistema valida integridad, vigencias y versión; muestra el resumen de cambios y solicita confirmación. (Ver FA 5.1) (Ver EX 2) +
+6.- El administrador confirma la actualización. +
+7.- El sistema aplica los cambios y registra las diferencias en la bitácora de auditoría. +
+8.- El administrador recibe la confirmación y concluye la operación. +
+9.- Termina el caso de uso.
+| Flujos alternos |
+FA 5.1 Conflicto por vigencias/alcance. +
+1.- El sistema detalla el conflicto y propone ajustar o crear una nueva tarifa. +
+2.- El administrador elige la acción. +
+3.- El sistema registra la decisión en auditoría y regresa al paso 3 o continúa en el paso 7 según corresponda.
+| Excepciones |
+EX 1 – La tarifa no existe o no es accesible. +
+1.- El sistema informa la situación y registra el evento. +
+2.- El administrador decide terminar o indicar otra tarifa. +
+3.- El sistema regresa al paso 1 o finaliza. +
+EX 2 – Concurrencia/falla de persistencia. +
+1.- El sistema detecta versión desactualizada o error, lo informa y registra el incidente. +
+2.- El administrador decide reintentar. +
+3.- El sistema regresa al paso 3 o termina.
+| Postcondiciones | POST-01: La tarifa queda actualizada o reemplazada según corresponda. +
+POST-02: La actualización queda registrada en la bitácora de auditoría.
+| Reglas de negocio |
+|===

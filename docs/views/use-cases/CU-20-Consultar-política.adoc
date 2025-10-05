@@ -1,0 +1,35 @@
+== CU-20 Consultar política
+[cols="25,~",options="header"]
+|===
+| ID | CU-20
+| Nombre | Consultar política
+| Autor | Alan Raziel Filobello Aguilar
+| Fecha de actualización | 03 de octubre de 2025
+| Descripción | El Administrador consulta políticas por tipo, alcance, estado y vigencia, con acceso a su historial. Cada consulta se registra en la bitácora de auditoría.
+| Actor(es) | Administrador
+| Disparador | El administrador selecciona consultar políticas.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema. +
+-PRE-02: Existen hoteles registrados. +
+-PRE-03: Existen políticas registradas.
+| Flujo normal |
+1.- El sistema solicita criterios de consulta (tipo, alcance, vigencia, estado). +
+2.- El administrador proporciona los criterios. +
+3.- El sistema valida los criterios, ejecuta la consulta y presenta un resumen; solicita seleccionar una política o pedir historial. (Ver FA 3.1) (Ver EX 1) +
+4.- El administrador selecciona una política o solicita ver su historial. +
+5.- El sistema muestra el detalle y/o historial y registra la consulta en la bitácora de auditoría. +
+6.- El administrador indica que finaliza la consulta. +
+7.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 Sin resultados. +
+1.- El sistema informa que no se encontraron políticas con los criterios y sugiere ajustar filtros. +
+2.- El administrador decide ajustar o finalizar. +
+3.- El sistema registra el evento y regresa al paso 1 o termina el caso.
+| Excepciones |
+EX 1 – Falla de consulta o conectividad. +
+1.- El sistema informa el error y registra el incidente en auditoría. +
+2.- El administrador decide reintentar más tarde. +
+3.- Termina el caso de uso.
+| Postcondiciones | POST-01: Sin cambios en la configuración del sistema. +
+POST-02: La consulta queda registrada en la bitácora de auditoría.
+| Reglas de negocio |
+|===

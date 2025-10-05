@@ -1,0 +1,45 @@
+== CU-06 Realizar check-in
+[cols="25,~",options="header"]
+|===
+| ID | CU-06
+| Nombre | Realizar check-in
+| Autor | Alan Raziel Filobello Aguilar
+| Fecha de actualización | 03 de octubre de 2025
+| Descripción | El recepcionista realiza el check-in de un huésped a partir de una reserva o estancia programada. El sistema valida elegibilidad, garantías y disponibilidad, actualiza el estado de la habitación y deja trazabilidad en la bitácora de auditoría.
+| Actor(es) | Recepcionista
+| Disparador | El recepcionista selecciona realizar check-in.
+| Precondiciones | -PRE-01: El recepcionista está autenticado en el sistema. +
+-PRE-02: Existe una reserva confirmada o una estancia pre-creada para el día. +
+-PRE-03: La habitación asignada existe y puede ocupar estado "ocupada" (no bloqueada/mantenimiento).
+| Flujo normal |
+1.- El sistema solicita identificador de reserva/estancia o búsqueda por huésped. +
+2.- El recepcionista proporciona el identificador o datos del huésped. +
+3.- El sistema valida elegibilidad (fecha, estado, políticas, habitación disponible) y muestra resumen con garantía/cargo estimado; solicita confirmación. (Ver FA 3.1) (Ver FA 3.2) (Ver EX 1) +
+4.- El recepcionista confirma el check-in e indica el medio de garantía/cobro. +
+5.- El sistema registra el check-in, cambia la habitación a "ocupada", genera credenciales/llaves y registra la operación en auditoría. (Ver EX 2) +
+6.- El recepcionista confirma recepción de credenciales y la entrega al huésped. +
+7.- El sistema muestra el identificador de la estancia activa y la hora oficial de salida. +
+8.- El recepcionista acusa recibo de la información y cierra la atención. +
+9.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 Habitación no lista o no disponible. +
+1.- El sistema informa el estado de la habitación y propone alternativas de asignación. +
+2.- El recepcionista elige cambiar de habitación o esperar. +
+3.- El sistema aplica la elección (reasigna o agenda check-in diferido), registra en auditoría y regresa al paso 3 del flujo normal o finaliza si se difiere. +
+FA 3.2 Check-in anticipado con cargo. +
+1.- El sistema detecta hora anticipada y calcula cargo conforme a políticas; solicita aceptación. +
+2.- El recepcionista acepta o rechaza el cargo. +
+3.- El sistema aplica/omite el cargo, registra en auditoría y continúa en el paso 4 del flujo normal o finaliza si se rechaza.
+| Excepciones |
+EX 1 – Garantía o cobro no autorizado. +
+1.- El sistema rechaza la transacción e indica solicitar otro medio. +
+2.- El recepcionista proporciona un medio alterno o cancela. +
+3.- El sistema registra el evento en auditoría y regresa al paso 4 o finaliza. +
+EX 2 – Falla de persistencia/conectividad. +
+1.- El sistema informa el error y registra el incidente en auditoría. +
+2.- El recepcionista decide reintentar más tarde. +
+3.- Termina el caso de uso.
+| Postcondiciones | POST-01: La estancia queda "en casa" y la habitación en estado "ocupada". +
+POST-02: El movimiento queda registrado en la bitácora de auditoría.
+| Reglas de negocio |
+|===

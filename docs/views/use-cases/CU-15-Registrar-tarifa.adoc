@@ -1,0 +1,40 @@
+== CU-15 Registrar tarifa
+[cols="25,~",options="header"]
+|===
+| ID | CU-15
+| Nombre | Registrar tarifa
+| Autor | Alan Raziel Filobello Aguilar
+| Fecha de actualización | 03 de octubre de 2025
+| Descripción | El Administrador registra una nueva tarifa para un hotel indicando su alcance y vigencia. El sistema valida consistencia y unicidad, y registra el alta en la bitácora de auditoría.
+| Actor(es) | Administrador
+| Disparador | El administrador selecciona registrar una tarifa.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema. +
+-PRE-02: El hotel existe y está activo. +
+-PRE-03: Existen tipos de habitación activos en el hotel.
+| Flujo normal |
+1.- El sistema solicita parámetros de la tarifa (hotel, alcance, vigencia, precio, estado). +
+2.- El administrador proporciona los parámetros solicitados. +
+3.- El sistema valida los datos, detecta posibles traslapes y muestra un resumen solicitando confirmación de alta. (Ver FA 3.1) (Ver EX 1) +
+4.- El administrador confirma el registro de la tarifa. +
+5.- El sistema crea la tarifa, la asocia al hotel y registra la operación en la bitácora de auditoría. (Ver EX 2) +
+6.- El administrador acusa recibo de la confirmación y solicita el identificador de la nueva tarifa. +
+7.- El sistema entrega el identificador de la tarifa y finaliza la operación. +
+8.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 Conflictos de vigencia/alcance. +
+1.- El sistema informa el conflicto y propone ajustar parámetros o reemplazar otra tarifa. +
+2.- El administrador decide la acción (ajustar o cancelar). +
+3.- El sistema registra la decisión en auditoría y regresa al paso 1 del flujo normal si se ajusta; si se cancela, finaliza el caso.
+| Excepciones |
+EX 1 – Datos inválidos o incompletos. +
+1.- El sistema detalla inconsistencias y solicita corrección. +
+2.- El administrador corrige o cancela. +
+3.- El sistema registra el evento y regresa al paso 1 o finaliza según corresponda. +
+EX 2 – Falla de persistencia/conectividad. +
+1.- El sistema informa el error y registra el incidente en auditoría. +
+2.- El administrador decide reintentar más tarde. +
+3.- Termina el caso de uso.
+| Postcondiciones | POST-01: La tarifa queda registrada y disponible según su vigencia. +
+POST-02: El alta queda registrada en la bitácora de auditoría.
+| Reglas de negocio |
+|===

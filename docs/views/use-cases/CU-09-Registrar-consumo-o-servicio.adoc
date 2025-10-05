@@ -1,0 +1,40 @@
+== CU-09 Registrar consumo o servicio
+[cols="25,~",options="header"]
+|===
+| ID | CU-09
+| Nombre | Registrar consumo o servicio
+| Autor | Alan Raziel Filobello Aguilar
+| Fecha de actualización | 03 de octubre de 2025
+| Descripción | El recepcionista registra un consumo/servicio a cargo de una estancia (p. ej., minibar, spa, lavandería). El sistema valida disponibilidad y precios vigentes, impacta la cuenta y registra la operación en auditoría.
+| Actor(es) | Recepcionista
+| Disparador | El recepcionista selecciona registrar consumo o servicio.
+| Precondiciones | -PRE-01: El recepcionista está autenticado en el sistema. +
+-PRE-02: Existe una estancia activa o una cuenta autorizada para cargos.
+| Flujo normal |
+1.- El sistema solicita identificador de estancia y datos del consumo/servicio (concepto, cantidad, origen). +
+2.- El recepcionista proporciona los datos solicitados. +
+3.- El sistema valida existencia del producto/servicio y precio vigente; calcula importe e impuestos y solicita confirmación de cargo. (Ver FA 3.1) (Ver EX 1) +
+4.- El recepcionista confirma el cargo a la habitación o indica pago inmediato. +
+5.- El sistema registra el consumo, actualiza la cuenta, emite comprobante si aplica y registra en auditoría. (Ver EX 2) +
+6.- El recepcionista confirma recepción/entrega del comprobante. +
+7.- El sistema muestra el nuevo saldo de la estancia. +
+8.- El recepcionista acusa recibo y finaliza la atención. +
+9.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 Cargo directo a tarjeta. +
+1.- El sistema ofrece procesar el cargo sin pasar por la cuenta y solicita confirmación. +
+2.- El recepcionista acepta o rechaza el cargo directo. +
+3.- El sistema procesa según decisión, registra en auditoría y continúa en el paso 5 o finaliza si se rechaza.
+| Excepciones |
+EX 1 – Producto/servicio no disponible o precio inválido. +
+1.- El sistema informa la situación y registra el evento. +
+2.- El recepcionista decide capturar otro concepto o cancelar. +
+3.- El sistema regresa al paso 1 o finaliza. +
+EX 2 – Cobro no autorizado o falla de persistencia. +
+1.- El sistema informa el rechazo/error y registra en auditoría. +
+2.- El recepcionista elige un medio alterno o finalizar. +
+3.- El sistema regresa al paso 4 o termina el caso.
+| Postcondiciones | POST-01: El consumo/servicio queda registrado e impactado en la cuenta de la estancia según corresponda. +
+POST-02: La operación queda registrada en la bitácora de auditoría.
+| Reglas de negocio |
+|===

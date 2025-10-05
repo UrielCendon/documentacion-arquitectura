@@ -1,0 +1,40 @@
+== CU-31 Actualizar cuenta
+[cols="25,~",options="header"]
+|===
+| ID | CU-31
+| Nombre | Actualizar cuenta
+| Autor | Alan Raziel Filobello Aguilar
+| Fecha de actualización | 03 de octubre de 2025
+| Descripción | El huésped actualiza información de su cuenta (datos personales, canales de contacto, credenciales o preferencias). El sistema controla validaciones, posibles verificaciones y registra diferencias en la bitácora de auditoría.
+| Actor(es) | Huésped
+| Disparador | El huésped selecciona actualizar su cuenta.
+| Precondiciones | -PRE-01: El huésped está autenticado en el sistema. +
+-PRE-02: La cuenta del huésped existe y es editable.
+| Flujo normal |
+1.- El sistema solicita seleccionar los datos a actualizar e indica si requieren verificación adicional. +
+2.- El huésped selecciona campos y proporciona nuevos valores. +
+3.- El sistema valida integridad, unicidad y, si es sensible (correo/teléfono/clave), solicita verificación o reautenticación. (Ver FA 3.1) (Ver EX 1) +
+4.- El huésped completa la verificación y confirma los cambios. +
+5.- El sistema aplica la actualización, registra diferencias antes/después en la bitácora de auditoría y prepara la confirmación. (Ver EX 2) +
+6.- El huésped acusa recibo de la confirmación. +
+7.- El sistema muestra el estado final de la cuenta. +
+8.- El huésped cierra la interacción. +
+9.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 Verificación pendiente/no disponible. +
+1.- El sistema ofrece reenvío del código o método alterno de verificación. +
+2.- El huésped elige reenvío/método alterno o cancela. +
+3.- El sistema aplica la elección, registra en auditoría y regresa al paso 3 o finaliza.
+| Excepciones |
+EX 1 – Falla de persistencia/conectividad o datos en uso (correo/teléfono duplicado). +
+1.- El sistema informa el error o duplicidad y lo registra en auditoría. +
+2.- El huésped corrige o reintenta más tarde. +
+3.- El sistema regresa al paso 2 o termina el caso. +
+EX 2 – Concurrencia: datos cambiaron en otra sesión. +
+1.- El sistema informa conflicto de versión y registra el evento en auditoría. +
+2.- El huésped decide recargar datos y reintentar. +
+3.- El sistema regresa al paso 1.
+| Postcondiciones | POST-01: Los datos de la cuenta quedan actualizados. +
+POST-02: Se guarda el registro detallado del cambio en la bitácora de auditoría.
+| Reglas de negocio |
+|===
