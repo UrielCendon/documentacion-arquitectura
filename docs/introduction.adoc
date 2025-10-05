@@ -71,13 +71,16 @@ LIC. INGENIERÍA DE SOFTWARE
 == Contexto y Alcance del Sistema
 
 === Visión del Sistema
-Hoy la cadena opera con múltiples soluciones locales por hotel. Ese esquema fragmentado provoca datos inconsistentes, cobros y reservaciones duplicadas, reglas que cambian de un lugar a otro y una experiencia de huésped poco predecible. Además, complica la toma de decisiones: es difícil ver la ocupación real, ajustar tarifas de forma coordinada o aplicar políticas comunes sin fricción. El impacto no es menor: pérdidas económicas, esfuerzo operativo extra, riesgos reputacionales y freno a la innovación.
+Hoy el panorama es disperso: cada hotel usa su propia solución de reservaciones y eso provoca inconsistencias, errores y poca capacidad de control centralizado sobre inventario y tarifas. La cadena opera a gran escala, por lo que este esquema fragmentado ya no alcanza. Además, los sistemas actuales son propensos a errores y exigen una curva de aprendizaje alta, lo que complica la operación diaria y afecta la experiencia del cliente.
 
-La propuesta es construir un sistema centralizado, confiable y escalable que unifique la gestión de reservaciones, tarifas e inventarios para más de 5,000 hoteles (aprox. 1,000,000 de habitaciones). La plataforma brindará a los huéspedes procesos simples y seguros para reservar en tiempo real; al personal operativo, herramientas claras para check-in, check-out y cambios de habitación; y a la administración, control total sobre políticas y métricas clave del negocio.
+La oportunidad es pasar a una plataforma única para toda la cadena, donde inventario, tarifas y reservaciones vivan en un solo lugar y se gestionen en tiempo real. Esto permitiría que los huéspedes reserven directamente con información consistente, mientras la administración optimiza la ocupación con precios dinámicos y reglas claras de overbooking, manteniendo trazabilidad de punta a punta y simplificando el trabajo en recepción.
 
-Este sistema no es solo “otra herramienta”: se concibe como un activo estratégico. Con la centralización se habilitan capacidades como precios dinámicos basados en demanda, temporada u ocupación; un overbooking controlado (hasta 10% por tipo de habitación y fecha) para compensar cancelaciones o inasistencias; y trazabilidad de punta a punta para auditar cada operación. Así se reducen errores, se optimizan ingresos y se gana agilidad para lanzar mejoras sin reconfigurar sitio por sitio.
+Con un sistema unificado, la gestión deja de ser un costo para convertirse en ventaja competitiva: se habilitan estrategias de ocupación y tarifas más inteligentes que elevan ingresos y satisfacción. Entre los cambios clave están: eliminar por completo dobles reservas y dobles cobros, implementar y controlar una política de overbooking del 10% por tipo de habitación sin sobreventa accidental, y concentrar en un solo punto el ajuste de tarifas diarias y políticas.
 
-La experiencia del usuario es prioridad. La reservación deberá completarse en un flujo corto (máximo cinco pasos), con mensajes claros y recuperables ante errores. También se cuidará la consistencia entre lo que se muestra y lo que se cobra: el precio ofrecido en el momento de reservar será el precio final al confirmar. En lo técnico, se favorecerán decisiones que mantengan la coherencia transaccional en escenarios de alta concurrencia, priorizando “acertar” antes que “acelerar y fallar”.
+También hay riesgos y focos de mejora que el nuevo diseño debe abordar: picos inesperados de tráfico que podrían elevar latencias si no se dimensiona bien, y la necesidad de una interfaz realmente intuitiva para evitar una curva de aprendizaje mayor a la prevista. En paralelo, se requiere alinear dependencias como una pasarela de pago fiable y contar con reglas de negocio (cancelaciones, cambios) definidas para que el sistema las aplique de forma consistente.
+
+Finalmente, el alcance funcional apunta a cubrir lo esencial de punta a punta: reservar con cobro y cancelación, disponibilidad mínima, check-in/check-out y cambios de habitación, registro de consumos, administración diaria de precios y políticas, y un backoffice básico para operar con orden desde el centro.
+
 
 === Alcance
 La versión inicial (v1) se enfoca en entregar un núcleo robusto, trazable y usable. Incluye lo indispensable para operar reservas de punta a punta, gestionar inventario/tarifas y soportar la operación diaria en recepción. Funcionalidades complementarias como programas de lealtad o integraciones externas se evaluarán en fases posteriores.
@@ -130,9 +133,9 @@ Este documento está dirigido a los grupos que intervienen en la definición, us
 
 - **Personal operativo (recepción y staff)**: Usará el sistema para check-in/out, cambios y registro de consumos. Requiere una interfaz simple, mensajes comprensibles y flujos guiados.
 
-- **Administradores del sistema**: Configuran inventario, tarifas y políticas globales. Necesitan trazabilidad, control de cambios y auditoría.
+- **Equipo de desarrollo y soporte**: Implementará y mantendrá la solución.
 
-- **Equipo de desarrollo y soporte**: Implementará y mantendrá la solución. Requiere límites claros, supuestos y criterios de éxito para tomar decisiones técnicas alineadas al negocio.
+- **Gerentes**: Necesita una vista centralizada para manejar las habitaciones de su hotel y los recepcionistas. Su objetivo es maximizar el uso de recursos y tiempos.
 
 === Glosario
 - **Reservación**: Proceso de apartar una habitación para fechas definidas; se confirma al realizar el pago completo.
