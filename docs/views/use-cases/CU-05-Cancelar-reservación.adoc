@@ -1,0 +1,40 @@
+== CU-05 Cancelar reservación
+[cols="25,~",options="header"]
+|===
+| ID | CU-05
+| Nombre | Cancelar reservación
+| Autor | Uriel Cendón Díaz
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | El huésped solicita cancelar una reservación mediante su folio. El sistema muestra la información de la reservación y la multa aplicable según la política, confirma la intención y ejecuta la cancelación liberando el inventario y gestionando el reembolso si aplica.
+| Actor(es) | Huésped
+| Disparador | El huésped selecciona cancelar una reservación.
+| Precondiciones | -PRE-01: Existe una reservación con un folio único.
+| Flujo normal |
+1.- El sistema solicita el folio y el nombre de la persona que reservó. +
+2.- El huésped proporciona los datos solicitados. +
+3.- El sistema valida y recupera la reservación; presenta la información del hotel, el tipo y la descripción de la habitación, las fechas, los datos del solicitante y la multa aplicable a la cancelación, y solicita confirmación. (Ver FA 3.1) (Ver EX 1) (Ver EX 2) +
+4.- El huésped confirma la cancelación. (Ver FA 4.1) +
+5.- El sistema aplica la política correspondiente, cancela la reservación, libera el inventario, solicita el número de la tarjeta del usuario para realizar el reembolso, notifica al huésped y registra el cierre. (Ver EX 3) +
+6.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 - No se encuentra el folio. +
+1.- El sistema informa que no se localiza la reservación con los datos proporcionados. +
+2.- Regresa al paso 1 del flujo normal. +
+FA 4.1 El huésped cancela la acción. +
+1.- El sistema cancela la operación y registra la cancelación. +
+2.- Termina el caso de uso.
+| Excepciones |
+EX 1 No se puede cancelar por política. +
+1.- El sistema informa que no procede la cancelación y mantiene la reservación sin cambios, registra esta acción. +
+2.- Termina el caso de uso. +
+EX 2 - El sistema no puede conectarse a la base de datos. +
+1.- El sistema muestra un mensaje de error al huésped solicitándole volver a intentar más tarde y registra este suceso. +
+2.- Termina el caso de uso. +
+EX 3 - No se pudo completar la cancelación. +
+1.- El sistema muestra un mensaje de error al huésped informándole de un error interno en la cancelación, solicita volver a intentar más tarde y registra el error. +
+2.- Termina el caso de uso.
+| Postcondiciones | POST-01: La reservación previa se canceló. +
+POST-02: El inventario del tipo de habitación en el hotel se libera. +
+POST-03: Se registró correctamente la cancelación.
+|Reglas de negocio|
+|===

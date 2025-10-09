@@ -1,0 +1,39 @@
+== CU-08 Cambiar de habitación a un huésped
+[cols="25,~",options="header"]
+|===
+| ID | CU-08
+| Nombre | Cambiar de habitación a un huésped
+| Autor | Alan Raziel Filobello Aguilar
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | El recepcionista cambia la habitación de una estancia activa. El sistema verifica disponibilidad, políticas y posibles diferencias tarifarias, actualiza asignaciones y registra la acción en auditoría.
+| Actor(es) | Recepcionista
+| Disparador | El recepcionista selecciona cambiar de habitación a un huésped.
+| Precondiciones | -PRE-01: El recepcionista está autenticado en el sistema. +
+-PRE-02: Existe una estancia activa.
+| Flujo normal |
+1.- El sistema solicita identificador de estancia y motivo del cambio. +
+2.- El recepcionista proporciona identificador y motivo. +
+3.- El sistema verifica disponibilidad y muestra opciones de habitación (mismo/otro tipo) con impacto tarifario; solicita seleccionar y confirmar. (Ver FA 3.1) (Ver EX 1) +
+4.- El recepcionista selecciona habitación destino y acepta/declina diferencias de tarifa. +
+5.- El sistema actualiza la asignación, recalcula la tarifa, libera/ocupa habitaciones y registra en auditoría. (Ver EX 2) +
+6.- El recepcionista entrega/activa nuevas credenciales y confirma el cambio con el huésped. +
+7.- El sistema muestra el nuevo detalle de la estancia. +
+8.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 No hay disponibilidad del mismo tipo. +
+1.- El sistema ofrece alternativas de otro tipo con diferencia tarifaria y solicita decisión. +
+2.- El recepcionista acepta una alternativa o decide no cambiar. +
+3.- El sistema aplica la decisión, registra en auditoría y continúa en el paso 5 o finaliza el caso.
+| Excepciones |
+EX 1 – Habitación destino bloqueada/mantenimiento. +
+1.- El sistema informa la condición y registra el evento. +
+2.- El recepcionista elige otra opción o cancela. +
+3.- El sistema regresa al paso 3 o finaliza. +
+EX 2 – Falla de persistencia/conectividad. +
+1.- El sistema informa el error y registra el incidente en auditoría. +
+2.- El recepcionista decide reintentar más tarde. +
+3.- Termina el caso de uso.
+| Postcondiciones | POST-01: La estancia queda asociada a la nueva habitación con la tarifa correspondiente. +
+POST-02: El cambio queda registrado en la bitácora de auditoría.
+| Reglas de negocio |
+|===

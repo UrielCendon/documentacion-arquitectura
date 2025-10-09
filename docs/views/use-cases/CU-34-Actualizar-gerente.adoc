@@ -1,0 +1,40 @@
+== CU-34 Actualizar gerente
+[cols="25,~",options="header"]
+|===
+| ID | CU-34
+| Nombre | Actualizar gerente
+| Autor | Uriel Cendón Díaz
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | El administrador actualiza los datos de un gerente.
+| Actor(es) | Administrador
+| Disparador | El administrador selecciona actualizar un gerente.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema. +
+-PRE-02: El gerente existe en el sistema.
+| Flujo normal |
+1.- El sistema solicita el identificador de trabajador del gerente. +
+2.- El administrador ingresa el identificador de trabajador del gerente que busca actualizar. +
+3.- El sistema recupera la información actual del gerente y solicita los campos a actualizar. (Ver FA 3.1) (Ver FA 3.2) +
+4.- El administrador ingresa los cambios. +
+5.- El sistema valida los cambios, aplica la actualización y registra la operación, así como regresa un mensaje de confirmación de la actualización. (Ver FA 4.1) (Ver EX 1) (Ver EX 2) +
+6.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 El administrador canceló antes de actualizar. +
+1.- El sistema cancela la operación a petición del administrador. +
+2.- Termina el caso de uso. +
+FA 3.2 - El gerente no se encontró. +
+1.- El sistema informa que no existe el gerente indicado. +
+2.- Regresa al paso 1 del flujo normal. +
+FA 4.1 - Los nuevos datos ya están en uso por otro gerente. +
+1.- El sistema informa que los datos ya se encuentran registrados en otro gerente actualmente. +
+2.- Regresa al paso 1 del flujo normal. +
+| Excepciones |
+EX 1 - No se pudo actualizar el gerente. +
+1.- El sistema informa error al actualizar y registra el incidente. +
+2.- Termina el caso de uso. +
+EX 2 - El sistema no puede conectarse a la base de datos. +
+1.- El sistema muestra un mensaje de error solicitando intentar más tarde y registra el suceso. +
+2.- Termina el caso de uso.
+| Postcondiciones | POST-01: Los datos del gerente quedan actualizados. +
+POST-02: Se guarda el registro del cambio.
+|Reglas de negocio|
+|===

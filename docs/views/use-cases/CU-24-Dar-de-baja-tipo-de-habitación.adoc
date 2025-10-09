@@ -1,0 +1,31 @@
+== CU-24 Dar de baja tipo de habitación
+[cols="25,~",options="header"]
+|===
+| ID | CU-24
+| Nombre | Dar de baja tipo de habitación
+| Autor | Miguel Eduardo Escobar Ladron De Guevara
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | Permite inhabilitar (baja lógica) un tipo de habitación.
+| Actor(es) | Administrador
+| Disparador | El administrador selecciona la acción Dar de baja sobre un tipo.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema. +
+-PRE-02: El tipo existe.
+| Flujo normal |
+1.- El sistema muestra la lista de tipos. +
+2.- El administrador selecciona el tipo y elige Dar de baja. +
+3.- El sistema solicita confirmación, si se acepta, valida que el tipo no tenga habitaciones activas ni reservaciones futuras asociadas, y cambia el estado del tipo a Baja, así como muestra un mensaje de éxito. (Ver FA 3.1) (Ver FA 3.2) (Ver EX 2) +
+4.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 El administrador cancela la baja. +
+1.- El sistema regresa a la lista de tipos sin cambios. +
+2.- Termina el caso de uso. +
+FA 3.2 - Existen habitaciones activas o reservaciones futuras asociadas. +
+1.- El sistema muestra No es posible dar de baja el tipo porque tiene habitaciones activas o reservaciones futuras asociadas. +
+2.- Regresa al paso 1 del flujo normal.
+| Excepciones |
+EX 1 - El sistema no puede conectarse a la base de datos. +
+1.- Mensaje de error; intentar más tarde. +
+2.- Termina el caso de uso. +
+| Postcondiciones | POST-01: El tipo queda inhabilitado para nuevas asignaciones.
+| Reglas de negocio |
+|===

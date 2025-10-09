@@ -1,0 +1,33 @@
+== CU-32 Registrar gerente
+[cols="25,~",options="header"]
+|===
+| ID | CU-32
+| Nombre | Registrar gerente
+| Autor | Uriel Cendón Díaz
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | El administrador registra un gerente en el sistema.
+| Actor(es) | Administrador
+| Disparador | El administrador selecciona registrar un gerente.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema.
+| Flujo normal |
+1.- El sistema solicita la información del gerente (nombre, correo, teléfono, etc.). +
+2.- El administrador ingresa los datos solicitados en el sistema. +
+3.- El sistema valida los datos ingresados y crea el registro del gerente, se registra la operación de inserción, se confirma el registro del gerente y devuelve su identificador de trabajador. (Ver FA 3.1) (Ver FA 3.2) (Ver EX 1) (Ver EX 2) +
+4.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 El administrador canceló antes de guardar. +
+1.- El sistema cancela la operación a petición del administrador y registra el desistimiento. +
+2.- Termina el caso de uso. +
+FA 3.2 - Los datos del gerente ya estaban registrados en el sistema. +
+1.- El sistema regresa un mensaje de error mencionando que no se puede registrar dos veces con los mismos datos a un gerente. +
+2.- Regresa al paso 1 del flujo normal. +
+| Excepciones |
+EX 1 - Hubo un fallo de persistencia. +
+1.- El sistema informa error al crear el registro y registra el incidente. +
+2.- Termina el caso de uso. +
+EX 2 - El sistema no puede conectarse a la base de datos. +
+1.- El sistema muestra un mensaje de error solicitando intentar más tarde y registra el suceso. +
+2.- Termina el caso de uso.
+| Postcondiciones | POST-01: El gerente queda registrado en el sistema.
+|Reglas de negocio|
+|===

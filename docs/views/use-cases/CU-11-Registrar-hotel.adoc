@@ -1,0 +1,40 @@
+== CU-11 Registrar hotel
+[cols="25,~",options="header"]
+|===
+
+| ID | CU-11
+| Nombre | Registrar hotel
+| Autor | Miguel Eduardo Escobar Ladron De Guevara
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | Permite registrar un nuevo hotel de la cadena, seleccionar a su Gerente y configurar sus servicios adicionales (p. ej., spa, estacionamiento, desayuno).
+| Actor(es) | Administrador
+| Disparador | El administrador da clic en la opción Registrar hotel.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema. +
+-PRE-02: Existe al menos un Gerente registrado y activo en el sistema.
+| Flujo normal |
+1.- El sistema muestra el formulario para registrar hotel (código, nombre comercial, razón social opcional, dirección, ciudad, país, zona horaria, teléfono, correo, políticas de check-in/check-out). +
+2.- El administrador captura los datos generales del hotel. +
+3.- El sistema muestra el selector de Gerente (lista de gerentes activos). +
+4.- El administrador selecciona al Gerente que administrará el hotel. (Ver EX 3) +
+5.- El sistema muestra el panel Servicios adicionales con: listado de servicios del catálogo y la opción Agregar servicio personalizado (nombre, descripción, unidad de cobro: por noche/por estancia, precio, horario, impuestos, estatus). +
+6.- El administrador selecciona servicios del catálogo y/o agrega servicios personalizados con sus parámetros. (Ver FA 6.1) +
+7.- El sistema valida campos obligatorios, unicidad de código, validez del Gerente seleccionado y consistencia de la configuración de servicios (precios numéricos, unidades válidas), así como registra el hotel, asocia el Gerente y los servicios configurados. Muestra un mensaje de éxito. (Ver FA 7.1) (Ver FA 7.2) +
+8.- Termina el caso de uso.
+| Flujos alternos |
+FA 6.1 El administrador decide no configurar servicios ahora. +
+1.- El sistema permite continuar sin servicios y muestra un recordatorio de que pueden configurarse después en Actualizar hotel. +
+2.- Regresa al paso 7 del flujo normal. +
+FA 7.1 - Datos inválidos o duplicados. +
+1.- Código de hotel duplicado o valores de servicio inválidos (precio no numérico, unidad no permitida, etc.). +
+2.- El sistema muestra el detalle del error. +
+3.- Regresa al paso 2 (datos del hotel) o 6 (servicios), según corresponda. +
+FA 7.2 - Gerente no válido o inactivo. +
+1.- El sistema muestra El gerente seleccionado no es válido o no está activo. +
+2.- Regresa al paso 4 del flujo normal.
+| Excepciones |
+EX 1 - El sistema no puede conectarse a la base de datos. +
+1.- Mensaje de error; intentar más tarde. +
+2.- Termina el caso de uso.
+| Postcondiciones | POST-01: El hotel queda registrado, con un Gerente asignado y, si se configuraron, los servicios adicionales asociados y activos.
+| Reglas de negocio |
+|===

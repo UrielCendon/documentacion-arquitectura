@@ -1,0 +1,172 @@
+:project-title: Sistema de Gestión de una Cadena Hotelera
+:authors: Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
+:revdate: 7 de diciembre del 2025
+:revnumber: 1.0
+:version-label: Versión
+:course: Diseño de Software
+:period: AGOSTO 2025 - ENERO 2026
+:repo_url: https://github.com/UrielCendon/documentacion-arquitectura
+
+= {project-title}
+
+:doctype: book
+:toc: left
+:icons: font
+:sectnums:
+
+[role="cover-page", align="center"]
+====
+image::UV-LOGO-PNG.png[width=150]
+
+*UNIVERSIDAD VERACRUZANA* +
+*FACULTAD DE ESTADÍSTICA E INFORMÁTICA* +
+LIC. INGENIERÍA DE SOFTWARE
+
+*REALIZADO POR:* +
+{authors}
+
+*CURSO:* +
+{course}
+
+*FECHA DE ENTREGA:* +
+{revdate}
+====
+
+<<<
+
+:sectnums!:
+== Historial de Versiones
+
+[options="header"]
+|===
+| Versión | Fecha | Autor(es) | Resumen de cambios significativos
+
+| 0.1
+| 18/09/2025
+| Uriel Cendón Díaz
+| Creación inicial del repositorio, definición de la estructura de directorios y configuración del flujo de trabajo de Integración Continua (CI/CD) con GitHub Actions.
+
+| 0.2
+| 21/09/2025
+| Alan Raziel Filobello Aguilar, Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara
+| Elaboración de las primeras versiones de los diagramas de clases, diagramas de contexto y casos de uso, incluyendo la corrección de imágenes y su nombrado.
+
+| 0.3
+| 22/09/2025
+| Uriel Cendón Díaz
+| Modificación y ajuste en los diagramas de casos de uso para definir correctamente los límites del sistema.
+
+| 0.4
+| 30/09/2025
+| Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar, Uriel Cendón Díaz
+| Actualización del diagrama de contexto y correcciones en los diagramas de casos de uso. Avances en la redacción del documento funcional (`functional.adoc`).
+
+| 0.5
+| 02/10/2025
+| Miguel Eduardo Escobar Ladrón de Guevara, Uriel Cendón Díaz
+| Desarrollo y actualización de la sección de Introducción, Contexto y Alcance del Sistema. Ajustes en la configuración del repositorio.
+
+| 0.6
+| 03/10/2025
+| Miguel Eduardo Escobar Ladrón de Guevara, Uriel Cendón Díaz
+| Agregar descripciones de casos de uso, diagramas de paquetes (el general y por subsistema).
+
+| 0.7
+| 04/10/2025
+| Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
+| Corrección de la sección de Introducción, Contexto y Alcance del Sistema, adición de las descripciones de casos de uso faltantes.
+
+| 1.0
+| 05/10/2025
+| Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar, Uriel Cendón Díaz
+| Adición del diagrama de contexto, Utility tree junto con descripciones e importancia de los atributos de calidad, y los ASRs de los atributos significativos para el sistema.
+|===
+
+:sectnums:
+== Contexto y Alcance del Sistema
+
+=== Visión del Sistema
+Hoy el panorama es disperso: cada hotel usa su propia solución de reservaciones y eso provoca inconsistencias, errores y poca capacidad de control centralizado sobre inventario y tarifas. La cadena opera a gran escala, por lo que este esquema fragmentado ya no alcanza. Además, los sistemas actuales son propensos a errores y exigen una curva de aprendizaje alta, lo que complica la operación diaria y afecta la experiencia del cliente.
+
+La oportunidad es pasar a una plataforma única para toda la cadena, donde inventario, tarifas y reservaciones vivan en un solo lugar y se gestionen en tiempo real. Esto permitiría que los huéspedes reserven directamente con información consistente, mientras la administración optimiza la ocupación con precios dinámicos y reglas claras de overbooking, manteniendo trazabilidad de punta a punta y simplificando el trabajo en recepción.
+
+Con un sistema unificado, la gestión deja de ser un costo para convertirse en ventaja competitiva: se habilitan estrategias de ocupación y tarifas más inteligentes que elevan ingresos y satisfacción. Entre los cambios clave están: eliminar por completo dobles reservas y dobles cobros, implementar y controlar una política de overbooking del 10% por tipo de habitación sin sobreventa accidental, y concentrar en un solo punto el ajuste de tarifas diarias y políticas.
+
+También hay riesgos y focos de mejora que el nuevo diseño debe abordar: picos inesperados de tráfico que podrían elevar latencias si no se dimensiona bien, y la necesidad de una interfaz realmente intuitiva para evitar una curva de aprendizaje mayor a la prevista. En paralelo, se requiere alinear dependencias como una pasarela de pago fiable y contar con reglas de negocio (cancelaciones, cambios) definidas para que el sistema las aplique de forma consistente.
+
+Finalmente, el alcance funcional apunta a cubrir lo esencial de punta a punta: reservar con cobro y cancelación, disponibilidad mínima, check-in/check-out y cambios de habitación, registro de consumos, administración diaria de precios y políticas, y un backoffice básico para operar con orden desde el centro.
+
+
+=== Alcance
+La versión inicial se enfoca en entregar un núcleo robusto, trazable y usable. Incluye lo indispensable para operar reservas de punta a punta, gestionar inventario/tarifas y soportar la operación diaria en recepción. Funcionalidades complementarias como programas de lealtad o integraciones externas se evaluarán en fases posteriores.
+
+==== Funcionalidades incluidas
+- **Consulta de disponibilidad en tiempo real** de habitaciones y tarifas, con información precisa y actualizada.
+- **Gestión de estancias**: check-in, check-out y cambio de habitación con control de ocupación.
+- **Reservación con pago completo** y **cancelación con penalización** según política vigente.
+- **Precios dinámicos** como optimización del negocio y mejora ante otros sistemas.
+- **Operaciones basicas** para catálogos de hoteles, tipos de habitación, habitaciones, personal y reglas de negocio.
+- **Trazabilidad completa** de operaciones relevantes (auditoría, seguridad y cumplimiento).
+- **Registro de consumos y servicios adicionales** durante la estancia (por ejemplo, alimentos o extras).
+- **Administración de inventario y tarifas** (altas, bajas y modificaciones) con bitácora de cambios.
+- **Gestión de overbooking** (hasta 10% por tipo de habitación y fecha), con reglas auditable.
+
+
+==== Fuera de alcance
+- **Buesquedas avanzadas (filtros avanzados) y recomendaciones**.
+- **Integraciones con otros sistemas hoteleros/agencias de viaje** para redistribuir demanda por falta de disponibilidad.
+- **Descuentos/promociones personalizadas** y **programas de fidelidad** (membresías, puntos, beneficios).
+
+==== Limitaciones y restricciones
+- **Canales de venta**: Solo se implementara para la web y la aplicación móvil oficial de la cadena.
+- **Política de pago**: 100% del total al confirmar la reservación (no hay anticipos parciales).
+- **Overbooking**: máximo 10% por tipo de habitación y fecha, definido centralmente.
+- **Experiencia de reserva**: máximo 5 pasos (≤5 clics) desde búsqueda hasta confirmación.
+- **Consistencia de precios**: el precio mostrado al iniciar la reserva se respeta hasta la confirmación dentro de la sesión.
+- **Base de datos**: se debe usar un RDBMS.
+
+==== Suposiciones y dependencias
+- **Pasarela de pago confiable** con autorización/captura, manejo de reintentos e idempotencia para evitar cargos duplicados.
+- **Políticas de negocio definidas** (cancelaciones, cambios, ventanas de tiempo) provistas por la administración antes de la salida a producción.
+- **Cargas operativas** estimadas (QPS/TPS) sujetas a revisión con telemetría para ajustar capacidad.
+
+==== Requisitos no funcionales (resumen)
+- **Usabilidad**: la reserva debe completarse en ≤5 pasos, con mensajes comprensibles, validaciones en línea y rutas de recuperación claras. Buscamos que personal nuevo en recepción complete tareas clave tras una inducción breve y que los huéspedes entiendan “qué sigue” sin instrucciones externas.
+- **Rendimiento y capacidad**: confirmación de reservación con latencias estables aun en picos; búsquedas de disponibilidad con tiempos acotados y cachés/estrategias de lectura adecuadas. Objetivo de respuesta rápida sin sacrificar integridad.
+- **Disponibilidad y resiliencia**: degradación controlada ante picos; recuperación rápida ante fallos parciales.
+- **Rendimiento**: confirmación de reservación rápida y estable; búsquedas de disponibilidad con latencias acotadas.
+- **Seguridad**: cifrado en tránsito y en reposo, mínimos privilegios, rotación de secretos, cumplimiento normativo local y de pagos.
+- **Observabilidad**: métricas, trazas de extremo a extremo y logs correlacionados por transacción para auditar y diagnosticar.
+- **Mantenibilidad**: arquitectura modular y estándares claros de calidad para facilitar evolución y soporte.
+
+=== Audiencia del documento
+Este documento está dirigido a los grupos que intervienen en la definición, uso u operación del sistema. Cada grupo encontrará aquí una guía clara de qué esperar y qué se espera de él.
+
+- **Administración de la cadena**: Necesita una vista centralizada para manejar el inventario, tarifas y políticas (incluido el overbooking). Su objetivo es maximizar el rendimiento de estos, asi como reducir costos y tiempos.
+
+- **Huéspedes / Clientes**: Usuarios finales que reservan, pagan y cancelan a través de web o app. Buscan claridad, seguridad y pasos mínimos(No tendran accesso a este pero si participan en su desarrollo).
+
+- **Personal operativo (recepción y staff)**: Usará el sistema para check-in/out, cambios y registro de consumos. Requiere una interfaz simple, mensajes comprensibles y flujos guiados.
+
+- **Equipo de desarrollo y soporte**: Implementará y mantendrá la solución.
+
+- **Gerentes**: Necesita una vista centralizada para manejar las habitaciones de su hotel y los recepcionistas. Su objetivo es maximizar el uso de recursos y tiempos.
+
+=== Glosario
+- **Reservación**: Proceso de apartar una habitación para fechas definidas; se confirma al realizar el pago completo.
+- **Check-in**: Registro de entrada del huésped en el hotel, con validación de identidad y asignación de habitación.
+- **Check-out**: Proceso de salida del huésped, que incluye la liquidación de consumos y la liberación de la habitación.
+- **Overbooking**: Aceptar más reservaciones que habitaciones disponibles (hasta 10%) para cubrir cancelaciones/no-shows bajo control central.
+- **Pago completo al reservar**: Cobro del 100% del importe de la estancia en el momento de confirmar.
+- **Penalización por cancelación**: Cargo aplicado al cancelar una reservación confirmada, conforme a la política vigente.
+- **Precios dinámicos**: Ajuste de tarifas en función de demanda, temporada, ocupación u otros factores del negocio.
+- **Exclusión mutua**: Garantía de que una misma habitación no puede confirmarse a dos clientes a la vez.
+- **Inventario**: Conjunto de habitaciones y, cuando aplique, servicios disponibles para reservación.
+- **Latencia**: Tiempo que tarda el sistema en responder a una operación del usuario.
+- **TPS (Transactions Per Second)**: Número de transacciones (por ejemplo, confirmaciones de reservación) procesadas por segundo.
+- **QPS (Queries Per Second)**: Número de consultas de disponibilidad atendidas por segundo.
+- **Idempotencia**: Propiedad que evita efectos duplicados ante reintentos (p. ej., no se generan cargos repetidos).
+- **Trazabilidad**: Capacidad de seguir cada operación con identificadores y bitácoras para auditar y resolver disputas.
+- **Política de cancelación**: Conjunto de reglas que define costos, plazos y condiciones para cancelar o modificar una reservación.
+- **Degradación controlada**: Modo de operación con funciones limitadas para mantener el servicio activo durante picos o fallos parciales.
+- **RDBMS (Relational Database Management System)**: Sistema de gestión de bases de datos relacionales.

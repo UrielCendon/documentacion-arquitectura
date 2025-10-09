@@ -1,84 +1,143 @@
-[[functional-view]]
-== Vista Funcional
+Describe las capacidades del sistema desde la perspectiva de sus usuarios (actores). Se define a través de los casos de uso, que muestran las interacciones entre los actores y el sistema para lograr un objetivo concreto.
 
-La vista funcional describe las capacidades del sistema desde la perspectiva de sus usuarios (actores). Se define a través de los casos de uso, que muestran las interacciones entre los actores y el sistema para lograr un objetivo concreto.
-
-=== Diagrama de Paquetes de Casos de Uso
+== Diagrama de Paquetes de Casos de Uso
 El siguiente diagrama presenta una vista consolidada de alto nivel, mostrando los principales subsistemas funcionales y los actores que interactúan con el sistema.
 
 .Diagrama de Paquetes de Casos de Uso
 image::diagrama-casos-uso.png[Diagrama de Paquetes de Casos de Uso, width=800, align="center"]
 
-=== Casos de Uso por Subsistema
+== Casos de Uso por Subsistema
 A continuación, se desglosa la funcionalidad de cada subsistema y se especifican los actores involucrados.
 
-==== Subsistema: Reservaciones
-Este subsistema agrupa todas las funcionalidades relacionadas con el proceso de creación y gestión de una reserva antes de la llegada del cliente al hotel.
+=== Subsistema: Reservaciones
+Este subsistema agrupa las funcionalidades previas a la estancia del huésped: consulta, creación y gestión del pago/cancelación de reservaciones.
 
 .Casos de Uso del Subsistema Reservaciones
 image::casos-uso-Reservaciones.png[Casos de Uso - Reservaciones, width=700, align="center"]
 
-Los casos de uso específicos son:
-- *Consultar disponibilidad*: Permite verificar qué habitaciones están libres en un rango de fechas.
-- *Reservar una habitación*: Inicia y completa el proceso de reserva de una habitación.
-- *Consultar estado de reservación*: Permite ver los detalles y el estado actual de una reserva.
-- *Realizar el pago de la reservación*: Procesa el pago seguro de una reserva.
-- *Cancelar reservación*: Permite anular una reserva existente.
+Los casos de uso específicos son: +
+- *CU-01 Consultar disponibilidad:* Consulta disponibilidad por tipo de habitación y muestra referencia al mapa del hotel. +
+- *CU-02 Reservar una habitación sin cuenta* (extiende a *CU-04*):   Reservación sin que el huésped tenga que autenticarse en el sistema, solicitando sus datos y un método de pago, valida cupo y envía a pasarela. +
+- *CU-03 Reservar una habitación con cuenta* (extiende a *CU-04*):
+  Reservación con sesión iniciada, valida disponibilidad y envía el pago a la pasarela. +
+- *CU-04 Realizar el pago de la reservación:*
+  Procesa el pago en pasarela externa y actualiza el estado de la reservación. +
+- *CU-05 Cancelar reservación:*
+  Cancela por folio aplicando política, libera inventario y gestiona reembolso.
 
-*Actores involucrados*: Tanto el Huésped (en línea) como el Recepcionista (en el hotel) pueden ejecutar todos los casos de uso de este subsistema.
+*Actor involucrado*: **Huésped**.
 
-==== Subsistema: Estancias (Operaciones de Estancia de un Hotel)
-Este subsistema cubre las operaciones que se realizan durante la estancia de un huésped en el hotel, desde su llegada hasta su partida.
+=== Subsistema: Estancias (Operaciones de Estancia de un Hotel)
+Este subsistema cubre las operaciones durante la estancia del huésped en el hotel.
 
 .Casos de Uso del Subsistema Estancias
 image::casos-uso-Estancias.png[Casos de Uso - Estancias, width=700, align="center"]
 
-Los casos de uso para este subsistema son:
-- *Realizar check-in*: Procesa la llegada y registro de un huésped.
-- *Realizar check-out*: Procesa la salida de un huésped, incluyendo pagos finales.
-- *Cambiar de habitación a un huésped*: Gestiona el cambio de habitación de un cliente durante su estancia.
-- *Registrar consumo o servicio*: Añade cargos adicionales a la cuenta de la habitación.
-- *Extender estancia*: Modifica la reserva para alargar la estancia de un huésped.
+Los casos de uso son: +
+- *CU-06 Registrar entrada:*
+  Realiza check-in contra reservación y activa la estancia. +
+- *CU-07 Registrar salida:*
+  Consolida cargos y realiza check-out liberando la habitación. +
+- *CU-08 Cambiar de habitación a un huésped:*
+  Gestiona el traslado de habitación, si se solicita alguno, durante la estancia. +
+- *CU-09 Registrar consumo o servicio:*
+  Agrega consumos/servicios a la cuenta de la habitación. +
+- *CU-10 Extender estancia:*
+  Amplía fechas respetando disponibilidad y tarifas.
 
-*Actores involucrados*: El Recepcionista es el principal actor de este subsistema, aunque el Huésped puede iniciar los procesos de *Realizar check-in* y *Realizar check-out*.
+*Actor involucrado*: **Recepcionista**.
 
-==== Subsistema: Administración de Hotel
-Este subsistema contiene las funciones de alto nivel para configurar los hoteles de la cadena, así como sus tarifas y políticas generales.
+=== Subsistema: Administración de Hotel
+Este subsistema contiene la configuración de hoteles de la cadena, así como sus tarifas y políticas.
 
 .Casos de Uso del Subsistema Administración de Hotel
 image::casos-uso-AdministracionHotel.png[Casos de Uso - Administración de Hotel, width=700, align="center"]
 
-Los casos de uso para este subsistema son:
-- *Registrar hotel*, *Actualizar hotel*, *Dar de baja hotel*: Permiten la gestión completa del catálogo de hoteles.
-- *Registrar tarifa*, *Actualizar tarifa*, *Dar de baja tarifa*, *Consultar tarifa*: Permiten la gestión de los precios.
-- *Registrar política*, *Actualizar política*, *Consultar política*: Permiten definir las reglas de negocio (ej. overbooking, cancelación).
+Los casos de uso son: +
+- *CU-11 Registrar hotel:*
+  Crea el registro del hotel con su configuración básica. +
+- *CU-12 Consultar hotel:*
+  Lista y filtra hoteles del sistema. +
+- *CU-13 Actualizar hotel:*
+  Actualiza datos del hotel, cambia gerente y gestiona servicios adicionales. +
+- *CU-14 Dar de baja hotel:*
+  Desactiva un hotel cuidando dependencias operativas. +
+- *CU-15 Registrar tarifa:*
+  Define tarifas por tipo de habitación/temporada. +
+- *CU-16 Consultar tarifa:*
+  Consulta y filtra tarifas vigentes. +
+- *CU-17 Actualizar tarifa:*
+  Modifica valores, periodos y condiciones de tarifas. +
+- *CU-18 Registrar política:*
+  Crea políticas (cancelación, overbooking, etc.). +
+- *CU-19 Actualizar política:*
+  Edita políticas vigentes. +
+- *CU-20 Consultar política:*
+  Lista y consulta políticas aplicables.
 
-*Actores involucrados*: El Administrador tiene control total sobre la gestión de hoteles y políticas. El Gerente puede gestionar las tarifas de su hotel y consultar la información de hoteles y políticas.
+*Actor involucrado*: **Administrador**.
 
-==== Subsistema: Administración de Habitaciones
-Este subsistema se enfoca en la gestión del inventario de habitaciones de cada hotel, incluyendo sus tipos y características.
+=== Subsistema: Administración de Habitaciones
+Este subsistema gestiona el inventario de habitaciones y sus tipos.
 
 .Casos de Uso del Subsistema Administración de Habitaciones
 image::casos-uso-AdministracionHabitaciones.png[Casos de Uso - Administración de Habitaciones, width=700, align="center"]
 
-Los casos de uso para este subsistema son:
-- *Registrar tipo de habitación*, *Actualizar tipo de habitación*, *Dar de baja tipo de habitación*, *Consultar tipo de habitación*: Para gestionar las categorías de habitaciones (ej. Sencilla, Doble, Suite).
-- *Registrar habitación*, *Actualizar habitación*, *Dar de baja habitación*, *Consultar habitación*: Para gestionar cada habitación individualmente.
+Los casos de uso son: +
+ **Tipos de habitación (Administrador):** +
+  - *CU-21 Registrar tipo de habitación:*
+    Crea una categoría de habitación con sus atributos. +
+  - *CU-22 Consultar tipo de habitación:*
+    Busca y lista tipos de habitación con filtros. +
+  - *CU-23 Actualizar tipo de habitación:*
+    Modifica atributos de una categoría de habitación. +
+  - *CU-24 Dar de baja tipo de habitación:*
+    Desactiva un tipo si no existen dependencias. +
+ **Habitaciones (Gerente):** +
+  - *CU-25 Registrar habitación:*
+    Crea la habitación física y la asigna a un tipo. +
+  - *CU-26 Consultar habitación:*
+    Consulta habitaciones mediante filtros. +
+  - *CU-27 Actualizar habitación:*
+    Modifica datos de una habitación específica. +
+  - *CU-28 Dar de baja habitación:*
+    Da de baja una habitación respetando reservaciones futuras.
 
-*Actores involucrados*: El Gerente tiene control total sobre la administración de las habitaciones y sus tipos para su hotel. El Recepcionista tiene permisos de solo consulta.
+*Actores involucrados*: **Administrador** para tipos de habitación, y **Gerente** para habitaciones.
 
-==== Subsistema: Administración de Actores
-Este subsistema permite gestionar las cuentas de los diferentes usuarios del sistema.
+=== Subsistema: Administración de Actores
+Este subsistema permite gestionar las cuentas/roles de los usuarios del sistema según su jerarquía.
 
 .Casos de Uso del Subsistema Administración de Actores
 image::casos-uso-AdministracionActores.png[Casos de Uso - Administración de Actores, width=700, align="center"]
 
-Los casos de uso para este subsistema son:
-- *Registrar huésped*, *Consultar huésped*, *Actualizar huésped*: Para la gestión de las cuentas de clientes.
-- *Registrar gerente*, *Actualizar gerente*, *Dar de baja gerente*, *Consultar gerente*: Para la gestión de los gerentes de hotel.
-- *Registrar recepcionista*, *Actualizar recepcionista*, *Dar de baja recepcionista*, *Consultar recepcionista*: Para la gestión del personal de recepción.
+Los casos de uso son: +
+ **Huésped:** +
+  - *CU-30 Crear cuenta:*
+    Crea la cuenta del huésped con sus datos de contacto. +
+  - *CU-31 Actualizar cuenta:*
+    Actualiza información de la cuenta del huésped. +
+  - *CU-29 Dar de baja cuenta:*
+    Da de baja la cuenta del huésped. +
+ **Administrador (gestiona gerentes):** +
+  - *CU-32 Registrar gerente:*
+    Registra un gerente en el sistema. +
+  - *CU-33 Consultar gerente:*
+    Consulta gerentes con filtros. +
+  - *CU-34 Actualizar gerente:*
+    Actualiza datos de un gerente. +
+  - *CU-35 Dar de baja gerente:*
+    Da de baja a un gerente sin relaciones activas. +
+ **Gerente (gestiona recepcionistas):** +
+  - *CU-36 Registrar recepcionista:*
+    Registra recepcionista y lo asocia a un hotel del gerente. +
+  - *CU-37 Consultar recepcionista:*
+    Consulta recepcionistas por hotel con filtros. +
+  - *CU-38 Actualizar recepcionista:*
+    Actualiza datos de un recepcionista. +
+  - *CU-39 Dar de baja recepcionista:*
+    Da de baja a un recepcionista de su hotel.
 
-*Actores involucrados*: La gestión está jerarquizada:
-- El Huésped y el Recepcionista pueden registrar y gestionar cuentas de huéspedes.
-- El Gerente administra al personal de Recepción y puede consultar sus propios datos.
-- El Administrador gestiona las cuentas de los Gerentes y puede consultar toda la información de los actores.
+*Actores involucrados*: **Huésped**, **Administrador** y **Gerente**.
+
+<<<

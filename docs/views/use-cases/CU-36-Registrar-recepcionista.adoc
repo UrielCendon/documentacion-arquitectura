@@ -1,0 +1,38 @@
+== CU-36 Registrar recepcionista
+[cols="25,~",options="header"]
+|===
+| ID | CU-36
+| Nombre | Registrar recepcionista
+| Autor | Uriel Cendón Díaz
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | El gerente registra un recepcionista asociado a uno de sus hoteles. El sistema valida que el gerente tenga al menos un hotel relacionado y que el recepcionista quede asignado a un solo hotel.
+| Actor(es) | Gerente
+| Disparador | El gerente selecciona registrar un recepcionista.
+| Precondiciones | -PRE-01: El gerente está autenticado en el sistema. +
+-PRE-02: El gerente tiene al menos un hotel relacionado.
+| Flujo normal |
+1.- El sistema solicita los datos del recepcionista y la selección de un hotel del gerente. +
+2.- El gerente proporciona los datos y el hotel elegido. +
+3.- El sistema valida que el hotel pertenezca al gerente, verifica los datos del recepcionista, crea el registro y lo asocia al hotel, así como le regresa un mensaje de confirmación del registro del recepcionista y entrega su identificador de trabajador. (Ver FA 3.1) (Ver FA 3.2) (Ver FA 3.3) (Ver EX 1) (Ver EX 2) +
+4.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 El gerente canceló antes de guardar. +
+1.- El sistema cancela la operación a petición del gerente. +
+2.- Termina el caso de uso. +
+FA 3.2 - El gerente no tiene ningún hotel relacionado. +
+1.- El sistema informa que no es posible registrar recepcionistas porque el gerente no tiene hoteles relacionados y registra el evento. +
+2.- Termina el caso de uso. +
+FA 3.3 - Los nuevos datos ya están en uso por otro recepcionista. +
+1.- El sistema informa que los datos ya se encuentran registrados en otro recepcionista actualmente. +
+2.- Regresa al paso 1 del flujo normal. +
+| Excepciones |
+EX 1 - No se pudo registrar el recepcionista. +
+1.- El sistema informa error al registrar el recepcionista y registra el incidente. +
+2.- Termina el caso de uso. +
+EX 2 - El sistema no puede conectarse a la base de datos. +
+1.- El sistema muestra un mensaje de error solicitando intentar más tarde y registra el suceso. +
+2.- Termina el caso de uso.
+| Postcondiciones | POST-01: El recepcionista queda registrado. +
+POST-02: El recepcionista queda asociado a un único hotel.
+|Reglas de negocio|
+|===
