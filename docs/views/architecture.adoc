@@ -1,0 +1,207 @@
+== Diagrama de la Arquitectura en Capas
+
+La vista lógica describe la estructura estática del sistema, su descomposición en elementos lógicos principales y las dependencias entre ellos.
+Su propósito es ilustrar cómo se organizan las responsabilidades funcionales para satisfacer los atributos de calidad clave, especialmente la mantenibilidad (CRN-7) y la evolución (CRN-8).
+
+Los siguientes diagramas de clases UML representan la estructura de alto nivel del sistema, basada en una combinación de los patrones de Arquitectura en Capas y el enfoque Domain-Driven Design (DDD).
+
+.Diagrama 1: Arquitectura en Capas
+image::Arquitectura_en_Capas.png[Arquitectura en Capas - Alto Nivel, width=900, align="center"]
+
+=== Estructura general del sistema
+
+*Capas Principales (Paquetes de primer nivel):*
+
+[cols="1,3"]
+|===
+| **Capa / Estereotipo** | **Descripción**
+
+| «layer» *Presentation*
+| Contiene los componentes de la interfaz de usuario para la aplicación web y la aplicación móvil, los cuales interactúan con el sistema únicamente a través del API Gateway.
+Su estructura es la siguiente: +
+---- +
+Presentation +
+ ├─ Aplicación Web +
+ └─ Aplicación Móvil +
+----
+
+| «layer» *Application*
+| Contiene el «gateway» API Gateway y los Application Services que orquestan los flujos de trabajo y exponen la funcionalidad a la capa de presentación.
+Su estructura es la siguiente: +
+---- +
+Application +
+ ├─ «gateway» API Gateway +
+ ├─ «service» ReservationAppService +
+ ├─ «service» UserAppService +
+ └─ «service» HotelAppService +
+----
+
+| «layer» *Domain*
+| Contiene el núcleo de la lógica de negocio, descompuesto en subdominios cohesivos identificados mediante DDD.
+Cada subdominio define sus propias interfaces (contratos) y servicios internos, agrupando la lógica correspondiente.
+Su estructura es la siguiente: +
+---- +
+Domain +
+ ├─ Reservations +
+ │   ├─ «interface» IReservationService +
+ │   └─ ReservationService +
+ ├─ Inventory +
+ │   ├─ «interface» IInventoryService +
+ │   ├─ «interface» IInventoryRepository +
+ │   └─ InventoryService +
+ ├─ Payments +
+ │   ├─ «interface» IPaymentService +
+ │   └─ PaymentService +
+ ├─ Pricing +
+ │   ├─ «interface» IPricingPolicy +
+ │   └─ PricingService +
+ ├─ Identity +
+ │   ├─ «interface» IUserRepository +
+ │   └─ UserService +
+ └─ Catalogs +
+     ├─ «interface» ICatalogService +
+     └─ CatalogService +
+----
+
+| «layer» *Infrastructure*
+| Contiene las implementaciones técnicas y servicios transversales.
+Agrupa los repositorios de persistencia (RDBMS), los adaptadores externos y los servicios de soporte.
+Su estructura es la siguiente: +
+---- +
+Infrastructure +
+ ├─ «repository» SqlReservationRepository +
+ ├─ «repository» SqlInventoryRepository +
+ ├─ «repository» SqlUserRepository +
+ ├─ «adapter» PaymentGatewayAdapter +
+ ├─ «transversal» SessionService +
+ └─ «transversal» MonitoreoService +
+---- +
+|===
+
+=== Dependencias entre capas
+
+Las dependencias (representadas con flechas de dependencia `--->`) se organizan de la siguiente manera:
+
+* Presentation ---> Application
+  (Las aplicaciones web y móvil consumen el API Gateway)
+* Application ---> Domain
+  (Los servicios de aplicación orquestan la lógica de negocio a través de las interfaces del dominio)
+* Domain ---> Infrastructure
+  (Las implementaciones concretas de repositorios y adaptadores residen en la capa de infraestructura)
+* Application ---> Infrastructure
+  (Para servicios transversales como sesión, monitoreo y métricas)
+
+=== Justificación de la arquitectura en capas
+
+*Impulsores:*
+La principal motivación para esta estructura es la necesidad de una alta mantenibilidad (CRN-7) y evolución (CRN-8).
+El sistema debe poder adaptarse a cambios futuros, como la incorporación de nuevas políticas de negocio o tecnologías sin alterar la lógica principal.
+
+*Tácticas aplicadas:*
+Se aplicaron las tácticas de modificabilidad Reducir Acoplamiento y Aumentar Cohesión.
+En particular, se implementó la táctica Restringir Dependencias, que define una dirección descendente entre capas, donde cada una depende solo de la inmediatamente inferior.
+
+*Patrón / Decisión:*
+Se implementó el patrón Layered Architecture. +
+- La capa Domain contiene la lógica de negocio pura, sin dependencias directas de presentación o persistencia. +
+- La capa Infrastructure encapsula los detalles técnicos, como las implementaciones SQL (CON-2). +
+- La capa Presentation se limita a la interacción con el usuario (CON-6).
+Esto permite incorporar nuevos canales (como quioscos o apps externas) sin modificar las capas inferiores.
+
+*Trade-offs:*
+Una arquitectura en capas introduce una leve penalización en rendimiento por la indirección, ya que una solicitud debe atravesar varias capas.
+Sin embargo, este costo es aceptable frente a los beneficios en mantenibilidad, escalabilidad y trazabilidad, y puede mitigarse mediante tácticas de rendimiento como el caching o réplicas de lectura.
+
+=== Justificación de la descomposición por dominios (DDD)
+
+*Impulsores:*
+Los impulsores clave son la mantenibilidad (CRN-7) y la evolución (CRN-8).
+La modularidad por dominios facilita la evolución independiente de cada parte del sistema.
+
+*Tácticas aplicadas:*
+Se aplicó la táctica Aumentar Cohesión mediante la división en módulos o Bounded Contexts, cada módulo agrupa la lógica y los datos relacionados con un subdominio de negocio específico.
+
+*Patrón / Decisión:*
+El módulo Reservations gestiona la creación y cancelación de reservas. +
+El módulo Inventory maneja la disponibilidad de habitaciones y el control de overbooking (CON-4). +
+Pricing contiene la lógica de tarifas. +
+Payments se encarga de procesar y confirmar pagos. +
+Catalogs y Identity gestionan la información base y las cuentas de usuario, respectivamente. +
+Cada módulo se comunica a través de contratos bien definidos, evitando acoplamiento directo.
+
+*Trade-offs:*
+El principal reto es definir los límites de los subdominios de manera precisa.
+Una separación incorrecta puede generar duplicación o alto acoplamiento, por lo que, aunque el esfuerzo de análisis inicial es mayor, se justifica por la reducción de la complejidad y los costos de mantenimiento a largo plazo.
+
+=== Justificación del módulo de pagos como adaptador
+
+*Impulsores:*
+- Restricción técnica y de seguridad: el sistema debe usar una pasarela de pago externa (CON-3).
+- Evolución (CRN-8): posibilidad de cambiar de proveedor sin reescribir la lógica interna.
+
+*Táctica aplicada:*
+La táctica de modificabilidad Usar un Intermediario aísla la lógica de negocio del sistema externo.
+
+*Patrón / Decisión:*
+El módulo Payments implementa el patrón Adapter.
+Define la interfaz interna `IPaymentService`, utilizada por el módulo Reservations, y una implementación concreta `PaymentGatewayAdapter` en la capa de infraestructura que traduce las llamadas hacia la API del proveedor externo certificado.
+
+*Trade-offs:*
+El uso del adaptador introduce una capa adicional de indirección, pero aporta flexibilidad y reduce el riesgo de acoplamiento con servicios externos.
+Además, cumple con la restricción de seguridad de no almacenar información sensible dentro del sistema (CON-3).
+
+== Modelo de Conceptos de Negocio
+
+El modelo de conceptos de negocio clarifica y define las entidades principales del dominio hotelero.
+Actúa como un *vocabulario ubicuo* (Ubiquitous Language, en términos de DDD), proporcionando un lenguaje común y preciso entre expertos del dominio, analistas y desarrolladores.
+Este modelo conceptual sirve como base para la identificación de componentes en el proceso CBSE y guía el diseño detallado de la capa de dominio y la capa de persistencia.
+
+El siguiente diagrama de clases UML presenta una vista conceptual del dominio del sistema de gestión hotelera, mostrando las entidades de negocio y sus relaciones fundamentales.
+
+.Diagrama del Modelo de Conceptos de Negocio
+image::Conceptos_Negocio.png[Modelo de Conceptos de Negocio, width=900, align="center"]
+
+=== Clases y conceptos principales
+
+* **CadenaHoteles:** Entidad raíz del dominio, que agrupa y gestiona todos los *Hotel(es)* pertenecientes a la organización.
+* **Roles de Personal:**
+  - *Administrador:* Encargado de la gestión general, políticas, tarifas y supervisión de hoteles.
+  - *Auditor:* Supervisa las operaciones de la cadena hotelera.
+  - *Gerente:* Responsable de la operación de un *Hotel* específico.
+  - *Recepcionista:* Administra *Reservacion(es)* y procesos de *RegistrarEntrada* y *RegistrarSalida*.
+* **Entidades de Configuración:** *Politica*, *Tarifa*.
+* **Entidades Físicas y de Catálogo:** *Hotel*, *Habitacion*, *TipoHabitacion*, *MapaHotel*.
+* **Entidades Transaccionales:** *Reservacion*, *Estancia*, *Consumo/servicio*, *Recibo*, *PasarelaPagos*.
+* **Entidades de Proceso:** *RegistrarEntrada*, *RegistrarSalida*.
+* **Actor Externo:** *Huesped* (cliente del sistema).
+
+=== Relaciones y cardinalidades clave
+
+* *CadenaHoteles* es el agregado raíz que contiene uno o más *Hotel(es)* (`1..*`) y se relaciona con uno o más *Administrador(es)* (`1..*`), así como con cero o más *Politica(s)* (`0..*`), *Tarifa(s)* (`0..*`) y un *Auditor* (`1`).
+* Cada *Hotel* pertenece a una única *CadenaHoteles* (`1`), tiene exactamente un *Gerente* (`1`), un *MapaHotel* (`1`) y puede contar con múltiples *Recepcionista(s)* (`0..*`) y *Habitacion(es)* (`0..*`).
+* Cada *Habitacion* está asociada a un *TipoHabitacion* (`1`), pertenece a un *Hotel* (`1`), y puede tener múltiples *Reservacion(es)* (`0..*`).
+* Cada *Reservacion* se asocia a una *Habitacion* (`1`), es realizada por un *Huesped* (`1`), y puede tener vinculados los procesos *RegistrarEntrada* (`1`) y *RegistrarSalida* (`1`).
+* Una *Reservacion* genera una única *Estancia* (`1`).
+* Cada *Estancia* puede acumular uno o varios *Consumo/servicio(s)* (`0..*`) y produce exactamente un *Recibo* (`1`).
+* El *Recibo* se procesa a través de una *PasarelaPagos* (`1`), encargada de ejecutar la transacción externa de pago.
+
+=== Justificación y clarificaciones del modelo
+
+La estructura de este modelo refleja las reglas y procesos reales del negocio hotelero, estableciendo un vocabulario compartido y una visión coherente del dominio.
+
+Una fortaleza clave es la separación explícita de roles y responsabilidades.
+El *Administrador* y el *Auditor* operan a nivel de *CadenaHoteles*, gestionando políticas (CU-18), tarifas (CU-15) y la administración de hoteles (CU-11).
+El *Gerente* opera a nivel de *Hotel*, gestionando *Habitacion(es)* (CU-25) y *Recepcionista(s)* (CU-36).
+De esta forma, la jerarquía organizacional se refleja directamente en la estructura de datos.
+
+El modelo también captura el ciclo completo de interacción con el huésped:
+la *Reservacion* representa el compromiso previo (la intención de hospedarse), mientras que la *Estancia* representa la ocupación efectiva.
+Los procesos *RegistrarEntrada* y *RegistrarSalida* se modelan como entidades explícitas vinculadas a la *Reservacion*, lo que formaliza los flujos de *check-in* y *check-out* (CU-06 y CU-07) dentro del dominio en lugar de tratarlos como operaciones externas.
+
+La **gestión de pagos** está correctamente aislada.
+La *Estancia* genera un *Recibo*, el cual es procesado por la *PasarelaPagos*.
+Esto representa la restricción CON-3, que exige que el sistema no almacene directamente información de pago y delegue la transacción a un sistema externo certificado.
+
+Por otra parte, el modelo distingue claramente entre *Habitacion* y *TipoHabitacion*.
+Cada *Reservacion* se asocia a una *Habitacion* física, pero esta, a su vez, está ligada a un *TipoHabitacion*, lo que permite manejar inventarios, tarifas y políticas de *overbooking* (CON-4) a nivel de tipo.
+Este diseño permite flexibilidad futura: por ejemplo, la asignación de una *Habitacion* específica podría realizarse durante el proceso de *RegistrarEntrada*, siguiendo la práctica operativa estándar en hotelería.

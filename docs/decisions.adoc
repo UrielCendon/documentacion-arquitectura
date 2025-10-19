@@ -1,0 +1,66 @@
+El diseño de la arquitectura del Sistema de Gestión de la Cadena Hotelera lo realizamos con un proceso claro y repetible. Usando el enfoque híbrido que combina Attribute-Driven Design (ADD) y Component-Based Software Engineering (CBSE, Cheesman & Daniels). La idea de realizarlo de esa forma es que cada decisión arquitectónica responda directamente a los impulsores (ASRs) que definimos anteriormente: requisitos funcionales, atributos de calidad, restricciones y preocupaciones.
+
+ADD guía el diseño por ciclos, en donde cada iteración se toman los drivers más significativos de la lista de tareas, y son elegidas distintas tácticas y patrones para satisfacerlos.
+De esta forma, nos aseguramos de construir la arquitectura alrededor de los atributos de calidad que encontramos críticos (rendimiento, disponibilidad, seguridad, etc.), con trazabilidad clara.
+
+El refinamiento dentro de cada iteración lo hacemos con base en CBSE, proponiendo componentes que colaboran para cumplir las operaciones clave del sistema, definiendo sus responsabilidades e interfaces. Primero, se identifican los componentes principales (con los conceptos de negocio y los casos de uso, para proponer los componentes), luego se modela su interacción (la manera en la que colaboran los componentes identificados, elaborados con diagramas de comunicación, afinando las responsabilidades e interfaces) y finalmente se especifican formalmente sus contratos y dependencias.
+
+El diseño se organizó en, principalmente, tres iteraciones. Cada una tuvo un objetivo concreto y un conjunto de drivers a atender, dejando registro de: drivers cubiertos, tácticas/patrones elegidos y decisiones tomadas (con sus trade-offs).
+
+== Iteración 1: Estructura Fundamental y Modularidad
+
+=== Objetivo
+El propósito de esta primera iteración es definir la estructura de más alto nivel del sistema, en donde se establecerá una arquitectura que garantice una separación clara de responsabilidades, sentando las bases para la mantenibilidad (CRN-7) y la evolución a largo plazo (CRN-8).
+
+=== Impulsores arquitectónicos
+- CRN-7 (Mantenibilidad): Modularidad clara por dominios (reservas, inventario, pagos, catálogos) y contratos estables.
+- CRN-8 (Evolución): Facilidad para introducir nuevas políticas (cancelación, overbooking, pricing) sin reescribir módulos.
+- CON-2 (Técnica): Se usará un RDBMS como base de datos transaccional principal.
+- CON-6 (Canales): Canales de venta soportados: sitio web oficial y app móvil oficial.
+
+=== Decisiones y Justificación
+- *El patrón arquitectónico de Arquitectura en Capas (Layered Architecture) como estructura fundamental.* +
+Con cuatro capas principales, la capa de Presentación, la capa de Aplicación, la capa de Dominio y la capa de Infraestructura.
+Este patrón es una aplicación directa de la táctica de "Reducir Acoplamiento" mediante la "Restricción de Dependencias" Cada capa solo puede comunicarse con la capa inmediatamente inferior, lo que aísla los cambios. Por ejemplo, la capa de Infraestructura encapsula el acceso al RDBMS (CON-2), permitiendo que la capa de Dominio (la contenedora de la lógica de negocio) sea independiente de la tecnología de persistencia específica. De manera similar, la capa de Presentación maneja la interfaz para los canales web y móvil (CON-6) sin que la lógica de negocio se vea afectada por los detalles de la interfaz de usuario. Esta separación es la base para satisfacer las preocupaciones de los impulsos arquitectónicos.
+- *Domain-Driven Design (DDD).* +
+Descomposición en módulos cohesivos alineados con los subdominios de negocio, donde los módulos identificados fueron: Reservations, Inventory, Pricing, Payments, Identity y Catalogs.
+Aquí se toma en cuenta la táctica de "Aumentar Cohesión" al agrupar responsabilidades lógicamente relacionadas. Al realizar un análisis de los casos de uso, se revelan estas agrupaciones funcionales naturales (donde CU-01 a CU-05 pertenecen a Reservations, mientras que CU-15 a CU-17 pertenecen a Pricing, por ejemplo). Esta modularidad es la clave para la mantenibilidad (CRN-7), ya que un cambio en una política de precios solo impactará a su módulo correspondiente, y para la evolución (CRN-8), ya que se pueden añadir nuevas políticas o incluso nuevos módulos de dominio con un impacto controlado.
+
+== Iteración 2: Diseño de Transacciones Críticas, Rendimiento y Seguridad
+
+=== Objetivo
+El propósito de esta segunda iteración es abordar los flujos de trabajo de mayor riesgo y exigencia técnica, como lo son la búsqueda de disponibilidad y la confirmación de reservaciones, que son fundamentales para encontrar el punto exacto entre el rendimiento y la consistencia.
+
+=== Impulsores arquitectónicos
+- CRN-5 (Rendimiento): Latencias acotadas en búsqueda de disponibilidad y confirmación bajo carga pico.
+- CRN-3 (Datos): Integridad/consistencia de inventario y tarifas en tiempo real (evitar sobreventa y desincronización).
+- CON-8 (Arquitectura): Consistencia transaccional en confirmación/cancelación de reservaciones (evitar “doble cargo” y “doble reserva”).
+- CON-3 (Técnica/Seguridad): Los pagos se procesan únicamente vía pasarela externa certificada, el sistema no almacena información de pagos de los huéspedes (cumplimiento PCI por delegación).
+- CRN-9 (Idempotencia): Reintentos seguros en pagos/confirmaciones sin efectos duplicados.
+- CON-9 (Seguridad): Cifrado en tránsito (HTTPS/TLS) y en reposo para datos sensibles, mínimos privilegios y rotación de secretos.
+
+=== Decisiones y Justificación
+- *Variación de CQRS (Command Query Responsibility Segregation) para manejo de inventario.* +
+El modelo de escritura (como el de CreateReservation) operará directamente sobre la base de datos transaccional (RDBMS), mientras que el modelo de lectura (como el de CheckAvailability) utilizará una réplica de lectura o una caché desnormalizada que se actualiza de forma casi instantánea.
+Esta decisión resuelve directamente el conflicto entre CRN-5 y CRN-3, en donde las consultas de disponibilidad no bloquearán la base de datos principal, permitiendo latencias muy bajas (CRN-5) al aplicar la táctica de rendimiento "Mantener Múltiples Copias de Datos", así como, al mismo tiempo, las operaciones de escritura (como las reservas y cancelaciones) mantienen una consistencia estricta y transaccional (CON-8, CRN-3) al operar sobre el RDBMS, aplicando la táctica de disponibilidad "Transacciones (ACID)".
+- *Pagos con el patrón Adapter e idempotencia en la confirmación.* +
+Aplicado en el módulo de Payments, para ser integrado con la pasarela de pago externa. El patrón Adapter encapsula la comunicación con el sistema externo (CON-3), aplicando la táctica de modificabilidad "Usar un Intermediario", lo que aísla al sistema de cambios en la API del proveedor de pagos. Para la idempotencia (CRN-9), cada intento de pago se asocia con un token de transacción único, así, si la pasarela recibe una solicitud con un token ya procesado, no realiza un nuevo cargo, evitando así el doble cargo al usuario (CON-8).
+
+== Iteración 3: Experiencia de Usuario y Operabilidad
+
+=== Objetivo
+Diseñar las capas superiores de la arquitectura para garantizar una experiencia de usuario fluida y una observabilidad completa del sistema, lo que es crucial para la correcta operación.
+
+=== Impulsores arquitectónicos
+- CRN-2 (Experiencia): Flujo de reserva simple (≤5 pasos), mensajes claros, precio mostrado = precio cobrado al confirmar.
+- CRN-6 (Operabilidad): Observabilidad de punta a punta (métricas, logs y trazas) con correlación por transacción.
+- CON-5 (Operación): Toda operación relevante debe quedar registrada con trazabilidad (actor, timestamp, entidad, antes/después, correlación).
+- CRN-4 (Disponibilidad): Servicio resiliente con degradación controlada y recuperación ante fallos parciales/picos.
+
+=== Decisiones y Justificación
+- *API Gateway en la capa de Aplicación, actuando como Facade.* +
+Un API Gateway que actúa como una fachada para los servicios de la capa de Dominio, permitiendo manejar múltiples llamadas a los módulos de dominio (Reservations, Inventory, Pricings) desde una única llamada desde el cliente (web o app). Esto simplifica drásticamente la lógica del cliente y es clave para lograr el flujo de reserva en ≤5 pasos (CRN-2). Esta decisión aplica la táctica de modificabilidad de "Usar un Intermediario".
+- *Instrumentación estandarizada con ID de correlación end-to-end.* +
+Cada solicitud que ingresa a través del API Gateway recibe un ID de Correlación único que se propaga en todas las llamadas subsecuentes a los servicios internos, así se maneja la implementación técnica de las tácticas de disponibilidad "Detectar Fallos hacia Supervisar" y "Registrar el fallo". Permite la observabilidad de punta a punta (CRN-6) y la trazabilidad de cada operación (CON-5), ya que los logs, métricas y trazas de diferentes módulos pueden ser correlacionados usando este ID.
+- *Endpoints de health check por módulo de dominio.* +
+Habilita la monitorización activa del estado de cada componente, aplicando la táctica de disponibilidad "Ping/Echo" o "Heartbeat". Un orquestador de contenedores o un balanceador de carga puede usar estos endpoints para retirar instancias defectuosas del servicio, mejorando la resiliencia y disponibilidad general del sistema (CRN-4).

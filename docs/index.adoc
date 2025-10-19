@@ -80,6 +80,8 @@ include::qualities.adoc[leveloffset=+1]
 include::views/asrs.adoc[leveloffset=+1]
 
 == Método de diseño
-include::views/attribute-driven-design.adoc[leveloffset=+1]
-include::decisions.adoc[]
+include::decisions.adoc[leveloffset=+1]
+
+== Arquitectura
+include::views/architecture.adoc[leveloffset=+1]
 include::appendix.adoc[]
