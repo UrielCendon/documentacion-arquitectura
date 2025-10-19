@@ -1,28 +1,38 @@
 == Restricciones y Preocupaciones
 
+Los impulsores arquitectónicos (ASRs) son todo aquello que el sistema debe cumplir sí o sí, se dividen en:
+
+- *Restricciones*: reglas no negociables que acotan las opciones. +
+- *Preocupaciones*: metas que guían el diseño hacia buenos atributos de calidad.
+
+En ADD (Attribute-Driven-Design), estas listas funcionan como una lista de tareas que la arquitectura sugerida debe satisfacer, en nuestro caso hay existe una clara tensión, ya que queremos consultas de disponibilidad muy rápidas mientras que también necesitamos tener consistencia estricta del inventario. Esto sugiere tratar lecturas (búsquedas) y escrituras (reservas) con estrategias distintas, en lugar de meter todo en un monolito simple.
+
+Además, la modularidad es la forma de facilitar cambios de políticas (cancelación, overbooking, precios) sin tener que volver a construir el sistema entero de nuevo. Por eso una arquitectura basada en dominios es prioridad desde el inicio.
+
+
 === Lista de Restricciones
 
-*-CON-1 (Negocio)*:: El cobro de la reservación es del 100% al confirmar (no se admiten anticipos parciales) para toda venta en web/app oficial.
-*-CON-2 (Técnica)*:: Se usará un RDBMS como base de datos transaccional principal.
-*-CON-3 (Técnica/Seguridad)*:: Los pagos se procesan únicamente vía pasarela externa certificada, el sistema no almacena información de pagos de los huéspedes (cumplimiento PCI por delegación).
-*-CON-4 (Negocio)*:: Overbooking máximo permitido de 10% por tipo de habitación y fecha, el tope es configurable centralmente pero no superable.
-*-CON-5 (Operación)*:: Toda operación relevante debe quedar registrada con trazabilidad (actor, timestamp, entidad, antes/después, correlación).
-*-CON-6 (Canales)*:: Canales de venta soportados: sitio web oficial y app móvil oficial.
-*-CON-7 (Regional/Legal)*:: Manejo de zonas horarias y moneda oficial definidas por la cadena, así como considerar las reglas fiscales locales aplicables a facturación.
-*-CON-8 (Arquitectura)*:: Consistencia transaccional en confirmación/cancelación de reservaciones (evitar “doble cargo” y “doble reserva”).
-*-CON-9 (Seguridad)*:: Cifrado en tránsito (HTTPS/TLS) y en reposo para datos sensibles, mínimos privilegios y rotación de secretos.
-*-CON-10 (Operación)*:: El precio mostrado al iniciar una reserva debe mantenerse hasta la confirmación de esta dentro de la misma sesión (ser consistente con el precio mostrado).
+- *CON-1 (Negocio)*: El cobro de la reservación es del 100% al confirmar (no se admiten anticipos parciales) para toda venta en web/app oficial.
+- *CON-2 (Técnica)*: Se usará un RDBMS como base de datos transaccional principal.
+- *CON-3 (Técnica/Seguridad)*: Los pagos se procesan únicamente vía pasarela externa certificada, el sistema no almacena información de pagos de los huéspedes (cumplimiento PCI por delegación).
+- *CON-4 (Negocio)*: Overbooking máximo permitido de 10% por tipo de habitación y fecha, el tope es configurable centralmente pero no superable.
+- *CON-5 (Operación)*: Toda operación relevante debe quedar registrada con trazabilidad (actor, timestamp, entidad, antes/después, correlación).
+- *CON-6 (Canales)*: Canales de venta soportados: sitio web oficial y app móvil oficial.
+- *CON-7 (Regional/Legal)*: Manejo de zonas horarias y moneda oficial definidas por la cadena, así como considerar las reglas fiscales locales aplicables a facturación.
+- *CON-8 (Arquitectura)*: Consistencia transaccional en confirmación/cancelación de reservaciones (evitar “doble cargo” y “doble reserva”).
+- *CON-9 (Seguridad)*: Cifrado en tránsito (HTTPS/TLS) y en reposo para datos sensibles, mínimos privilegios y rotación de secretos.
+- *CON-10 (Operación)*: El precio mostrado al iniciar una reserva debe mantenerse hasta la confirmación de esta dentro de la misma sesión (ser consistente con el precio mostrado).
 
 === Lista de Preocupaciones
 
-*-CRN-1 (Negocio)*:: Maximizar ocupación/ingresos manteniendo políticas coherentes en toda la cadena.
-*-CRN-2 (Experiencia)*:: Flujo de reserva simple (≤5 pasos), mensajes claros, precio mostrado = precio cobrado al confirmar.
-*-CRN-3 (Datos)*:: Integridad/consistencia de inventario y tarifas en tiempo real (evitar sobreventa y desincronización).
-*-CRN-4 (Disponibilidad)*:: Servicio resiliente con degradación controlada y recuperación ante fallos parciales/picos.
-*-CRN-5 (Rendimiento)*:: Latencias acotadas en búsqueda de disponibilidad y confirmación bajo carga pico.
-*-CRN-6 (Operabilidad)*:: Observabilidad de punta a punta (métricas, logs y trazas) con correlación por transacción.
-*-CRN-7 (Mantenibilidad)*:: Modularidad clara por dominios (reservas, inventario, pagos, catálogos) y contratos estables.
-*-CRN-8 (Evolución)*:: Facilidad para introducir nuevas políticas (cancelación, overbooking, pricing) sin reescribir módulos.
-*-CRN-9 (Idempotencia)*:: Reintentos seguros en pagos/confirmaciones sin efectos duplicados.
-*-CRN-10 (Seguridad y Cumplimiento)*:: Protección de datos personales y evidencias auditables de operaciones.
-*-CRN-11 (Gobernanza de Configuración)*:: Control de cambios en tarifas/políticas con bitácora.
+- *CRN-1 (Negocio)*: Maximizar ocupación/ingresos manteniendo políticas coherentes en toda la cadena.
+- *CRN-2 (Experiencia)*: Flujo de reserva simple (≤5 pasos), mensajes claros, precio mostrado = precio cobrado al confirmar.
+- *CRN-3 (Datos)*: Integridad/consistencia de inventario y tarifas en tiempo real (evitar sobreventa y desincronización).
+- *CRN-4 (Disponibilidad)*: Servicio resiliente con degradación controlada y recuperación ante fallos parciales/picos.
+- *CRN-5 (Rendimiento)*: Latencias acotadas en búsqueda de disponibilidad y confirmación bajo carga pico.
+- *CRN-6 (Operabilidad)*: Observabilidad de punta a punta (métricas, logs y trazas) con correlación por transacción.
+- *CRN-7 (Mantenibilidad)*: Modularidad clara por dominios (reservas, inventario, pagos, catálogos) y contratos estables.
+- *CRN-8 (Evolución)*: Facilidad para introducir nuevas políticas (cancelación, overbooking, pricing) sin reescribir módulos.
+- *CRN-9 (Idempotencia)*: Reintentos seguros en pagos/confirmaciones sin efectos duplicados.
+- *CRN-10 (Seguridad y Cumplimiento)*: Protección de datos personales y evidencias auditables de operaciones.
+- *CRN-11 (Gobernanza de Configuración)*: Control de cambios en tarifas/políticas con bitácora.

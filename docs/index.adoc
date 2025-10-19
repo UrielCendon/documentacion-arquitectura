@@ -78,5 +78,8 @@ include::views/operational.adoc[]
 == Impulsores Arquitectónicos (ASRs) y Priorización
 include::qualities.adoc[leveloffset=+1]
 include::views/asrs.adoc[leveloffset=+1]
+
+== Método de diseño
+include::views/attribute-driven-design.adoc[leveloffset=+1]
 include::decisions.adoc[]
 include::appendix.adoc[]
