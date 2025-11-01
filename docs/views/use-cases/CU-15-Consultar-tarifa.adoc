@@ -1,0 +1,34 @@
+== CU-15 Consultar tarifa
+[cols="25,~",options="header"]
+|===
+| ID | CU-15
+| Nombre | Consultar tarifa
+| Autor | Alan Raziel Filobello Aguilar
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | El Administrador consulta tarifas de uno o varios hoteles con filtros por alcance, estado y vigencia. Cada consulta se registra en la bitácora de auditoría.
+| Actor(es) | Administrador
+| Disparador | El administrador selecciona consultar tarifas.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema. +
+-PRE-02: Existen hoteles registrados. +
+-PRE-03: Existen tarifas registradas.
+| Flujo normal |
+1.- El sistema solicita criterios de búsqueda (hotel, alcance, vigencia, estado). +
+2.- El administrador proporciona los criterios. +
+3.- El sistema valida los criterios, ejecuta la búsqueda y presenta un resumen; solicita seleccionar una tarifa o pedir detalle. (Ver FA 3.1) (Ver EX 1) +
+4.- El administrador selecciona una tarifa o solicita exportar resultados. +
+5.- El sistema muestra el detalle solicitado o prepara la exportación y registra la consulta en la bitácora de auditoría. +
+6.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 Sin resultados. +
+1.- El sistema informa que no se encontraron tarifas con los criterios y sugiere ajustar filtros. +
+2.- El administrador decide ajustar o finalizar. +
+3.- El sistema registra el evento en auditoría y regresa al paso 1 o termina el caso.
+| Excepciones |
+EX 1 – Falla de consulta o conectividad. +
+1.- El sistema informa el error y registra el incidente en auditoría. +
+2.- El administrador decide reintentar más tarde. +
+3.- Termina el caso de uso.
+| Postcondiciones | POST-01: Sin cambios en la configuración del sistema. +
+POST-02: La consulta queda registrada en la bitácora de auditoría.
+| Reglas de negocio |
+|===

@@ -1,0 +1,31 @@
+== CU-27 Dar de baja habitación
+[cols="25,~",options="header"]
+|===
+| ID | CU-27
+| Nombre | Dar de baja habitación
+| Autor | Miguel Eduardo Escobar Ladron De Guevara
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | Permite inhabilitar (baja lógica) una habitación de un hotel.
+| Actor(es) | Gerente
+| Disparador | El gerente selecciona la acción Dar de baja sobre una habitación.
+| Precondiciones | -PRE-01: El gerente está autenticado. +
+-PRE-02: La habitación existe en un hotel asignado al gerente.
+| Flujo normal |
+1.- El sistema muestra filtros con selector de hotel (preseleccionado si solo hay uno). +
+2.- El gerente selecciona la habitación a dar de baja. +
+3.- El sistema solicita confirmación, si se acepta, verifica que la habitación no tenga estancias en curso ni reservaciones futuras, cambia el estado de la habitación a Baja, así como muestra un mensaje de éxito y registra el movimiento. (Ver FA 3.1) (Ver FA 3.2) (Ver EX 1) +
+4.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 El gerente cancela la baja. +
+1.- El sistema regresa a la lista sin cambios. +
+2.- Termina el caso de uso. +
+FA 3.2 - Existen estancias en curso o reservaciones futuras. +
+1.- El sistema muestra No es posible dar de baja la habitación porque existen estancias en curso o reservaciones futuras. +
+2.- Regresa al paso 1 del flujo normal.
+| Excepciones |
+EX 1 - El sistema no puede conectarse a la base de datos. +
+1.- El sistema muestra un mensaje de error, sugiriendo intentar más tarde, así como registra el incidente. +
+2.- Termina el caso de uso. +
+| Postcondiciones | POST-01: La habitación queda inhabilitada para nuevas asignaciones y ventas.
+|Reglas de negocio|
+|===

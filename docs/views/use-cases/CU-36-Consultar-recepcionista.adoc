@@ -1,0 +1,31 @@
+== CU-36 Consultar recepcionista
+[cols="25,~",options="header"]
+|===
+| ID | CU-36
+| Nombre | Consultar recepcionista
+| Autor | Uriel Cendón Díaz
+| Fecha de actualización | 31 de octubre de 2025
+| Descripción | El gerente consulta recepcionistas de uno de sus hoteles. El sistema presenta resultados para el hotel seleccionado con filtros opcionales.
+| Actor(es) | Gerente
+| Disparador | El gerente selecciona consultar recepcionistas.
+| Precondiciones | -PRE-01: El gerente está autenticado en el sistema. +
+-PRE-02: El gerente tiene al menos un hotel relacionado.
+| Flujo normal |
+1.- El sistema muestra los hoteles del gerente y solicita los filtros de búsqueda (nombre, apellidos, email). +
+2.- El gerente elige el hotel y los criterios de búsqueda para los filtros. +
+3.- El sistema valida que el hotel pertenezca al gerente, ejecuta la consulta y presenta un listado de coincidencias de recepcionistas. (Ver FA 3.1) (Ver EX 1) (Ver EX 2) +
+4.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 No se obtuvieron resultados. +
+1.- El sistema informa que no se encontraron recepcionistas con los criterios proporcionados y sugiere ajustar filtros. +
+2.- Termina el caso de uso.
+| Excepciones |
+EX 1 - El sistema no puede conectarse a la base de datos. +
+1.- El sistema muestra un mensaje de error solicitando intentar más tarde y registra el suceso. +
+2.- Termina el caso de uso. +
+EX 2 - Hubo un fallo de consulta. +
+1.- El sistema informa error al consultar y registra el incidente. +
+2.- Termina el caso de uso.
+| Postcondiciones | POST-01: La consulta queda registrada.
+|Reglas de negocio|
+|===

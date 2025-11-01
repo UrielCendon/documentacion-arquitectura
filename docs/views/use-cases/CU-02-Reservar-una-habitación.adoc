@@ -1,0 +1,50 @@
+== CU-02 Reservar una habitación
+[cols="25,~",options="header"]
+|===
+| ID | CU-02
+| Nombre | Reservar una habitación
+| Autor | Uriel Cendón Díaz
+| Fecha de actualización | 31 de octubre de 2025
+| Descripción | El huésped con cuenta inicia una reservación indicando hotel, fechas y tipo de habitación. El sistema valida disponibilidad y procede al pago para confirmar la reservación.
+| Actor(es) | Huésped
+| Disparador | El huésped elige reservar una habitación.
+| Precondiciones | -PRE-01: Existen hoteles activos en el sistema. +
+-PRE-02: Existen tipos de habitación activos en el sistema. +
+-PRE-03: El huésped tiene una cuenta en el sistema.
+| Flujo normal |
+1.- El sistema reconoce la sesión del huésped y solicita el hotel, las fechas de estancia y el tipo de habitación a reservar. (Ver FA 1.1) +
+2.- El huésped ingresa hotel, fechas y tipo de habitación. +
+3.- El sistema valida las entradas y consulta su inventario. Si hay cupo, solicita el método de pago e incluye al CU-04 Realizar el pago de la reservación. Al regresar con un pago aprobado, el sistema confirma la reservación, asigna un folio único, comunica la política de cancelación y registra la operación. (Ver FA 3.1) (Ver FA 3.2) (Ver FA 3.3) (Ver EX 1) (Ver EX 2) (Ver EX 3) (Ver EX 4) +
+4.- Termina el caso de uso.
+| Flujos alternos |
+FA 1.1 El huésped no tiene una sesión iniciada. +
+1.- El sistema extiende al CU-29 Crear Cuenta. +
+2.- Si el huésped crea una cuenta, retorna al paso 1 del flujo normal. +
+3.- Si el huésped no crea una cuenta, termina el caso de uso. +
+FA 3.1 No hay disponibilidad. +
+1.- El sistema informa indisponibilidad y ofrece fechas u hoteles alternos. +
+2.- El huésped decide si ingresar otros parámetros o finalizar. +
+3.- Termina el caso de uso. +
+FA 3.2 El huésped cancela la acción antes de realizar el pago. +
+1.- El sistema cancela la operación. +
+2.- Termina el caso de uso. +
+FA 3.3 El pago no se completó. +
+1.- El sistema mantiene la reservación por un tiempo límite y ofrece reintentar el pago o cancelar la misma. +
+2.- El huésped elige reintentar (regresa al paso 5 del flujo normal) o cancelar. +
+3.- Termina el caso de uso.
+| Excepciones |
+EX 1 - Se superó el límite de overbooking. +
+1.- El sistema rechaza la creación de la reservación, ofrece alternativas y registra el evento. +
+2.- Termina el caso de uso. +
+EX 2 - El sistema no puede conectarse a la base de datos. +
+1.- El sistema muestra un mensaje de error al huésped solicitándole volver a intentar más tarde y registra este suceso. +
+2.- Termina el caso de uso. +
+EX 3 - El servicio de inventario no está disponible. +
+1.- El sistema informa error temporal, registra el incidente y solicita intentar más tarde. +
+2.- Termina el caso de uso. +
+EX 4 - Hubo un fallo al crear la reservación. +
+1.- El sistema informa error temporal, realiza un reembolso automático del dinero pagado (si aplica), registra el error y solicita intentar más tarde. +
+2.- Termina el caso de uso.
+| Postcondiciones | POST-01: Se crea una reservación pagada con un folio único.
+|Reglas de negocio|
+|===

@@ -1,0 +1,35 @@
+== CU-17 Registrar política
+[cols="25,~",options="header"]
+|===
+| ID | CU-17
+| Nombre | Registrar política
+| Autor | Alan Raziel Filobello Aguilar
+| Fecha de actualización | 04 de octubre de 2025
+| Descripción | El Administrador registra una política del hotel (p. ej., cancelación, no-show, mascotas) indicando tipo, alcance y vigencia. El sistema valida compatibilidad y registra el alta en la bitácora de auditoría.
+| Actor(es) | Administrador
+| Disparador | El administrador selecciona registrar una política.
+| Precondiciones | -PRE-01: El administrador está autenticado en el sistema. +
+-PRE-02: El hotel existe y está activo.
+| Flujo normal |
+1.- El sistema solicita los parámetros de la política (tipo, alcance, vigencia, parámetros). +
+2.- El administrador proporciona los parámetros. +
+3.- El sistema valida compatibilidad/unicidad y solicita confirmación del registro. (Ver FA 3.1) (Ver EX 1) +
+4.- El administrador confirma el registro. +
+5.- El sistema crea la política, la asocia al hotel y registra la operación en la bitácora de auditoría. +
+6.- El administrador recibe la confirmación y solicita el identificador. +
+7.- El sistema entrega el identificador de la política y finaliza la operación. +
+8.- Termina el caso de uso.
+| Flujos alternos |
+FA 3.1 Duplicidad o traslape. +
+1.- El sistema informa el conflicto y propone ajustar vigencias o reemplazar. +
+2.- El administrador decide la acción. +
+3.- El sistema registra la decisión en auditoría y regresa al paso 1 o continúa en el paso 5.
+| Excepciones |
+EX 1 – Falla de persistencia/conectividad. +
+1.- El sistema informa el error y registra el incidente en auditoría. +
+2.- El administrador decide reintentar más tarde. +
+3.- Termina el caso de uso.
+| Postcondiciones | POST-01: La política queda registrada y disponible para su aplicación. +
+POST-02: El alta queda registrada en la bitácora de auditoría.
+| Reglas de negocio |
+|===
