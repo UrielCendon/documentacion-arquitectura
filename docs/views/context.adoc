@@ -100,4 +100,4 @@ Esta sección no define aún la arquitectura, pero deja listos los insumos que l
 === Diagrama de contexto
 El siguiente diagrama muestra una vista general del sistema propuesto y su interacción con actores externos y componentes clave. Sirve como punto de partida para entender los límites del sistema y las principales integraciones.
 
-image::Diagrama-contexto-general.png[Diagrama de contexto general, width=800, align=center]
+image::Contexto/Diagrama-contexto-general.png[Diagrama de contexto general, width=800, align=center]

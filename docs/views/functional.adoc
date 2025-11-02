@@ -4,7 +4,7 @@ Describe las capacidades del sistema desde la perspectiva de sus usuarios (actor
 El siguiente diagrama presenta una vista consolidada de alto nivel, mostrando los principales subsistemas funcionales y los actores que interactúan con el sistema.
 
 .Diagrama de Paquetes de Casos de Uso
-image::diagrama-casos-uso.png[Diagrama de Paquetes de Casos de Uso, width=800, align="center"]
+image::Casos-De-Uso/diagrama-casos-uso.png[Diagrama de Paquetes de Casos de Uso, width=800, align="center"]
 
 == Casos de Uso por Subsistema
 A continuación, se desglosa la funcionalidad de cada subsistema y se especifican los actores involucrados.
@@ -13,7 +13,7 @@ A continuación, se desglosa la funcionalidad de cada subsistema y se especifica
 Este subsistema agrupa las funcionalidades previas a la estancia del huésped: consulta, creación y gestión del pago/cancelación de reservaciones.
 
 .Casos de Uso del Subsistema Reservaciones
-image::casos-uso-Reservaciones.png[Casos de Uso - Reservaciones, width=700, align="center"]
+image::Casos-De-Uso/casos-uso-Reservaciones.png[Casos de Uso - Reservaciones, width=700, align="center"]
 
 Los casos de uso específicos son: +
 - *CU-01 Consultar disponibilidad:* Consulta disponibilidad por tipo de habitación y muestra referencia al mapa del hotel. +
@@ -29,7 +29,7 @@ Los casos de uso específicos son: +
 Este subsistema cubre las operaciones durante la estancia del huésped en el hotel.
 
 .Casos de Uso del Subsistema Estancias
-image::casos-uso-Estancias.png[Casos de Uso - Estancias, width=700, align="center"]
+image::Casos-De-Uso/casos-uso-Estancias.png[Casos de Uso - Estancias, width=700, align="center"]
 
 Los casos de uso son: +
 - *CU-05 Registrar entrada:*
@@ -49,7 +49,7 @@ Los casos de uso son: +
 Este subsistema contiene la configuración de hoteles de la cadena, así como sus tarifas y políticas.
 
 .Casos de Uso del Subsistema Administración de Hotel
-image::casos-uso-AdministracionHotel.png[Casos de Uso - Administración de Hotel, width=700, align="center"]
+image::Casos-De-Uso/casos-uso-AdministracionHotel.png[Casos de Uso - Administración de Hotel, width=700, align="center"]
 
 Los casos de uso son: +
 - *CU-10 Registrar hotel:*
@@ -79,7 +79,7 @@ Los casos de uso son: +
 Este subsistema gestiona el inventario de habitaciones y sus tipos.
 
 .Casos de Uso del Subsistema Administración de Habitaciones
-image::casos-uso-AdministracionHabitaciones.png[Casos de Uso - Administración de Habitaciones, width=700, align="center"]
+image::Casos-De-Uso/casos-uso-AdministracionHabitaciones.png[Casos de Uso - Administración de Habitaciones, width=700, align="center"]
 
 Los casos de uso son: +
  **Tipos de habitación (Administrador):** +
@@ -107,7 +107,7 @@ Los casos de uso son: +
 Este subsistema permite gestionar las cuentas/roles de los usuarios del sistema según su jerarquía.
 
 .Casos de Uso del Subsistema Administración de Actores
-image::casos-uso-AdministracionActores.png[Casos de Uso - Administración de Actores, width=700, align="center"]
+image::Casos-De-Uso/casos-uso-AdministracionActores.png[Casos de Uso - Administración de Actores, width=700, align="center"]
 
 Los casos de uso son: +
  **Huésped:** +

@@ -6,7 +6,7 @@ Su propósito es ilustrar cómo se organizan las responsabilidades funcionales p
 Los siguientes diagramas de clases UML representan la estructura de alto nivel del sistema, basada en una combinación de los patrones de Arquitectura en Capas y el enfoque Domain-Driven Design (DDD).
 
 .Diagrama 1: Arquitectura en Capas
-image::Arquitectura_en_Capas.png[Arquitectura en Capas - Alto Nivel, width=900, align="center"]
+image::Arquitectura/Arquitectura_en_Capas.png[Arquitectura en Capas - Alto Nivel, width=900, align="center"]
 
 === Estructura general del sistema
 
@@ -159,7 +159,7 @@ Este modelo conceptual sirve como base para la identificación de componentes en
 El siguiente diagrama de clases UML presenta una vista conceptual del dominio del sistema de gestión hotelera, mostrando las entidades de negocio y sus relaciones fundamentales.
 
 .Diagrama del Modelo de Conceptos de Negocio
-image::Conceptos_Negocio.png[Modelo de Conceptos de Negocio, width=900, align="center"]
+image::Conceptos-Tipos-Negocio/Conceptos_Negocio.png[Modelo de Conceptos de Negocio, width=900, align="center"]
 
 === Clases y conceptos principales
 
