@@ -97,7 +97,7 @@ LIC. INGENIERÍA DE SOFTWARE
 | Realización de Hito 2: Se agregó el Modelo de Conceptos de Negocio y la Vista Lógica (Arquitectura en Capas).
 
 | 2.0
-| 31/10/2025
+| 19/10/2025
 | Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
 | Entrega Hito 2: Definición del Método de Diseño (ADD y CBSE), Modelo de Conceptos de Negocio, Restricciones y Preocupaciones. Refinamiento de Casos de Uso (CRUDs, CU-02, CU-03).
 
@@ -117,7 +117,7 @@ LIC. INGENIERÍA DE SOFTWARE
 | Añadir Interfaces y Diagramas de Comunicación (De Miguel Eduardo Escobar Ladrón de Guevara).
 
 | 3.0
-| 07/12/2025
+| 02/12/2025
 | Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
 | Entrega Hito 3: Elaboración de Diagramas de Componentes (`<comp spec>`), Diagramas de Especificación de Interfaces (`<interface type>`) y Diagramas de Comunicación para todos los Casos de Uso.
 |===
