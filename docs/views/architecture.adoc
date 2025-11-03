@@ -1147,19 +1147,19 @@ image::Comunicacion/CU-23-Dar-De-Baja-Tipo-Habitacion/EliminarTipoHabitacion.png
 Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IRegistrarHabitacion`, correspondiente al `CU-24`:
 
 .Diagrama de Comunicación: Consultar Hotel
-image::Comunicacion/CU-24-Registrar-habitacion/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+image::Comunicacion/CU-24-Registrar-Habitacion/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
 
 .Diagrama de Comunicación: Consultar Tipo de Habitacion
-image::Comunicacion/CU-24-Registrar-habitacion/ConsultarTipoHabitacion.png[Consultar Tipo de Habitacion, width=900, align="center"]
+image::Comunicacion/CU-24-Registrar-Habitacion/ConsultarTipoHabitacion.png[Consultar Tipo de Habitacion, width=900, align="center"]
 
 .Diagrama de Comunicación: Registrar Habitacion
-image::Comunicacion/CU-24-Registrar-habitacion/RegistrarHabitacion.png[Registrar Habitacion, width=900, align="center"]
+image::Comunicacion/CU-24-Registrar-Habitacion/RegistrarHabitacion.png[Registrar Habitacion, width=900, align="center"]
 
 ==== Interfaz: IConsultarHabitacion (CU-25)
 El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IConsultarHabitacion`, correspondiente al `CU-25`:
 
 .Diagrama de Comunicación: Consultar Habitacion
-image::Comunicacion/CU-25-Consultar-habitacion/ConsultarHabitacion.png[Consultar Habitacion, width=900, align="center"]
+image::Comunicacion/CU-25-Consultar-Habitacion/ConsultarHabitacion.png[Consultar Habitacion, width=900, align="center"]
 
 ===== Interfaz: IActualizarHabitacion (CU-26)
 Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IActualizarHabitacion`, correspondiente al `CU-26`:
