@@ -80,6 +80,46 @@ LIC. INGENIERÍA DE SOFTWARE
 | 05/10/2025
 | Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar, Uriel Cendón Díaz
 | Adición del diagrama de contexto, Utility tree junto con descripciones e importancia de los atributos de calidad, y los ASRs de los atributos significativos para el sistema.
+
+| 1.1
+| 09/10/2025
+| Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
+| Añadir Lista de Restricciones y Preocupaciones. Añadir Diagrama de Conceptos de Negocio.
+
+| 1.2
+| 18/10/2025
+| Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara
+| Añadir Método de Diseño (ADD y CBSE) y refinar Restricciones.
+
+| 1.3
+| 19/10/2025
+| Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
+| Realización de Hito 2: Se agregó el Modelo de Conceptos de Negocio y la Vista Lógica (Arquitectura en Capas).
+
+| 2.0
+| 31/10/2025
+| Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
+| Entrega Hito 2: Definición del Método de Diseño (ADD y CBSE), Modelo de Conceptos de Negocio, Restricciones y Preocupaciones. Refinamiento de Casos de Uso (CRUDs, CU-02, CU-03).
+
+| 2.1
+| 01/11/2025
+| Uriel Cendón Díaz
+| Añadir Diagramas de Componentes, de Interfaces y Diagramas de Comunicación (De Uriel Cendón Díaz), y reorganización de carpetas.
+
+| 2.2
+| 01/11/2025
+| Alan Raziel Filobello Aguilar
+| Añadir Interfaces y Diagramas de Comunicación (De Alan Raziel Filobello Aguilar).
+
+| 2.3
+| 02/11/2025
+| Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
+| Añadir Interfaces y Diagramas de Comunicación (De Miguel Eduardo Escobar Ladrón de Guevara).
+
+| 3.0
+| 07/12/2025
+| Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
+| Entrega Hito 3: Elaboración de Diagramas de Componentes (`<comp spec>`), Diagramas de Especificación de Interfaces (`<interface type>`) y Diagramas de Comunicación para todos los Casos de Uso.
 |===
 
 :sectnums:

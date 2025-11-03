@@ -1,4 +1,4 @@
-== Diagrama de la Arquitectura en Capas
+== Vista lógica
 
 La vista lógica describe la estructura estática del sistema, su descomposición en elementos lógicos principales y las dependencias entre ellos.
 Su propósito es ilustrar cómo se organizan las responsabilidades funcionales para satisfacer los atributos de calidad clave, especialmente la mantenibilidad (CRN-7) y la evolución (CRN-8).
@@ -205,3 +205,1080 @@ Esto representa la restricción CON-3, que exige que el sistema no almacene dire
 Por otra parte, el modelo distingue claramente entre *Habitacion* y *TipoHabitacion*.
 Cada *Reservacion* se asocia a una *Habitacion* física, pero esta, a su vez, está ligada a un *TipoHabitacion*, lo que permite manejar inventarios, tarifas y políticas de *overbooking* (CON-4) a nivel de tipo.
 Este diseño permite flexibilidad futura: por ejemplo, la asignación de una *Habitacion* específica podría realizarse durante el proceso de *RegistrarEntrada*, siguiendo la práctica operativa estándar en hotelería.
+
+== Modelo de Tipos de Negocio
+
+El Modelo de Tipos de Negocio es un artefacto de especificación, que refina el modelo conceptual para definir con precisión la "visión del sistema" sobre la información de negocio que debe gestionar.
+
+Este modelo es la base fundamental para el siguiente paso del proceso: la identificación de las Interfaces de Negocio. Su propósito es ser preciso y estructurado, sirviendo como el material del cual se construirán las especificaciones de las interfaces.
+
+.Diagrama del Modelo de Tipos de Negocio
+image::Conceptos-Tipos-Negocio/Tipos-Negocio.png[Modelo de Tipos de Negocio, width=900, align="center"]
+
+=== Identificación de Tipos Core («core»)
+
+El primer paso para identificar las interfaces es analizar el modelo para encontrar los "Tipos Core", el cual es una entidad de negocio que tiene existencia independiente y un identificador de negocio propio. Estos tipos representan la información fundamental que no depende de ninguna otra.
+
+En este modelo, se han identificado los siguientes Tipos Core:
+
+- Hotel: Representa la entidad central de operaciones.
+
+- Huesped: Representa la entidad de cliente, que existe independientemente de si tiene o no una reserva.
+
+- PasarelaPagos: Representa el concepto de gestión de transacciones financieras.
+
+- TipoHabitacion: Representa la clasificación o categoría de las habitaciones, es utilizada para gestionar el inventario, las tarifas base y las políticas de reserva.
+
+=== Interfaces de Negocio y Asignación de Responsabilidades
+
+La regla general del proceso es crear una interfaz de negocio por cada tipo core. Estas interfaces, a menudo llamadas "interfaces de gestión", son responsables de administrar el tipo core y todos sus "tipos" («type») asociados.
+
+El diagrama utiliza una asociación de composición (el rombo negro) para asignar la responsabilidad de cada tipo a una interfaz de gestión específica. Cada tipo detallado debe ser "propiedad" de exactamente una interfaz.
+
+«interface type» IHotelMgt: Es la interfaz más grande y compleja. Es propietaria del tipo core Hotel y, por extensión, de toda la información que detalla la operación de un hotel: Gerente, Recepcionista, Politica, Tarifa, TipoHabitacion, Habitacion, Reservacion, Estancia, Consumo y Recibo.
+
+«interface type» IHuespedMgt: Interfaz dedicada exclusivamente a la gestión del tipo core Huesped y sus datos asociados.
+
+«interface type» IPasarelaPagosMgt: Interfaz especializada que es propietaria del tipo core PasarelaPagos, encapsulando toda la lógica financiera.
+
+«interface type» ITipoHabitacionMgt: Interfaz especializada, propietaria del tipo Tipo Habitacion. Encapsula la gestión del catálogo de categorías de habitaciones, incluyendo sus operaciones (CRUD) y la lógica para definir sus detalles, como amenidades, capacidad y tarifas base.
+
+
+=== Tipos Detallados («type») y Relaciones Clave
+
+Los elementos marcados como «type» son los "tipos detallados". No tienen existencia independiente y están, directa o indirectamente, ligados a un tipo core. Este modelo define las siguientes relaciones clave del sistema:
+
+Un Hotel está directamente relacionado con su personal (Gerente, Recepcionista), su configuración (Politica, Tarifa) y su inventario (TipoHabitacion, Habitacion), en donde la entidad Reservacion actúa como el nexo transaccional central. Se vincula a un Hotel (dónde se reserva), un Huesped (quién reserva) y, opcionalmente, a una Habitacion específica.
+
+El flujo de la estancia está claramente definido: una Reservacion se convierte en una Estancia, la cual es propietaria de los Consumos generados y del Recibo final.
+
+El Recibo se vincula con la PasarelaPagos, mostrando la separación de responsabilidades: IHotelMgt gestiona la generación del Recibo, pero IPasarelaPagosMgt gestiona la ejecución del pago.
+
+=== Justificación y Clarificaciones del Modelo
+
+La estructura de este modelo justifica directamente la arquitectura de componentes que hemos estado construyendo. La separación de responsabilidades en cuatro interfaces de gestión principales (IHotelMgt, IHuespedMgt, IPasarelaPagosMgt, ITipoHabitacionMgt) permite un bajo acoplamiento entre los dominios de negocio.
+
+Por ejemplo, el componente SistemaReservaciones (que hemos analizado) usa estas cuatro interfaces para coordinar sus casos de uso :
+
+- Usa IHotelMgt para consultar disponibilidad y crear la Reservacion.
+
+- Usa IHuespedMgt para identificar al Huesped de la sesión.
+
+- Usa IPasarelaPagoMgt para procesar el pago y el reembolso.
+
+- Usa ITipoHabitacionMgt para gestionar las categorías de habitaciones y sus tarifas.
+
+De igual manera, el componente SistemaGestionActores usa IHotelMgt para registrar, consultar y eliminar a un Gerente o Recepcionista, ya que el modelo le asigna a IHotelMgt la propiedad sobre esos tipos. Este modelo es la base para definir los contratos de las interfaces que los componentes de sistema consumen.
+
+== Vista de implementación
+
+=== Diagrama de especificación de componentes
+
+Siguiendo la arquitectura en capas, los componentes se dividen en dos grupos:
+
+- Componentes de Sistema: Corresponden a la capa "System Services". Estos componentes orquestan la lógica de negocio y exponen la funcionalidad a un actor a través de interfaces de casos de uso (por ejemplo, IRegistrarGerente, IConsultarDisponibilidad).
+
+- Componentes de Negocio: Corresponden a la capa "Business Services". Estos componentes encapsulan la lógica de negocio pura y los datos (por ejemplo, IHotelMgt, IHuespedMgt).
+
+==== Componentes de Sistema
+
+Estos componentes actúan como fachadas o coordinadores para los casos de uso del sistema.
+
+*Especificación: SistemaGestionActores* +
+Este componente actúa como la fachada para todos los casos de uso relacionados con la administración de identidades. Ofrece las interfaces para el alta, baja y modificación de Gerentes, Recepcionistas y Cuentas de Huésped. Orquesta las llamadas a las interfaces de negocio IHotelMgt (para la gestión de personal) e IHuespedMgt (para la gestión de cuentas de huéspedes).
+
+.Componente de Sistema: SistemaGestionActores
+image::Componentes/Componente-Sistema-De-Gestión-De-Actores.png[SistemaGestionActores, width=900, align="center"]
+
+*Especificación: SistemaReservaciones* +
+Este componente gestiona el ciclo de vida completo de una reservación, desde la consulta de disponibilidad hasta el pago y la cancelación. Actúa como un coordinador clave , ofreciendo las interfaces de los casos de uso y delegando la lógica de negocio a IHotelMgt (para el inventario), IHuespedMgt (para la identidad del cliente) e IPasarelaPagoMgt (para el procesamiento de pagos y reembolsos).
+
+.Componente de Sistema: SistemaReservaciones
+image::Componentes/Componente-Sistema-De-Reservas.png[SistemaReservaciones, width=900, align="center"]
+
+*Especificación: SistemaGestionEstancias* +
+Este componente maneja todas las operaciones que ocurren durante la estancia de un huésped en el hotel. Ofrece las interfaces para los procesos de check-in (IRegistroEntrada), check-out (IRegistroSalida), así como para la gestión de la estancia activa, como registrar consumos, cambiar de habitación o extender la estancia. Coordina la lógica entre IHotelMgt, IHuespedMgt e IPasarelaPagoMgt.
+
+.Componente de Sistema: SistemaGestionEstancias
+image::Componentes/Componente-Sistema-De-Gestión-De-Estancias.png[SistemaGestionEstancias, width=900, align="center"]
+
+*Especificación: SistemaAdministracionHabitaciones* +
+Este componente se especializa en la administración del inventario físico y catalogado del hotel. Provee las interfaces de casos de uso para que se puedan registrar, actualizar o eliminar tanto Habitaciones individuales como TipoHabitaciones (categorías). Delega la lógica de negocio a IHotelMgt y ITipoHabitacionMgt.
+
+.Componente de Sistema: SistemaAdministracionHabitaciones
+image::Componentes/Componente-Sistema-De-Administracion-De-Habitaciones.png[SistemaAdministracionHabitaciones, width=900, align="center"]
+
+*Especificación: SistemaGestionHotel* +
+Este componente actúa como la fachada para la configuración y administración de la entidad Hotel en sí misma. Ofrece las interfaces para registrar un nuevo hotel, modificar sus datos, y gestionar su configuración asociada, como Políticas y Tarifas.
+
+.Componente de Sistema: SistemaGestionHotel
+image::Componentes/Componente-Sistema-De-Gestion-De-Hotel.png[SistemaGestionHotel, width=900, align="center"]
+
+==== Componentes de Negocio
+
+Estos componentes implementan la capa "Business Services", encapsulan la lógica de negocio pura y la persistencia de los datos, y son reutilizados por los distintos Componentes de Sistema. Cada componente de negocio ofrece una interfaz de gestión que es responsable de un "Tipo Core" (como Hotel o Huesped) y sus entidades asociadas, tal como se definió en el Modelo de Tipos de Negocio.
+
+.Componentes de Negocio: HotelMgr, HuespedMgr, PasarelaPagosMgr, TipoHabitacionMgr
+image::Componentes/Diagrama-De-Componentes.png[Business Components, width=900, align="center"]
+
+=== Diagramas de especificación de interfaces
+
+==== Interfaces de Sistema
+
+Estas interfaces son ofrecidas por los Componentes de Sistema y definen las operaciones que un actor puede invocar, correspondiendo directamente a los casos de uso.
+
+===== Componente: Sistema-De-Gestion-De-Actores
+
+====== Interfaz: IActualizarCuenta
+image::Interfaces/Sistema-De-Gestion-De-Actores/IActualizarCuenta.png[IActualizarCuenta, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-30)
+[horizontal]
+`ActualizarCuenta(CuentaDetalle)`::
+    `Pre:` El huésped está autenticado (PRE-01) y la cuenta existe (PRE-02). Los datos en `CuentaDetalle` son válidos y no están en uso por otra cuenta (EX 1, FA 3.1). +
+    `Post:` Los datos de la cuenta se actualizan en el sistema (POST-01). Se registra la modificación en la bitácora (POST-02).
+
+====== Interfaz: IActualizarGerente
+image::Interfaces/Sistema-De-Gestion-De-Actores/IActualizarGerente.png[IActualizarGerente, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-33 )
+[horizontal]
+`ConsultarGerente(GerenteConsulta)`::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` El sistema devuelve una lista de `Gerente[]` que coinciden con los criterios de `GerenteConsulta` (Flujo 3). Si no hay coincidencias (FA 3.2), la lista está vacía.
+`ActualizarGerente(GerenteDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01) y el gerente a actualizar existe (PRE-02). Los datos en `GerenteDetalle` son válidos y no están en uso por otro gerente (FA 4.1). +
+    `Post:` Los datos del gerente se actualizan en el sistema (POST-01). Se registra el cambio (POST-02).
+
+====== Interfaz: IActualizarRecepcionista
+image::Interfaces/Sistema-De-Gestion-De-Actores/IActualizarRecepcionista.png[IActualizarRecepcionista, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-37 )
+[horizontal]
+`ConsultarHotel(HotelConsulta)`::
+    `Pre:` El gerente está autenticado (PRE-01) y tiene al menos un hotel (PRE-02). `HotelConsulta` contiene el ID del gerente (Flujo 1). +
+    `Post:` El sistema devuelve la lista de `Hotel[]` asociados al gerente (Flujo 1).
+`ConsultarRecepcionista(RecepcionistaConsulta)`::
+    `Pre:` El gerente está autenticado (PRE-01). `RecepcionistaConsulta` incluye un `HotelID` válido que pertenece al gerente (PRE-03, Flujo 3). +
+    `Post:` El sistema devuelve una lista de `Recepcionista[]` que coinciden con los criterios en el hotel especificado (Flujo 3).
+`ActualizarRecepcionista(RecepcionistaDetalle)`::
+    `Pre:` El gerente está autenticado (PRE-01). El recepcionista a actualizar existe y pertenece a un hotel del gerente (PRE-03). Los datos en `RecepcionistaDetalle` son válidos y no están en uso por otro recepcionista (FA 5.2). +
+    `Post:` Los datos del recepcionista se actualizan (POST-01). Se guarda el registro de los cambios (POST-02).
+
+====== Interfaz: IConsultarGerente
+image::Interfaces/Sistema-De-Gestion-De-Actores/IConsultarGerente.png[IConsultarGerente, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-32)
+[horizontal]
+`ConsultarGerente(GerenteConsulta)`::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` El sistema devuelve una lista de `Gerente[]` que coinciden con los criterios de `GerenteConsulta` (Flujo 3). Si no hay coincidencias (FA 3.1), la lista está vacía.
+
+====== Interfaz: IConsultarRecepcionista
+image::Interfaces/Sistema-De-Gestion-De-Actores/IConsultarRecepcionista.png[IConsultarRecepcionista, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-36)
+[horizontal]
+`ConsultarHotel(HotelConsulta)`::
+    `Pre:` El gerente está autenticado (PRE-01) y tiene al menos un hotel (PRE-02). `HotelConsulta` contiene el ID del gerente (Flujo 1). +
+    `Post:` El sistema devuelve la lista de `Hotel[]` asociados al gerente (Flujo 1).
+`ConsultarRecepcionista(RecepcionistaConsulta)`::
+    `Pre:` El gerente está autenticado (PRE-01). `RecepcionistaConsulta` incluye un `HotelID` válido que pertenece al gerente (Flujo 3). +
+    `Post:` El sistema devuelve una lista de `Recepcionista[]` que coinciden con los criterios en el hotel especificado (Flujo 3).
+
+====== Interfaz: ICrearCuenta
+image::Interfaces/Sistema-De-Gestion-De-Actores/ICrearCuenta.png[ICrearCuenta, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-29)
+[horizontal]
+`CrearCuenta(CuentaDetalle)`::
+    `Pre:` No existe una cuenta previa con el email/teléfono proporcionado (PRE-01, FA 3.1). Los datos en `CuentaDetalle` son válidos (formato, contraseña segura) (FA 3.2). +
+    `Post:` La cuenta del huésped se crea en el sistema y queda activa (POST-01). Se registra la operación en la bitácora (POST-02).
+
+====== Interfaz: IDarDeBajaCuenta
+image::Interfaces/Sistema-De-Gestion-De-Actores/IDarDeBajaCuenta.png[IDarDeBajaCuenta, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-28)
+[horizontal]
+`EliminarCuenta(int)`::
+    `Pre:` El huésped está autenticado (PRE-01) y su cuenta está activa (PRE-02). No existen estancias activas ni saldos pendientes (PRE-03, FA 3.1). +
+    `Post:` La cuenta se desactiva (baja lógica) (POST-01). Las sesiones activas se revocan (POST-01). Se registra la acción en la bitácora (POST-02).
+
+====== Interfaz: IDarDeBajaGerente
+image::Interfaces/Sistema-De-Gestion-De-Actores/IDarDeBajaGerente.png[IDarDeBajaGerente, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-34)
+[horizontal]
+`ConsultarGerente(GerenteConsulta)`::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` El sistema devuelve una lista de `Gerente[]` que coinciden con los criterios (Flujo 1).
+`ConsultarHotel(HotelConsulta)`::
+    `Pre:` El administrador está autenticado (PRE-01). `HotelConsulta` contiene el ID del gerente. +
+    `Post:` El sistema devuelve una lista de `Hotel[]` asociados al gerente (para verificar FA 3.1).
+`EliminarGerente(GerenteEliminar)`::
+    `Pre:` El administrador está autenticado (PRE-01) y el gerente existe (PRE-02). El gerente no está relacionado con ningún hotel (PRE-03, FA 3.1). +
+    `Post:` El gerente queda en estado "Baja" (POST-01). Se guarda el registro de la acción (POST-02).
+
+====== Interfaz: IDarDeBajaRecepcionista
+image::Interfaces/Sistema-De-Gestion-De-Actores/IDarDeBajaRecepcionista.png[IDarDeBajaRecepcionista, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-38)
+[horizontal]
+`ConsultarHotel(HotelConsulta)`::
+    `Pre:` El gerente está autenticado (PRE-01) y tiene al menos un hotel (PRE-02). `HotelConsulta` contiene el ID del gerente (Flujo 1). +
+    `Post:` El sistema devuelve la lista de `Hotel[]` asociados al gerente (Flujo 1).
+`ConsultarRecepcionista(RecepcionistaConsulta)`::
+    `Pre:` El gerente está autenticado (PRE-01). `RecepcionistaConsulta` incluye un `idHotel` válido que pertenece al gerente (PRE-03, Flujo 3). +
+    `Post:` El sistema devuelve una lista de `Recepcionista[]` que coinciden con los criterios en el hotel especificado (Flujo 3).
+`EliminarRecepcionista(RecepcionistaEliminar)`::
+    `Pre:` El gerente está autenticado (PRE-01). El recepcionista a eliminar existe y pertenece a un hotel del gerente (PRE-03). +
+    `Post:` El recepcionista queda en estado "Baja" (POST-01). Se guarda el registro de la acción (POST-02).
+
+====== Interfaz: IRegistrarGerente
+image::Interfaces/Sistema-De-Gestion-De-Actores/IRegistrarGerente.png[IRegistrarGerente, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-31)
+[horizontal]
+`RegistrarGerente(GerenteDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01). Los datos en `GerenteDetalle` son válidos y no están duplicados (FA 3.2). +
+    `Post:` El gerente queda registrado en el sistema (POST-01). Se devuelve su ID de trabajador (Flujo 3).
+
+====== Interfaz: IRegistrarRecepcionista
+image::Interfaces/Sistema-De-Gestion-De-Actores/IRegistrarRecepcionista.png[IRegistrarRecepcionista, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-35)
+[horizontal]
+`ConsultarHotel(HotelConsulta)`::
+    `Pre:` El gerente está autenticado (PRE-01) y tiene al menos un hotel (PRE-02, FA 3.2). `HotelConsulta` contiene el ID del gerente (Flujo 1). +
+    `Post:` El sistema devuelve la lista de `Hotel[]` asociados al gerente (Flujo 1).
+`RegistrarRecepcionista(RecepcionistaDetalle)`::
+    `Pre:` El gerente está autenticado (PRE-01). `RecepcionistaDetalle` contiene un `idHotel` válido que pertenece al gerente (Flujo 3). Los datos del recepcionista no están duplicados (FA 3.3). +
+    `Post:` El recepcionista queda registrado (POST-01) y asociado al hotel (POST-02). Se devuelve su ID de trabajador (Flujo 3).
+
+===== Componente: Sistema-De-Reservas
+
+====== Interfaz: ICancelarReservacion
+image::Interfaces/Sistema-De-Reservas/ICancelarReservacion.png[ICancelarReservacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-04)
+[horizontal]
+`BuscarReservacion(ReservacionBusqueda)`::
+    `Pre:` `ReservacionBusqueda` contiene un folio y nombre válidos (Flujo 1). +
+    `Post:` El sistema devuelve los datos de la `Reservacion`, incluyendo la multa aplicable (Flujo 3). Si no se encuentra (FA 3.1), devuelve nulo.
+`CancelarReservacion(string)`::
+    `Pre:` Existe una reservación con el `folio` (PRE-01). La política del hotel permite la cancelación (No EX 1). +
+    `Post:` La reservación se marca como cancelada (POST-01). El inventario se libera (POST-02). Se registra la cancelación (POST-03).
+`ReembolsarPago(string, string)`::
+    `Pre:` La reservación con `folio` ha sido cancelada y aplica un reembolso (Flujo 5). +
+    `Post:` Se gestiona el reembolso del pago asociado al `folio` (Flujo 5).
+
+====== Interfaz: IConsultarDisponibilidad
+image::Interfaces/Sistema-De-Reservas/IConsultarDisponibilidad.png[IConsultarDisponibilidad, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-01)
+[horizontal]
+`ConsultarDisponibilidadHabitacion(DisponibilidadConsulta)`::
+    `Pre:` Existen hoteles (PRE-01) y tipos de habitación (PRE-02). `DisponibilidadConsulta` contiene hotel, fechas y tipo de habitación (Flujo 2). +
+    `Post:` El sistema devuelve una lista de `Habitacion[]` (tipos) con su descripción y cantidad disponible (Flujo 3). Si no hay (FA 3.1), la lista está vacía.
+
+====== Interfaz: IRealizarPagoReservacion
+image::Interfaces/Sistema-De-Reservas/IRealizarPagoReservacion.png[IRealizarPagoReservacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-03)
+[horizontal]
+`CapturarDatosPago(DatosPago)`::
+    `Pre:` Existe una reservación pendiente de pago con folio e importe (PRE-01). `DatosPago` contiene la información de la pasarela (Flujo 2). +
+    `Post:` Se valida la respuesta de la pasarela (Flujo 3). El estado de la reservación se actualiza a "Pagada" (POST-01). Si el pago es rechazado (EX 2) o inválido (EX 3), la reservación no se actualiza.
+`GenerarRecibo(ReciboDetalle)`::
+    `Pre:` El pago fue aprobado (Flujo 3). `ReciboDetalle` contiene la información de la transacción. +
+    `Post:` Se emite y devuelve un `Recibo` (Flujo 3).
+
+====== Interfaz: IReservarHabitacion
+image::Interfaces/Sistema-De-Reservas/IReservarHabitacion.png[IReservarHabitacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-02)
+[horizontal]
+`ConsultarDisponibilidadHabitacion(DisponibilidadConsulta)`::
+    `Pre:` Existen hoteles (PRE-01) y tipos de habitación (PRE-02). +
+    `Post:` El sistema devuelve la disponibilidad (Flujo 3). Si no hay cupo, informa (FA 3.1).
+`CrearReservacion(ReservacionDetalle)`::
+    `Pre:` El huésped está autenticado (PRE-03). Hay cupo disponible y no se supera el límite de overbooking (No FA 3.1, No EX 1). +
+    `Post:` Se crea una `Reservacion` en estado pendiente y se devuelve (Flujo 3).
+`RealizarPago(MetodoPagoEnum)`::
+    `Pre:` Se ha creado una reservación pendiente (Flujo 3). El pago es aprobado por la pasarela (No FA 3.3). +
+    `Post:` La reservación se confirma y se asigna un folio único (POST-01). Devuelve `true` si el pago fue exitoso.
+
+===== Componente: Sistema-De-Gestion-De-Estancias
+
+====== Interfaz: ICambiarHabitacionHuesped
+image::Interfaces/Sistema-De-Gestion-De-Estancias/ICambiarHabitacionHuesped.png[ICambiarHabitacionHuesped, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-07)
+[horizontal]
+`BuscarEstanciaHuesped(string)::
+    `Pre:` El recepcionista está autenticado (PRE-01). El `string` es un identificador de estancia válido (Flujo 1). +
+    `Post:` Devuelve la `Estancia` activa (Flujo 1).
+`CambiarHabitacion(HabitacionCambio)::
+    `Pre:` El recepcionista está autenticado (PRE-01) y existe una estancia activa (PRE-02). La habitación de destino (en `HabitacionCambio`) está disponible (Flujo 3, No EX 1). +
+    `Post:` La estancia se asocia a la nueva habitación (POST-01). La habitación anterior se libera. Se registra el cambio en auditoría (POST-02).
+`ConsultarDisponibilidadHabitacion(HabitacionConsultaDisponibilidad)::
+    `Pre:` El recepcionista está autenticado (PRE-01). La consulta incluye el tipo de habitación deseado. +
+    `Post:` Devuelve la lista de `Habitacion[]` disponibles con su impacto tarifario (Flujo 3).
+
+====== Interfaz: IExtenderEstancia
+image::Interfaces/Sistema-De-Gestion-De-Estancias/IExtenderEstancia.png[IExtenderEstancia, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-09)
+[horizontal]
+`ActualizarFechaSalida(DateTime)::
+    `Pre:` El recepcionista está autenticado (PRE-01) y existe una estancia activa (PRE-02). Hay disponibilidad para la nueva `DateTime` (Flujo 3, No FA 3.1, No EX 1). +
+    `Post:` La estancia queda extendida con la nueva fecha (POST-01). Se procesan las garantías adicionales (FA 3.2). Se registra el movimiento (POST-02).
+`BuscarEstanciaHuesped(string)::
+    `Pre:` El recepcionista está autenticado (PRE-01). El `string` es un identificador de estancia válido (Flujo 1). +
+    `Post:` Devuelve la `Estancia` activa correspondiente (Flujo 1).
+`ConsultarDisponibilidadHabitacion(HabitacionConsultaDisponibilidad)::
+    `Pre:` El recepcionista está autenticado (PRE-01). La consulta incluye la habitación actual y la nueva fecha de salida. +
+    `Post:` Devuelve la disponibilidad para la extensión solicitada (Flujo 3).
+
+====== Interfaz: IRegistrarConsumoServicio
+image::Interfaces/Sistema-De-Gestion-De-Estancias/IRegistrarConsumoServicio.png[IRegistrarConsumoServicio, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-08)
+[horizontal]
+`BuscarEstanciaHuesped(string)::
+    `Pre:` El recepcionista está autenticado (PRE-01). El `string` es un identificador de estancia/habitación válido (Flujo 1). +
+    `Post:` Devuelve la `Estancia` activa correspondiente (Flujo 1).
+`RegistrarConsumo(ConsumoRegistro)::
+    `Pre:` El recepcionista está autenticado (PRE-01) y existe una estancia activa (PRE-02). El producto/servicio en `ConsumoRegistro` es válido (Flujo 3, No EX 1). +
+    `Post:` El consumo se registra y se actualiza la cuenta de la estancia (POST-01). Se registra la operación en auditoría (POST-02).
+
+====== Interfaz: IRegistroEntrada
+image::Interfaces/Sistema-De-Gestion-De-Estancias/IRegistroEntrada.png[IRegistroEntrada, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-05)
+[horizontal]
+`BuscarReservacion(ReservacionBusqueda)::
+    `Pre:` El recepcionista está autenticado (PRE-01). `ReservacionBusqueda` contiene el folio o datos del huésped (Flujo 1-2). +
+    `Post:` Devuelve la `Reservacion` confirmada para el día (PRE-02).
+`RegistrarEntrada(EntradaRegistro)::
+    `Pre:` El recepcionista está autenticado (PRE-01). Existe una reserva confirmada (PRE-02). La habitación asignada (en `EntradaRegistro`) está disponible (PRE-03, No FA 3.1). +
+    `Post:` La estancia se marca como "en casa" (POST-01). La habitación se marca como "ocupada" (POST-01). Se registra la operación en auditoría (POST-02).
+
+====== Interfaz: IRegistroSalida
+image::Interfaces/Sistema-De-Gestion-De-Estancias/IRegistroSalida.png[IRegistroSalida, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-06)
+[horizontal]
+`BuscarReservacion(ReservacionBusqueda)::
+    `Pre:` El recepcionista está autenticado (PRE-01). `ReservacionBusqueda` contiene el ID de estancia/habitación (Flujo 1-2). +
+    `Post:` Devuelve la `Reservacion` (o Estancia) activa con todos sus cargos (Flujo 3).
+`RealizarPago(MetodoPagoEnum)::
+    `Pre:` El recepcionista está autenticado (PRE-01). Existe una estancia activa con un saldo pendiente (Flujo 3). +
+    `Post:` El pago se procesa. Devuelve `true` si fue exitoso (Flujo 5, No EX 1).
+`RegistrarSalida(SalidaRegistro)::
+    `Pre:` El recepcionista está autenticado (PRE-01) y existe una estancia activa (PRE-02). Todos los cargos han sido cubiertos (Flujo 5). +
+    `Post:` La estancia queda "cerrada" (POST-01). La habitación se libera (POST-01). Se registra la operación en auditoría (POST-02).
+
+===== Componente: Sistema-De-Gestion-De-Hotel
+
+====== Interfaz: IActualizarHotel
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IActualizarHotel.png[IActualizarHotel, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-12)
+[horizontal]
+`ActualizarHotel(HotelDetalle)::
+    `Pre:` El administrador está autenticado (PRE-01) y el hotel existe (PRE-02). El nuevo gerente (si se cambió) es válido (PRE-03, FA 4.1). Los datos en `HotelDetalle` son válidos (No FA 5.2). +
+    `Post:` La información del hotel, su gerente y servicios quedan actualizadas (POST-01).
+`AgregarServicio(ServicioAgregar)::
+    `Pre:` El administrador está autenticado (PRE-01). Los datos en `ServicioAgregar` son válidos (precio, unidad, etc.) (Basado en CU-10, Flujo 7). +
+    `Post:` El servicio se registra y se asocia al hotel (Basado en CU-10, POST-01).
+`ConsultarGerente(GerenteConsulta)::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` Devuelve lista de `Gerente[]` activos (Flujo 4).
+`ConsultarHotel(HotelConsulta)::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` Devuelve la lista de `Hotel[]` que coinciden con `HotelConsulta` (Flujo 1).
+
+====== Interfaz: IActualizarPolitica
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IActualizarPolitica.png[IActualizarPolitica, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-18)
+[horizontal]
+`ConsultarPolitica(PoliticaDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` Devuelve la `Politica` actual (Flujo 3). Si no existe (EX 1), devuelve nulo.
+`ActualizarPolitica(PoliticaDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01) y la política existe (PRE-02). Los datos son válidos y no hay conflictos (No FA 5.1, No EX 2). +
+    `Post:` La política queda actualizada o se crea una nueva versión (POST-01). Se registra la auditoría (POST-02).
+
+====== Interfaz: IActualizarTarifa
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IActualizarTarifa.png[IActualizarTarifa, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-16)
+[horizontal]
+`ConsultarTarifa(TarifaDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` Devuelve la `Tarifa` actual (Flujo 3). Si no existe (EX 1), devuelve nulo.
+`ActualizarTarifa(TarifaDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01) y la tarifa existe (PRE-02). Los datos son válidos y no hay conflictos (No FA 5.1, No EX 2). +
+    `Post:` La tarifa queda actualizada (POST-01). Se registra la auditoría (POST-02).
+
+====== Interfaz: IConsultarHotel
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IConsultarHotel.png[IConsultarHotel, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-11)
+[horizontal]
+`ConsultarHotel(HotelConsulta)`::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` El sistema devuelve una lista de `Hotel[]` que coinciden con los criterios (Flujo 3). Si no hay (FA 3.1), la lista está vacía.
+
+====== Interfaz: IConsultarPolitica
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IConsultarPolitica.png[IConsultarPolitica, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-19)
+[horizontal]
+`ConsultarPolitica(PoliticaDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01) y existen políticas (PRE-03). +
+    `Post:` Devuelve una lista de `Politica[]` según los criterios (Flujo 3). Se registra la consulta (POST-02).
+
+====== Interfaz: IConsultarTarifa
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IConsultarTarifa.png[IConsultarTarifa, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-15)
+[horizontal]
+`ConsultarTarifa(TarifaDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01) y existen tarifas (PRE-03). +
+    `Post:` Devuelve una lista de `Tarifa[]` según los criterios (Flujo 3). Se registra la consulta (POST-02).
+
+====== Interfaz: IDarDeBajaHotel
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IDarDeBajaHotel.png[IDarDeBajaHotel, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-13)
+[horizontal]
+`ConsultarHotel(HotelConsulta)::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` Devuelve lista de `Hotel[]` (Flujo 1).
+`EliminarHotel(HotelEliminar)::
+    `Pre:` El administrador está autenticado (PRE-01) y el hotel existe (PRE-02). El hotel no tiene estancias en curso, ni reservas futuras, ni habitaciones activas (Flujo 3, FA 3.2). +
+    `Post:` El hotel cambia su estado a "Baja" (POST-01).
+
+====== Interfaz: IRegistrarHotel
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IRegistrarHotel.png[IRegistrarHotel, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-10)
+[horizontal]
+`AgregarServicio(ServicioAgregar)`::
+    `Pre:` El administrador está autenticado (PRE-01). Los datos del servicio son válidos (Flujo 7). +
+    `Post:` El servicio se registra y asocia al hotel (Flujo 7).
+`ConsultarGerente(GerenteConsulta)`::
+    `Pre:` El administrador está autenticado (PRE-01).
+    `Post:` Devuelve una lista de gerentes activos (Flujo 3).
+`RegistrarHotel(HotelDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01). Existe al menos un gerente activo (PRE-02). Los datos del hotel son válidos y el código no está duplicado (FA 7.1). El gerente seleccionado es válido (FA 7.2). +
+    `Post:` El hotel queda registrado (POST-01).
+
+====== Interfaz: IRegistrarPolitica
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IRegistrarPolitica.png[IRegistrarPolitica, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-17)
+[horizontal]
+`RegistrarPolitica(PoliticaDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01) y el hotel existe (PRE-02). Los datos son válidos y no hay duplicidad (Flujo 3, FA 3.1). +
+    `Post:` La política queda registrada (POST-01). Se registra la auditoría (POST-02).
+
+====== Interfaz: IRegistrarTarifa
+image::Interfaces/Sistema-De-Gestion-De-Hotel/IRegistrarTarifa.png[IRegistrarTarifa, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-14)
+[horizontal]
+`RegistrarTarifa(TarifaDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01). El hotel (PRE-02) y los tipos de habitación (PRE-03) existen. Los datos son válidos y no hay conflictos (Flujo 3, FA 3.1). +
+    `Post:` La tarifa queda registrada (POST-01). Se registra la auditoría (POST-02).
+
+===== Componente: Sistema-De-Administracion-De-Habitaciones
+
+====== Interfaz: IActualizarHabitacion
+image::Interfaces/Sistema-De-Administracion-De-Habitaciones/IActualizarHabitacion.png[IActualizarHabitacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-26)
+[horizontal]
+`ActualizarHabitacion(HabitacionDetalle)::
+    `Pre:` El gerente está autenticado (PRE-01) y la habitación existe (PRE-02). Los datos son válidos, no hay duplicados (FA 5.1) y no hay conflictos con reservas (FA 5.2). +
+    `Post:` La habitación queda actualizada (POST-01).
+`ConsultarHabitacion(HabitacionConsulta)::
+    `Pre:` El gerente está autenticado (PRE-01). +
+    `Post:` Devuelve una lista de `Habitacion[]` (Flujo 2).
+`ConsultarHotel(HotelConsulta)::
+    `Pre:` El gerente está autenticado (PRE-01). `HotelConsulta` contiene el ID del gerente. +
+    `Post:` Devuelve la lista de `Hotel[]` que administra el gerente (Flujo 1, FA 1.1).
+`ConsultarTipoHabitacion(TipoHabitacionConsulta)::
+    `Pre:` El gerente está autenticado (PRE-01). `TipoHabitacionConsulta` filtra por el hotel seleccionado. +
+    `Post:` Devuelve la lista de `TipoHabitacion[]` disponibles en ese hotel (Flujo 3).
+
+====== Interfaz: IActualizarTipoHabitacion
+image::Interfaces/Sistema-De-Administracion-De-Habitaciones/IActualizarTipoHabitacion.png[IActualizarTipoHabitacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-22)
+[horizontal]
+`ConsultarTipoHabitacion(TipoHabitacionConsulta)`::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` Devuelve el `TipoHabitacion` (Flujo 3).
+`ActualizarTipoHabitacion(TipoHabitacionDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01) y el tipo existe (PRE-02). Los datos son válidos y no hay duplicados (FA 5.1). +
+    `Post:` El tipo de habitación queda actualizado (POST-01).
+
+====== Interfaz: IConsultarHabitacion
+image::Interfaces/Sistema-De-Administracion-De-Habitaciones/IConsultarHabitacion.png[IConsultarHabitacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-25)
+[horizontal]
+`ConsultarHabitacion(HabitacionConsulta)`::
+    `Pre:` El gerente está autenticado (PRE-01) y tiene al menos un hotel (PRE-02). +
+    `Post:` Devuelve una lista de `Habitacion[]` según los criterios (Flujo 3). Si no hay (FA 3.1), la lista está vacía.
+
+====== Interfaz: IConsultarTipoHabitacion
+image::Interfaces/Sistema-De-Administracion-De-Habitaciones/IConsultarTipoHabitacion.png[IConsultarTipoHabitacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-21)
+[horizontal]
+`ConsultarTipoHabitacion(TipoHabitacionConsulta)`::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` Devuelve una lista de `TipoHabitacion[]` según los criterios (Flujo 3). Si no hay (FA 3.1), la lista está vacía.
+
+====== Interfaz: IDarDeBajaHabitacion
+image::Interfaces/Sistema-De-Administracion-De-Habitaciones/IDarDeBajaHabitacion.png[IDarDeBajaHabitacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-27)
+[horizontal]
+`ConsultarHabitacion(HabitacionConsulta)::
+    `Pre:` El gerente está autenticado (PRE-01). `HabitacionConsulta` filtra por el hotel del gerente. +
+    `Post:` Devuelve lista de `Habitacion[]` (Flujo 1).
+`ConsultarHotel(HotelConsulta)::
+    `Pre:` El gerente está autenticado (PRE-01). `HotelConsulta` contiene el ID del gerente. +
+    `Post:` Devuelve la lista de `Hotel[]` que administra el gerente (Flujo 1).
+`EliminarHabitacion(HabitacionEliminar)::
+    `Pre:` El gerente está autenticado (PRE-01) y la habitación existe (PRE-02). La habitación no tiene estancias en curso ni reservas futuras (FA 3.2). +
+    `Post:` La habitación cambia su estado a "Baja" (POST-01).
+
+====== Interfaz: IDarDeBajaTipoHabitacion
+image::Interfaces/Sistema-De-Administracion-De-Habitaciones/IDarDeBajaTipoHabitacion.png[IDarDeBajaTipoHabitacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-23)
+[horizontal]
+`ConsultarTipoHabitacion(TipoHabitacionConsulta)`::
+    `Pre:` El administrador está autenticado (PRE-01). +
+    `Post:` Devuelve lista de `TipoHabitacion[]` (Flujo 1).
+`EliminarTipoHabitacion(TipoHabitacionEliminar)`::
+    `Pre:` El administrador está autenticado (PRE-01) y el tipo existe (PRE-02). El tipo no tiene habitaciones activas ni reservas futuras (FA 3.2). +
+    `Post:` El tipo de habitación cambia su estado a "Baja" (POST-01).
+
+====== Interfaz: IRegistrarHabitacion
+image::Interfaces/Sistema-De-Administracion-De-Habitaciones/IRegistrarHabitacion.png[IRegistrarHabitacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-24)
+[horizontal]
+`ConsultarHotel(HotelConsulta)`::
+    `Pre:` El gerente está autenticado (PRE-01) y tiene al menos un hotel (PRE-02). +
+    `Post:` Devuelve lista de `Hotel[]` del gerente (FA 1.1).
+`ConsultarTipoHabitacion(TipoHabitacionConsulta)`::
+    `Pre:` El hotel seleccionado tiene tipos de habitación activos (No FA 1.2). +
+    `Post:` Devuelve lista de `TipoHabitacion[]` activos (Flujo 1).
+`RegistrarHabitacion(HabitacionDetalle)`::
+    `Pre:` El gerente está autenticado (PRE-01). Los datos son válidos y el número no está duplicado en el hotel (FA 3.1). +
+    `Post:` La nueva habitación queda registrada y asociada al hotel y al tipo (POST-01).
+
+====== Interfaz: IRegistrarTipoHabitacion
+image::Interfaces/Sistema-De-Administracion-De-Habitaciones/IRegistrarTipoHabitacion.png[IRegistrarTipoHabitacion, width=900, align="center"]
+###### Pre/Post-condiciones (Basado en CU-20)
+[horizontal]
+`RegistrarTipoHabitacion(TipoHabitacionDetalle)`::
+    `Pre:` El administrador está autenticado (PRE-01). Los datos son válidos y el código/nombre no están duplicados (FA 3.2). +
+    `Post:` El nuevo tipo de habitación queda registrado (POST-01).
+
+==== Interfaces de Negocio
+
+Estas interfaces son ofrecidas por los Componentes de Negocio y encapsulan la lógica de negocio pura y los datos, son las interfaces requeridas o usadas por los Componentes de Sistema.
+
+===== Interfaz: IHotelMgt
+image::Interfaces/Interfaz - IHotelMgt.png[IHotelMgt, width=900, align="center"]
+##### Pre/Post-condiciones
+[horizontal]
+`ActualizarEstadoReservacion(string, string)`::
+    `Pre:` Existe una `Reservacion` con ese `folio`. +
+    `Post:` El estado de la `Reservacion` se actualiza al `estado` provisto (ej. "Pagada") (Basado en CU-03, Flujo 3).
+`ActualizarFechaSalida(DateTime)`::
+    `Pre:` El recepcionista está autenticado (PRE-01) y existe una estancia activa (PRE-02). Hay disponibilidad para la nueva `DateTime` (CU-09, Flujo 3, No FA 3.1). +
+    `Post:` La `fechaSalida` de la `Estancia` se actualiza (CU-09, POST-01).
+`ActualizarGerente(GerenteDetalle)`::
+    `Pre:` Un Gerente con el `idGerente` de `GerenteDetalle` existe (CU-33, PRE-02). Los datos no están en uso por otro gerente (FA 4.1). +
+    `Post:` Los datos del Gerente se actualizan en la base de datos (CU-33, POST-01).
+`ActualizarHabitacion(HabitacionDetalle)`::
+    `Pre:` La `Habitacion` existe (CU-26, PRE-02). No hay conflictos (FA 5.1, FA 5.2). +
+    `Post:` Los datos de la `Habitacion` se actualizan (CU-26, POST-01).
+`ActualizarHotel(HotelDetalle)`::
+    `Pre:` Un Hotel con el `idHotel` de `HotelDetalle` existe (CU-12, PRE-02). El nuevo gerente es válido (PRE-03). +
+    `Post:` Los datos del Hotel se actualizan (CU-12, POST-01).
+`ActualizarPolitica(PoliticaDetalle)`::
+    `Pre:` Una Politica con el `idPolitica` de `PoliticaDetalle` existe (CU-18, PRE-02). No hay conflictos de vigencia (FA 5.1). +
+    `Post:` Los datos de la Politica se actualizan (CU-18, POST-01).
+`ActualizarRecepcionista(RecepcionistaDetalle)`::
+    `Pre:` Un Recepcionista con el `idRecepcionista` de `RecepcionistaDetalle` existe (CU-37, PRE-03). Los datos no están en uso por otro recepcionista (FA 5.2). +
+    `Post:` Los datos del Recepcionista se actualizan (CU-37, POST-01).
+`ActualizarTarifa(TarifaDetalle)`::
+    `Pre:` Una Tarifa con el `idTarifa` de `TarifaDetalle` existe (CU-16, PRE-02). No hay conflictos de vigencia (FA 5.1). +
+    `Post:` Los datos de la Tarifa se actualizan (CU-16, POST-01).
+`AgregarServicio(ServicioAgregar)`::
+    `Pre:` El `idHotel` es válido. Los datos del servicio son válidos (CU-10, Flujo 7). +
+    `Post:` Se crea un nuevo `Servicio` y se asocia al hotel (CU-10, POST-01).
+`BuscarEstanciaHuesped(string)`::
+    `Pre:` El `string` es un identificador de estancia/habitación válido (CU-06, Flujo 1). +
+    `Post:` Devuelve la `Estancia` activa correspondiente.
+`BuscarReservacion(ReservacionBusqueda)`::
+    `Pre:` Ninguna. +
+    `Post:` Devuelve la `Reservacion` que coincide con la búsqueda, incluyendo el cálculo de la multa (CU-04, Flujo 3).
+`CambiarHabitacion(Estancia, Habitacion)`::
+    `Pre:` Existe una `Estancia` activa (CU-07, PRE-02). La `Habitacion` (destino) es válida y está disponible (Flujo 3). +
+    `Post:` La `Estancia` se asocia a la nueva `Habitacion` (CU-07, POST-01).
+`CancelarReservacion(string)`::
+    `Pre:` Existe una `Reservacion` con ese `folio` (CU-04, PRE-01). +
+    `Post:` La `Reservacion` se marca como "Cancelada" (CU-04, POST-01) y se libera el inventario (POST-02).
+`ConsultarDisponibilidadHabitacion(DisponibilidadConsulta)`::
+    `Pre:` Ninguna. +
+    `Post:` Devuelve la disponibilidad de inventario (`Habitacion[]`) para los criterios (CU-01, Flujo 3).
+`ConsultarGerente(GerenteConsulta)`::
+    `Pre:` Ninguna. +
+    `Post:` Devuelve una lista de `Gerente[]` que coinciden con los filtros de `GerenteConsulta` (CU-32, Flujo 3).
+`ConsultarHabitacion(HabitacionConsulta)`::
+    `Pre:` Ninguna. +
+    `Post:` Devuelve lista de `Habitacion[]` según filtros (CU-25, Flujo 3).
+`ConsultarHotel(HotelConsulta)`::
+    `Pre:` Ninguna. +
+    `Post:` Devuelve una lista de `Hotel[]` que coinciden con los filtros (CU-11, Flujo 3).
+`ConsultarHotelesPorGerente(string)`::
+    `Pre:` El `string` es un `idGerente` válido. +
+    `Post:` Devuelve una lista de `Hotel[]` donde `idGerente` coincida (CU-34, FA 3.1).
+`ConsultarPolitica(PoliticaDetalle)`::
+    `Pre:` Ninguna. +
+    `Post:` Devuelve una lista de `Politica[]` que coinciden con los filtros (CU-19, Flujo 3).
+`ConsultarRecepcionista(RecepcionistaConsulta)`::
+    `Pre:` Ninguna. +
+    `Post:` Devuelve una lista de `Recepcionista[]` que coinciden con los filtros (CU-36, Flujo 3).
+`ConsultarTarifa(TarifaDetalle)`::
+    `Pre:` Ninguna. +
+    `Post:` Devuelve una lista de `Tarifa[]` que coinciden con los filtros (CU-15, Flujo 3).
+`CrearReservacionHotel(ReservacionDetalle)`::
+    `Pre:` `ReservacionDetalle` contiene un `idHuesped` válido. Hay inventario disponible (CU-02, No EX 1). +
+    `Post:` Se crea una `Reservacion` en estado "Pendiente" y se devuelve (CU-02, Flujo 3).
+`EliminarGerente(GerenteEliminar)`::
+    `Pre:` Un Gerente con el `idGerente` de `GerenteEliminar` existe (CU-34, PRE-02). +
+    `Post:` El Gerente se marca como "Baja" (CU-34, POST-01).
+`EliminarHabitacion(HabitacionEliminar)`::
+    `Pre:` La `Habitacion` existe (CU-27, PRE-02) y no tiene dependencias (FA 3.2). +
+    `Post:` La `Habitacion` se marca como "Baja" (CU-27, POST-01).
+`EliminarHotel(HotelEliminar)`::
+    `Pre:` Un Hotel con el `idHotel` de `HotelEliminar` existe (CU-13, PRE-02). No tiene dependencias activas (FA 3.2). +
+    `Post:` El Hotel se marca como "Baja" (CU-13, POST-01).
+`EliminarRecepcionista(RecepcionistaEliminar)`::
+    `Pre:` Un Recepcionista con el `idRecepcionista` de `RecepcionistaEliminar` existe (CU-38, PRE-03). +
+    `Post:` El Recepcionista se marca como "Baja" (CU-38, POST-01).
+`RegistrarConsumo(ConsumoRegistro)`::
+    `Pre:` Existe una `Estancia` activa (CU-08, PRE-02). El `ConsumoRegistro` es válido (Flujo 3). +
+    `Post:` Se crea un `Consumo` y se asocia a la `Estancia` (CU-08, POST-01).
+`RegistrarEntrada(EntradaRegistro)`::
+    `Pre:` Existe una `Reservacion` válida para check-in (CU-05, PRE-02). La habitación está disponible (PRE-03). +
+    `Post:` Se crea una `Estancia` (POST-01) y la `Habitacion` se marca como "Ocupada" (POST-01).
+`RegistrarGerente(GerenteDetalle)`::
+    `Pre:` `GerenteDetalle` no viola restricciones de unicidad (ej. email) (CU-31, FA 3.2). +
+    `Post:` Se crea una nueva entidad Gerente en la base de datos (CU-31, POST-01).
+`RegistrarHabitacion(HabitacionDetalle)`::
+    `Pre:` `HabitacionDetalle` no viola unicidad en el hotel (CU-24, FA 3.1). `idHotel` y `idTipoHabitacion` son válidos. +
+    `Post:` Se crea una `Habitacion` (CU-24, POST-01).
+`RegistrarHotel(HotelDetalle)`::
+    `Pre:` `HotelDetalle` no viola restricciones de unicidad (ej. código) (CU-10, FA 7.1). El `idGerente` es válido (PRE-02). +
+    `Post:` Se crea una nueva entidad Hotel (CU-10, POST-01).
+`RegistrarPolitica(PoliticaDetalle)`::
+    `Pre:` `PoliticaDetalle` no viola restricciones de unicidad o traslape (CU-17, FA 3.1). +
+    `Post:` Se crea una nueva entidad Politica (CU-17, POST-01).
+`RegistrarRecepcionista(RecepcionistaDetalle)`::
+    `Pre:` `RecepcionistaDetalle` no viola restricciones de unicidad (CU-35, FA 3.3). El `idHotel` es válido. +
+    `Post:` Se crea una nueva entidad Recepcionista y se asocia al hotel (CU-35, POST-01, POST-02).
+`RegistrarSalida(SalidaRegistro)`::
+    `Pre:` Existe una `Estancia` activa (CU-06, PRE-02). Todos los cargos están cubiertos (Flujo 5). +
+    `Post:` La `Estancia` se marca como "Cerrada" (CU-06, POST-01) y la `Habitacion` se libera (POST-01).
+`RegistrarTarifa(TarifaDetalle)`::
+    `Pre:` `TarifaDetalle` no viola restricciones de unicidad o traslape (CU-14, FA 3.1). +
+    `Post:` Se crea una nueva entidad Tarifa (CU-14, POST-01).
+`ValidarPertenenciaRecepcionistaHotel(int, int)`::
+    `Pre:` `idGerente` y `idHotel` son válidos. +
+    `Post:` Devuelve `true` si el `Hotel` está asignado al `Gerente`, `false` en caso contrario (CU-35, Flujo 3).
+
+===== Interfaz: IHuespedMgt
+image::Interfaces/Interfaz - IHuespedMgt.png[IHuespedMgt, width=900, align="center"]
+##### Pre/Post-condiciones
+[horizontal]
+`CrearCuenta(CuentaDetalle)`::
+    `Pre:` No existe una cuenta previa con el email/teléfono proporcionado (CU-29, PRE-01). Los datos son válidos (FA 3.2). +
+    `Post:` La cuenta del huésped se crea en el sistema y queda activa (CU-29, POST-01).
+`ActualizarCuenta(CuentaDetalle)`::
+    `Pre:` El huésped está autenticado (CU-30, PRE-01) y la cuenta existe (PRE-02). Los datos son válidos y no están duplicados (EX 1). +
+    `Post:` Los datos de la cuenta se actualizan (CU-30, POST-01).
+`EliminarCuenta(int)`::
+    `Pre:` El huésped está autenticado (CU-28, PRE-01) y la cuenta está activa (PRE-02). No existen estancias activas ni saldos pendientes (PRE-03, FA 3.1). +
+    `Post:` La cuenta se desactiva (baja lógica) (CU-28, POST-01).
+`ObtenerHuespedSesion()`::
+    `Pre:` El huésped está autenticado (CU-02, PRE-03). +
+    `Post:` Devuelve los datos del `Huesped` asociado a la sesión.
+
+===== Interfaz: IPasarelaPagosMgt
+image::Interfaces/Interfaz - IPasarelaPagosMgt.png[IPasarelaPagosMgt, width=900, align="center"]
+##### Pre/Post-condiciones
+[horizontal]
+`CapturarDatosPago(DatosPago)`::
+    `Pre:` Existe una reservación pendiente de pago (CU-03, PRE-01). `DatosPago` contiene la información de la pasarela (Flujo 2). +
+    `Post:` El pago es procesado por la pasarela. Devuelve `void` (la respuesta se maneja asincrónicamente o se consulta).
+`GenerarRecibo(ReciboDetalle)`::
+    `Pre:` El pago fue "Aprobado" (CU-03, Flujo 3). `ReciboDetalle` contiene la información de la transacción. +
+    `Post:` Se genera y devuelve un objeto `Recibo` con los detalles de la transacción (CU-03, Flujo 3).
+`RealizarPago(MetodoPagoEnum)`::
+    `Pre:` Existe una reservación pendiente de pago (CU-02, Flujo 3). +
+    `Post:` El pago es procesado por la pasarela externa. Devuelve `true` si fue "Aprobado", `false` si fue "Rechazado" (CU-02, FA 3.3) o "Pendiente".
+`ReembolsarPago(string, string)`::
+    `Pre:` Existe un pago aprobado asociado al `folio` (primer `string`) de la reservación (CU-04, Flujo 5). El segundo `string` es el `numeroTarjeta` (o token) para el reembolso. +
+    `Post:` Se procesa la devolución del pago a través de la pasarela externa (CU-04, Flujo 5).
+
+===== Interfaz: ITipoHabitacionMgt
+image::Interfaces/Interfaz - ITipoHabitacionMgt.png[ITipoHabitacionMgt, width=900, align="center"]
+##### Pre/Post-condiciones
+[horizontal]
+`RegistrarTipoHabitacion(TipoHabitacionDetalle)`::
+    `Pre:` El administrador está autenticado (CU-20, PRE-01). Los datos (código, nombre) no están duplicados (FA 3.2). +
+    `Post:` El nuevo tipo de habitación queda registrado (CU-20, POST-01).
+`ConsultarTipoHabitacion(TipoHabitacionConsulta)`::
+    `Pre:` El administrador está autenticado (CU-21, PRE-01). +
+    `Post:` Devuelve una lista de `TipoHabitacion[]` según los criterios (CU-21, Flujo 3).
+`ActualizarTipoHabitacion(TipoHabitacionDetalle)`::
+    `Pre:` El administrador está autenticado (CU-22, PRE-01) y el tipo existe (PRE-02). Los datos no están duplicados (FA 5.1). +
+    `Post:` El tipo de habitación queda actualizado (CU-22, POST-01).
+`EliminarTipoHabitacion(TipoHabitacionEliminar)`::
+    `Pre:` El administrador está autenticado (CU-23, PRE-01) y el tipo existe (PRE-02). No hay habitaciones activas ni reservas futuras asociadas (FA 3.2). +
+    `Post:` El tipo de habitación queda inhabilitado (CU-23, POST-01).
+
+=== Interacción de Componente
+
+==== Componente: SistemaReservaciones
+
+===== Interfaz: IConsultarDisponibilidad (CU-01)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IConsultarDisponibilidad`, correspondiente al `CU-01`:
+
+.Diagrama de Comunicación: Consultar Disponibilidad
+image::Comunicacion/CU-01-Consultar-disponibilidad/ConsultarDisponibilidadHabitacion.png[Consultar Disponibilidad, width=900, align="center"]
+
+===== Interfaz: IReservarHabitacion (CU-02)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IReservarHabitacion`, correspondiente al `CU-02`:
+
+.Diagrama de Comunicación: Consultar Disponibilidad
+image::Comunicacion/CU-02-Reservar-una-habitación/ConsultarDisponibilidadHabitacion.png[Consultar Disponibilidad, width=900, align="center"]
+
+.Diagrama de Comunicación: Crear Reservacion
+image::Comunicacion/CU-02-Reservar-una-habitación/CrearReservacion.png[Crear Reservacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Realizar Pago
+image::Comunicacion/CU-02-Reservar-una-habitación/RealizarPago.png[Realizar Pago, width=900, align="center"]
+
+===== Interfaz: IRealizarPagoReservacion (CU-03)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IRealizarPagoReservacion`, correspondiente al `CU-03`:
+
+.Diagrama de Comunicación: Capturar Datos Pago
+image::Comunicacion/CU-03-Realizar-el-pago-de-la-reservación/CapturarDatosPago.png[Capturar Datos Pago, width=900, align="center"]
+
+.Diagrama de Comunicación: Generar Recibo
+image::Comunicacion/CU-03-Realizar-el-pago-de-la-reservación/GenerarRecibo.png[Generar Recibo, width=900, align="center"]
+
+===== Interfaz: ICancelarReservacion (CU-04)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `ICancelarReservacion`, correspondiente al `CU-04`:
+
+.Diagrama de Comunicación: Buscar Reservacion
+image::Comunicacion/CU-04-Cancelar-reservación/BuscarReservacion.png[Buscar Reservacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Cancelar Reservacion
+image::Comunicacion/CU-04-Cancelar-reservación/CancelarReservacion.png[Cancelar Reservacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Reembolsar Pago
+image::Comunicacion/CU-04-Cancelar-reservación/ReembolsarPago.png[Reembolsar Pago, width=900, align="center"]
+
+==== Componente: SistemaGestionEstancias
+
+===== Interfaz: IRegistroEntrada (CU-05)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IRegistroEntrada`, correspondiente al `CU-05`:
+
+.Diagrama de Comunicación: Buscar Reservacion
+image::Comunicacion/CU-05-Registrar-entrada/BuscarReservacion.png[Buscar Reservacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Registrar Entrada
+image::Comunicacion/CU-05-Registrar-entrada/RegistrarEntrada.png[Registrar Entrada, width=900, align="center"]
+
+===== Interfaz: IRegistroSalida (CU-06)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IRegistroSalida`, correspondiente al `CU-06`:
+
+.Diagrama de Comunicación: Buscar Reservacion
+image::Comunicacion/CU-06-Registrar-salida/BuscarReservacion.png[Buscar Reservacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Realizar Pago
+image::Comunicacion/CU-06-Registrar-salida/RealizarPago.png[Realizar Pago, width=900, align="center"]
+
+.Diagrama de Comunicación: Registrar Salida
+image::Comunicacion/CU-06-Registrar-salida/RegistrarSalida.png[Registrar Salida, width=900, align="center"]
+
+===== Interfaz: ICambiarHabitacionHuesped (CU-07)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `ICambiarHabitacionHuesped`, correspondiente al `CU-07`:
+
+.Diagrama de Comunicación: Buscar Estancia Huesped
+image::Comunicacion/CU-07-Cambiar-de-habitación-a-un-huésped/BuscarEstanciaHuesped.png[Buscar Estancia Huesped, width=900, align="center"]
+
+.Diagrama de Comunicación: Cambiar Habitacion
+image::Comunicacion/CU-07-Cambiar-de-habitación-a-un-huésped/CambiarHabitacion.png[Cambiar Habitacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Disponibilidad Habitacion
+image::Comunicacion/CU-07-Cambiar-de-habitación-a-un-huésped/ConsultarDisponibilidadHabitacion.png[Consultar Disponibilidad Habitacion, width=900, align="center"]
+
+===== Interfaz: IRegistrarConsumoServicio (CU-08)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IRegistrarConsumoServicio`, correspondiente al `CU-08`:
+
+.Diagrama de Comunicación: Buscar Estancia Huesped
+image::Comunicacion/CU-08-Registrar-consumo-o-servicio/BuscarEstanciaHuesped.png[Buscar Estancia Huesped, width=900, align="center"]
+
+.Diagrama de Comunicación: Registrar Consumo
+image::Comunicacion/CU-08-Registrar-consumo-o-servicio/RegistrarConsumo.png[Registrar Consumo, width=900, align="center"]
+
+===== Interfaz: IExtenderEstancia (CU-09)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IExtenderEstancia`, correspondiente al `CU-09`:
+
+.Diagrama de Comunicación: Actualizar Fecha Salida
+image::Comunicacion/CU-09-Extender-estancia/ActualizarFechaSalida.png[Actualizar Fecha Salida, width=900, align="center"]
+
+.Diagrama de Comunicación: Buscar Estancia Huesped
+image::Comunicacion/CU-09-Extender-estancia/BuscarEstanciaHuesped.png[Buscar Estancia Huesped, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Disponibilidad Habitacion
+image::Comunicacion/CU-09-Extender-estancia/ConsultarDisponibilidadHabitacion.png[Consultar Disponibilidad Habitacion, width=900, align="center"]
+
+==== Componente: SistemaGestionHotel
+
+===== Interfaz: IRegistrarHotel (CU-10)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IRegistrarHotel`, correspondiente al `CU-10`:
+
+.Diagrama de Comunicación: Agregar Servicio
+image::Comunicacion/CU-10-Registrar-hotel/AgregarServicio.png[Agregar Servicio, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Gerente
+image::Comunicacion/CU-10-Registrar-hotel/ConsultarGerente.png[Consultar Gerente, width=900, align="center"]
+
+.Diagrama de Comunicación: Registrar Hotel
+image::Comunicacion/CU-10-Registrar-hotel/RegistrarHotel.png[Registrar Hotel, width=900, align="center"]
+
+===== Interfaz: IConsultarHotel (CU-11)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IConsultarHotel`, correspondiente al `CU-11`:
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-11-Consultar-hotel/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+===== Interfaz: IActualizarHotel (CU-12)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IActualizarHotel`, correspondiente al `CU-12`:
+
+.Diagrama de Comunicación: Actualizar Hotel
+image::Comunicacion/CU-12-Actualizar-hotel/ActualizarHotel.png[Actualizar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Agregar Servicio
+image::Comunicacion/CU-12-Actualizar-hotel/AgregarServicio.png[Agregar Servicio, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Gerente
+image::Comunicacion/CU-12-Actualizar-hotel/ConsultarGerente.png[Consultar Gerente, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-12-Actualizar-hotel/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+===== Interfaz: IDarDeBajaHotel (CU-13)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IDarDeBajaHotel`, correspondiente al `CU-13`:
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-13-Dar-de-baja-hotel/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Eliminar Hotel
+image::Comunicacion/CU-13-Dar-de-baja-hotel/EliminarHotel.png[Eliminar Hotel, width=900, align="center"]
+
+===== Interfaz: IRegistrarTarifa (CU-14)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IRegistrarTarifa`, correspondiente al `CU-14`:
+
+.Diagrama de Comunicación: Registrar Tarifa
+image::Comunicacion/CU-14-Registrar-tarifa/RegistrarTarifa.png[Registrar Tarifa, width=900, align="center"]
+
+===== Interfaz: IConsultarTarifa (CU-15)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IConsultarTarifa`, correspondiente al `CU-15`:
+
+.Diagrama de Comunicación: Consultar Tarifa
+image::Comunicacion/CU-15-Consultar-tarifa/ConsultarTarifa.png[Consultar Tarifa, width=900, align="center"]
+
+===== Interfaz: IActualizarTarifa (CU-16)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IActualizarTarifa`, correspondiente al `CU-16`:
+
+.Diagrama de Comunicación: Actualizar Tarifa
+image::Comunicacion/CU-16-Actualizar-tarifa/ActualizarTarifa.png[Actualizar Tarifa, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Tarifa
+image::Comunicacion/CU-16-Actualizar-tarifa/ConsultarTarifa.png[Consultar Tarifa, width=900, align="center"]
+
+===== Interfaz: IRegistrarPolitica (CU-17)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IRegistrarPolitica`, correspondiente al `CU-17`:
+
+.Diagrama de Comunicación: Registrar Politica
+image::Comunicacion/CU-17-Registrar-política/RegistrarPolitica.png[Registrar Politica, width=900, align="center"]
+
+===== Interfaz: IActualizarPolitica (CU-18)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IActualizarPolitica`, correspondiente al `CU-18`:
+
+.Diagrama de Comunicación: Actualizar Politica
+image::Comunicacion/CU-18-Actualizar-política/ActualizarPolitica.png[Actualizar Politica, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Politica
+image::Comunicacion/CU-18-Actualizar-política/ConsultarPolitica.png[Consultar Politica, width=900, align="center"]
+
+===== Interfaz: IConsultarPolitica (CU-19)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IConsultarPolitica`, correspondiente al `CU-19`:
+
+.Diagrama de Comunicación: Consultar Politica
+image::Comunicacion/CU-19-Consultar-política/ConsultarPolitica.png[Consultar Politica, width=900, align="center"]
+
+==== Componente: SistemaAdministracionHabitaciones
+
+===== Interfaz: IRegistrarTipoHabitacion (CU-20)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IRegistrarTipoHabitacion`, correspondiente al `CU-20`:
+
+.Diagrama de Comunicación: Registrar Tipo de Habitacion
+image::Comunicacion/CU-20-Registrar-Tipo-habitacion/RegistrarTipoHabitacion.png[Registrar Tipo de Habitacion, width=900, align="center"]
+
+===== Interfaz: IConsultarTipoHabitacion (CU-21)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IConsultarTipoHabitacion`, correspondiente al `CU-21`:
+
+.Diagrama de Comunicación: Consultar Tipo de Habitacion
+image::Comunicacion/CU-21-Consultar-Tipo-Habitacion/ConsultarTipoHabitacion.png[Consultar Tipo de Habitacion, width=900, align="center"]
+
+===== Interfaz: IActualizarTipoHabitacion (CU-22)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IActualizarTipoHabitacion`, correspondiente al `CU-22`:
+
+.Diagrama de Comunicación: Actualizar Tipo de Habitacion
+image::Comunicacion/CU-22-Actualizar-Tipo-Habitacion/ActualizarTipoHabitacion.png[Actualizar Tipo de Habitacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Tipo de Habitacion
+image::Comunicacion/CU-22-Actualizar-Tipo-Habitacion/ConsultarTipoHabitacion.png[Consultar Tipo de Habitacion, width=900, align="center"]
+
+===== Interfaz: IDarDeBajaTipoHabitacion (CU-23)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IDarDeBajaTipoHabitacion`, correspondiente al `CU-23`:
+
+.Diagrama de Comunicación: Consultar Tipo de Habitacion
+image::Comunicacion/CU-23-Dar-De-Baja-Tipo-Habitacion/ConsultarTipoHabitacion.png[Consultar Tipo de Habitacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Eliminar Tipo de Habitacion
+image::Comunicacion/CU-23-Dar-De-Baja-Tipo-Habitacion/EliminarTipoHabitacion.png[Eliminar Tipo de Habitacion, width=900, align="center"]
+
+===== Interfaz: IRegistrarHabitacion (CU-24)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IRegistrarHabitacion`, correspondiente al `CU-24`:
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-24-Registrar-habitacion/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Tipo de Habitacion
+image::Comunicacion/CU-24-Registrar-habitacion/ConsultarTipoHabitacion.png[Consultar Tipo de Habitacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Registrar Habitacion
+image::Comunicacion/CU-24-Registrar-habitacion/RegistrarHabitacion.png[Registrar Habitacion, width=900, align="center"]
+
+==== Interfaz: IConsultarHabitacion (CU-25)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IConsultarHabitacion`, correspondiente al `CU-25`:
+
+.Diagrama de Comunicación: Consultar Habitacion
+image::Comunicacion/CU-25-Consultar-habitacion/ConsultarHabitacion.png[Consultar Habitacion, width=900, align="center"]
+
+===== Interfaz: IActualizarHabitacion (CU-26)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IActualizarHabitacion`, correspondiente al `CU-26`:
+
+.Diagrama de Comunicación: Actualizar Habitacion
+image::Comunicacion/CU-26-Actualizar-Habitacion/ActualizarHabitacion.png[Actualizar Habitacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Habitacion
+image::Comunicacion/CU-26-Actualizar-Habitacion/ConsultarHabitacion.png[Consultar Habitacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-26-Actualizar-Habitacion/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Tipo de Habitacion
+image::Comunicacion/CU-26-Actualizar-Habitacion/ConsultarTipoHabitacion.png[Consultar Tipo de Habitacion, width=900, align="center"]
+
+===== Interfaz: IDarDeBajaHabitacion (CU-27)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IDarDeBajaHabitacion`, correspondiente al `CU-27`:
+
+.Diagrama de Comunicación: Consultar Habitacion
+image::Comunicacion/CU-27-Dar-De-Baja-Habitacion/ConsultarHabitacion.png[Consultar Habitacion, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-27-Dar-De-Baja-Habitacion/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Eliminar Habitacion
+image::Comunicacion/CU-27-Dar-De-Baja-Habitacion/EliminarHabitacion.png[Eliminar Habitacion, width=900, align="center"]
+
+==== Componente: SistemaGestionActores
+
+===== Interfaz: IDarDeBajaCuenta (CU-28)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IDarDeBajaCuenta`, correspondiente al `CU-28`:
+
+.Diagrama de Comunicación: Eliminar Cuenta
+image::Comunicacion/CU-28-Dar-de-baja-cuenta/EliminarCuenta.png[Eliminar Cuenta, width=900, align="center"]
+
+===== Interfaz: ICrearCuenta (CU-29)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `ICrearCuenta`, correspondiente al `CU-29`:
+
+.Diagrama de Comunicación: Crear Cuenta
+image::Comunicacion/CU-29-Crear-cuenta/CrearCuenta.png[Crear Cuenta, width=900, align="center"]
+
+===== Interfaz: IActualizarCuenta (CU-30)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IActualizarCuenta`, correspondiente al `CU-30`:
+
+.Diagrama de Comunicación: Actualizar Cuenta
+image::Comunicacion/CU-30-Actualizar-cuenta/ActualizarCuenta.png[Actualizar Cuenta, width=900, align="center"]
+
+===== Interfaz: IRegistrarGerente (CU-31)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IRegistrarGerente`, correspondiente al `CU-31`:
+
+.Diagrama de Comunicación: Registrar Gerente
+image::Comunicacion/CU-31-Registrar-gerente/RegistrarGerente.png[Registrar Gerente, width=900, align="center"]
+
+===== Interfaz: IConsultarGerente (CU-32)
+El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IConsultarGerente`, correspondiente al `CU-32`:
+
+.Diagrama de Comunicación: Consultar Gerente
+image::Comunicacion/CU-32-Consultar-gerente/ConsultarGerente.png[Consultar Gerente, width=900, align="center"]
+
+===== Interfaz: IActualizarGerente (CU-33)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IActualizarGerente`, correspondiente al `CU-33`:
+
+.Diagrama de Comunicación: Actualizar Gerente
+image::Comunicacion/CU-33-Actualizar-gerente/ActualizarGerente.png[Actualizar Gerente, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Gerente
+image::Comunicacion/CU-33-Actualizar-gerente/ConsultarGerente.png[Consultar Gerente, width=900, align="center"]
+
+===== Interfaz: IDarDeBajaGerente (CU-34)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IDarDeBajaGerente`, correspondiente al `CU-34`:
+
+.Diagrama de Comunicación: Consultar Gerente
+image::Comunicacion/CU-34-Dar-de-baja-gerente/ConsultarGerente.png[Consultar Gerente, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-34-Dar-de-baja-gerente/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Eliminar Gerente
+image::Comunicacion/CU-34-Dar-de-baja-gerente/EliminarGerente.png[Eliminar Gerente, width=900, align="center"]
+
+===== Interfaz: IRegistrarRecepcionista (CU-35)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IRegistrarRecepcionista`, correspondiente al `CU-35`:
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-35-Registrar-recepcionista/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Registrar Recepcionista
+image::Comunicacion/CU-35-Registrar-recepcionista/RegistrarRecepcionista.png[Registrar Recepcionista, width=900, align="center"]
+
+===== Interfaz: IConsultarRecepcionista (CU-36)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IConsultarRecepcionista`, correspondiente al `CU-36`:
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-36-Consultar-recepcionista/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Recepcionista
+image::Comunicacion/CU-36-Consultar-recepcionista/ConsultarRecepcionista.png[Consultar Recepcionista, width=900, align="center"]
+
+===== Interfaz: IActualizarRecepcionista (CU-37)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IActualizarRecepcionista`, correspondiente al `CU-37`:
+
+.Diagrama de Comunicación: Actualizar Recepcionista
+image::Comunicacion/CU-37-Actualizar-recepcionista/ActualizarRecepcionista.png[Actualizar Recepcionista, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-37-Actualizar-recepcionista/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Recepcionista
+image::Comunicacion/CU-37-Actualizar-recepcionista/ConsultarRecepcionista.png[Consultar Recepcionista, width=900, align="center"]
+
+===== Interfaz: IDarDeBajaRecepcionista (CU-38)
+Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IDarDeBajaRecepcionista`, correspondiente al `CU-38`:
+
+.Diagrama de Comunicación: Consultar Hotel
+image::Comunicacion/CU-38-Dar-de-baja-recepcionista/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+
+.Diagrama de Comunicación: Consultar Recepcionista
+image::Comunicacion/CU-38-Dar-de-baja-recepcionista/ConsultarRecepcionista.png[Consultar Recepcionista, width=900, align="center"]
+
+.Diagrama de Comunicación: Eliminar Recepcionista
+image::Comunicacion/CU-38-Dar-de-baja-recepcionista/EliminarRecepcionista.png[Eliminar Recepcionista, width=900, align="center"]
