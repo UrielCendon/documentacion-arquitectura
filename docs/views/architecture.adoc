@@ -1064,10 +1064,10 @@ image::Comunicacion/CU-12-Actualizar-Hotel/ConsultarHotel.png[Consultar Hotel, w
 Los siguientes diagramas de comunicación ilustran la colaboración para cada operación de la interfaz `IDarDeBajaHotel`, correspondiente al `CU-13`:
 
 .Diagrama de Comunicación: Consultar Hotel
-image::Comunicacion/CU-13-Dar-de-baja-Hotel/ConsultarHotel.png[Consultar Hotel, width=900, align="center"]
+image::Comunicacion/CU-13-Dar-de-baja-hotel/Consultar-Hotel.png[Consultar Hotel, width=900, align="center"]
 
 .Diagrama de Comunicación: Eliminar Hotel
-image::Comunicacion/CU-13-Dar-de-baja-Hotel/EliminarHotel.png[Eliminar Hotel, width=900, align="center"]
+image::Comunicacion/CU-13-Dar-de-baja-hotel/Eliminar-Hotel.png[Eliminar Hotel, width=900, align="center"]
 
 ===== Interfaz: IRegistrarTarifa (CU-14)
 El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IRegistrarTarifa`, correspondiente al `CU-14`:
