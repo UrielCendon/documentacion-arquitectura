@@ -1117,7 +1117,7 @@ image::Comunicacion/CU-19-Consultar-política/ConsultarPolitica.png[Consultar Po
 El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IRegistrarTipoHabitacion`, correspondiente al `CU-20`:
 
 .Diagrama de Comunicación: Registrar Tipo de Habitacion
-image::Comunicacion/CU-20-Registrar-Tipo-habitacion/RegistrarTipoHabitacion.png[Registrar Tipo de Habitacion, width=900, align="center"]
+image::Comunicacion/CU-20-Registrar-Tipo-Habitacion/RegistrarTipoHabitacion.png[Registrar Tipo de Habitacion, width=900, align="center"]
 
 ===== Interfaz: IConsultarTipoHabitacion (CU-21)
 El siguiente diagrama de comunicación ilustra la colaboración para cada operación de la interfaz `IConsultarTipoHabitacion`, correspondiente al `CU-21`:
