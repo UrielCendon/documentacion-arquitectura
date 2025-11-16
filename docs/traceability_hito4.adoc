@@ -8,6 +8,61 @@ La siguiente matriz relaciona cada **driver arquitectónico** (casos de uso –C
 |===
 | *Driver (ID y Tipo)* | *Decisión de Diseño (Táctica / Patrón)* | *Artefactos Afectados (Vistas/Elementos)* | *Estado*
 
+| **QAS‑1 (Disponibilidad)**
+| Aplicación de tácticas **Ping/Echo** y **Heartbeat** mediante **endpoints de health‑check** por módulo de dominio.  Los orquestadores o balanceadores detectan instancias defectuosas (< 5 s) y redirigen el tráfico a nodos sanos, logrando recuperación automática (MTTR < 30 s).
+| Vista de despliegue: infraestructura de balanceo de carga y orquestación; endpoints de salud en cada servicio de dominio (Reservations, Inventory, Payments, etc.).
+| Cumple
+
+| **QAS‑2 (Rendimiento)**
+| Uso de **CQRS** (Command Query Responsibility Segregation): comandos (escrituras) operan sobre el RDBMS principal y consultas (lecturas) usan réplica de lectura o caché desnormalizada.  Táctica **Mantener múltiples copias de datos** reduce latencia en consultas de disponibilidad (P95 ≤ 500 ms) sin comprometer consistencia en escrituras.
+| Servicios ReservationService e InventoryService en la capa de Dominio; capa de Infraestructura con réplicas de lectura y caché.
+| Cumple
+
+| **QAS‑3 (Seguridad)**
+| Implementación de **control de acceso basado en roles** (RBAC) y **registro de auditoría** para detectar y bloquear intentos no autorizados.  Táctica **Detectar intrusiones** con registro completo de eventos (actor, timestamp, acción) y **Limitar acceso** mediante autenticación y autorización.
+| Módulo Identity (autenticación/autorización); infraestructura de logging y auditoría; servicios de Reservations y Payments con validación de permisos.
+| Cumple
+
+| **QAS‑4 (Usabilidad)**
+| **API Gateway** actuando como **Facade** simplifica la interacción del cliente, reduciendo el número de llamadas y presentando una interfaz unificada.  Táctica **Separar interfaz de usuario** permite diseño guiado con validaciones y mensajes claros en la capa de Presentación.
+| Capa de Presentación con interfaces web y móvil; API Gateway en capa de Aplicación; componentes de UI con flujos guiados y validaciones.
+| Cumple
+
+| **QAS‑5 (Modificabilidad)**
+| **Arquitectura en capas** + **DDD** con módulo de Políticas separado permite cambios de configuración (ej. porcentaje de overbooking) sin recompilación.  Táctica **Aplazamiento de vinculación** mediante configuración externa y **Aumentar cohesión** en módulo de Policies.
+| Módulo Policies en capa de Dominio; mecanismos de configuración dinámica; interfaces estables entre módulos.
+| Cumple
+
+| **CU‑01 (Consultar disponibilidad)**
+| Implementación mediante **CQRS** para consultas: el servicio CheckAvailability consulta réplica de lectura/caché desnormalizada, aplicando táctica **Mantener múltiples copias** para latencia baja sin bloquear escrituras.
+| Servicio InventoryService (operación CheckAvailability); réplica de lectura o caché en capa de Infraestructura; Vista funcional subsistema Reservaciones.
+| Cumple
+
+| **CU‑02 (Reservar una habitación)**
+| Flujo orquestado por **Application Services** (ReservationAppService) que coordina validación de inventario, creación de reserva y procesamiento de pago.  Patrón **Facade** en API Gateway simplifica interacción del cliente.  Táctica **Transacciones (ACID)** asegura atomicidad.
+| ReservationAppService en capa de Aplicación; servicios ReservationService, InventoryService, PricingService en Dominio; API Gateway; Vista funcional subsistema Reservaciones.
+| Cumple
+
+| **CU‑03 (Realizar el pago de la reservación)**
+| **Patrón Adapter** en módulo Payments encapsula integración con pasarela externa.  Táctica **Usar un intermediario** aísla cambios de API del proveedor.  **Idempotencia** con token único evita cargos duplicados.
+| PaymentService y PaymentAdapter en módulo Payments; integración con pasarela externa; Vista funcional subsistema Reservaciones.
+| Cumple
+
+| **CU‑04 (Cancelar reservación)**
+| Aplicación de **política de cancelación** mediante módulo Policies; **Transacciones ACID** aseguran liberación de inventario y procesamiento de reembolso atómico.  Táctica **Aumentar cohesión** en módulo de políticas.
+| ReservationService y PolicyService en Dominio; PaymentService para reembolsos; módulo Policies; Vista funcional subsistema Reservaciones.
+| Cumple
+
+| **CU‑05 (Registrar entrada)**
+| Operación de check‑in coordinada por Application Service que valida reservación, actualiza estado y asigna habitación física.  Táctica **Transacciones** asegura consistencia entre reservación y asignación de habitación.
+| CheckInAppService en capa de Aplicación; ReservationService e InventoryService en Dominio; Vista funcional subsistema Estancias.
+| Cumple
+
+| **CU‑06 (Registrar salida)**
+| Operación de check‑out que consolida cargos (consumos/servicios) y libera habitación.  **Transacciones ACID** aseguran que la liberación de inventario y el cierre de cuenta sean atómicos.
+| CheckOutAppService en capa de Aplicación; ReservationService, InventoryService, BillingService en Dominio; Vista funcional subsistema Estancias.
+| Cumple
+
 | **CRN‑7 (Mantenibilidad)**
 | Tácticas **Reducir acoplamiento** y **Aumentar cohesión** aplicadas mediante el **patrón de Arquitectura en Capas** y **Domain‑Driven Design**.  La arquitectura se divide en Presentación, Aplicación, Dominio e Infraestructura; cada módulo de dominio (Reservations, Inventory, Pricing, Payments, Identity, Catalogs) encapsula responsabilidades para facilitar cambios【431450688115606†L3871-L3923】.
 | Vista lógica del Capítulo 5: estructura en capas y módulos de dominio【431450688115606†L4047-L4092】.
@@ -111,9 +166,9 @@ La siguiente matriz relaciona cada **driver arquitectónico** (casos de uso –C
 
 ==== Descripción General
 
-La matriz presenta la trazabilidad de los principales **impulsores arquitectónicos** identificados en el Hito 3 del *Sistema de Gestión de una Cadena Hotelera*.  Por cada restricción (CON), preocupación (CRN) o escenario de calidad se indican las tácticas y patrones aplicados, los elementos del diseño afectados y el grado de cumplimiento.
+La matriz presenta la trazabilidad de los principales **impulsores arquitectónicos** identificados en el Hito 3 del *Sistema de Gestión de una Cadena Hotelera*.  Por cada **escenario de atributo de calidad (QAS)**, **caso de uso (CU)**, **restricción (CON)** y **preocupación (CRN)** se indican las tácticas y patrones aplicados, los elementos del diseño afectados y el grado de cumplimiento.
 
-* **Por qué:** Las filas de la primera columna enumeran los drivers que motivan el diseño (restricciones de negocio/técnica, preocupaciones de calidad o requisitos de seguridad y operación).
+* **Por qué:** Las filas de la primera columna enumeran los drivers que motivan el diseño: escenarios de atributos de calidad (QAS) que establecen metas medibles, casos de uso (CU) que representan funcionalidad clave, restricciones (CON) de negocio/técnica y preocupaciones (CRN) de calidad y operación.
 * **Cómo:** La segunda columna describe las tácticas y patrones utilizados (Arquitectura en capas, Domain‑Driven Design, CQRS, Adapter, API Gateway, health‑checks, etc.) para responder a cada driver.
 * **Qué:** La tercera columna apunta a los artefactos donde se evidencia la decisión: vistas lógicas, módulos de dominio, servicios, adaptadores y mecanismos de observabilidad.
 
