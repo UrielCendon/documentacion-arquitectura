@@ -1,0 +1,120 @@
+== Trazabilidad
+
+=== Matriz de Trazabilidad
+
+La siguiente matriz relaciona cada **driver arquitectónico** (casos de uso –CU–, escenarios de atributos de calidad –QAS–, restricciones –CON– y preocupaciones –CRN–) con la **decisión de diseño** tomada para satisfacerlo, los **artefactos arquitectónicos** donde se materializa dicha decisión y su **estado** (Cumple / Parcial / Pendiente).  Las referencias entre paréntesis señalan las secciones del Hito 3 donde se justifica la decisión.
+
+[cols="^20,<35,<35,^10", options="header"]
+|===
+| *Driver (ID y Tipo)* | *Decisión de Diseño (Táctica / Patrón)* | *Artefactos Afectados (Vistas/Elementos)* | *Estado*
+
+| **CRN‑7 (Mantenibilidad)**
+| Tácticas **Reducir acoplamiento** y **Aumentar cohesión** aplicadas mediante el **patrón de Arquitectura en Capas** y **Domain‑Driven Design**.  La arquitectura se divide en Presentación, Aplicación, Dominio e Infraestructura; cada módulo de dominio (Reservations, Inventory, Pricing, Payments, Identity, Catalogs) encapsula responsabilidades para facilitar cambios【431450688115606†L3871-L3923】.
+| Vista lógica del Capítulo 5: estructura en capas y módulos de dominio【431450688115606†L4047-L4092】.
+| Cumple
+
+| **CRN‑8 (Evolución)**
+| La modularidad de DDD permite incorporar nuevas políticas (cancelación, overbooking, pricing) o agregar dominios sin reescribir otros módulos; se aplica la táctica **Usar un intermediario** y contratos estables【431450688115606†L3871-L3923】.
+| Vista lógica y contratos de servicios en la capa de Dominio【431450688115606†L4047-L4092】.
+| Cumple
+
+| **CON‑2 (Técnica)**
+| Restricción de usar un **RDBMS** como base de datos transaccional.  La capa de Infraestructura encapsula el acceso al RDBMS, aislando la lógica de Dominio de la tecnología de persistencia【431450688115606†L3889-L3903】.
+| Vista de implementación: capa de Infraestructura y componentes de persistencia【431450688115606†L4047-L4092】.
+| Cumple
+
+| **CON‑6 (Canales)**
+| La capa de Presentación separa interfaces para web y app móvil.  El **API Gateway** centraliza la interacción con servicios de dominio, permitiendo soportar múltiples canales sin afectar la lógica de negocio【431450688115606†L3894-L3907】.
+| Vista lógica: Presentación → Application → Domain; uso de API Gateway【431450688115606†L4047-L4092】.
+| Cumple
+
+| **CRN‑5 (Rendimiento)**
+| Se utiliza una **variación de CQRS**; los comandos de reserva operan sobre el RDBMS y las consultas de disponibilidad usan una réplica de lectura o caché desnormalizada.  Esta táctica de **Mantener múltiples copias de datos** reduce latencia en lectura y asegura transacciones ACID【431450688115606†L3960-L3975】.
+| Modelo de persistencia (capa de Infraestructura) y servicios de Reservations/Inventory【431450688115606†L3960-L3979】.
+| Cumple
+
+| **CRN‑3 (Datos)**
+| La separación entre modelos de lectura y escritura (CQRS) garantiza **consistencia estricta** y evita bloqueos.  Las escrituras usan transacciones ACID en el RDBMS, mientras que la caché se actualiza casi en tiempo real【431450688115606†L3964-L3979】.
+| Servicios de ReservationService e InventoryService; contratos de persistencia【431450688115606†L3964-L3979】.
+| Cumple
+
+| **CON‑8 (Consistencia transaccional)**
+| Las operaciones de confirmación/cancelación usan transacciones ACID para evitar “doble cargo” o “doble reserva”; la táctica de **Transacciones** asegura atomicidad y consistencia【431450688115606†L3976-L3979】.
+| Capa de Infraestructura (repositorios) y módulo de Payments【431450688115606†L3964-L3979】.
+| Cumple
+
+| **CON‑3 (Pasarela de pago)**
+| Uso del **Patrón Adapter** en el módulo de Payments para integrar la pasarela de pago externa; se aplica la táctica **Usar un intermediario**, aislando cambios de la API del proveedor【431450688115606†L3981-L3987】.
+| Módulo *Payments* y adaptador hacia el proveedor externo【431450688115606†L3981-L3987】.
+| Cumple
+
+| **CRN‑9 (Idempotencia)**
+| Cada intento de pago se asocia con un **token único**; si la pasarela recibe un token ya procesado, no genera un nuevo cargo.  Esta táctica de idempotencia evita cargos duplicados【431450688115606†L3988-L3992】.
+| Servicios de Payments y contratos de integración con la pasarela【431450688115606†L3988-L3992】.
+| Cumple
+
+| **CON‑9 (Seguridad)**
+| La restricción de cifrar datos en tránsito y en reposo (HTTPS/TLS) se menciona en los impulsores【431450688115606†L3779-L3785】, pero las decisiones de diseño del Hito 3 no detallan cómo se implementará el cifrado ni la gestión de secretos.  Se considera **Parcial**.
+| Vista de seguridad (a definir en Hito 4).  Los servicios expondrán APIs HTTPS; se requiere especificar certificados y rotación.
+| Parcial
+
+| **CRN‑2 (Experiencia)**
+| Implementación de un **API Gateway** que actúa como **Facade**, simplificando el flujo de reserva a un máximo de cinco pasos.  La táctica **Usar un intermediario** reduce la complejidad del cliente【431450688115606†L4015-L4023】.
+| Componentes: API Gateway y Application Services (ReservationAppService, UserAppService, HotelAppService)【431450688115606†L4015-L4023】【431450688115606†L4081-L4086】.
+| Cumple
+
+| **CRN‑6 (Operabilidad)**
+| Se introduce **instrumentación estandarizada** con un **ID de correlación end‑to‑end**.  Cada solicitud propagada entre servicios lleva un ID que permite correlacionar logs, métricas y trazas; se aplican tácticas de **Detectar fallos** y **Registrar el fallo**【431450688115606†L4025-L4034】.
+| Instrumentación en todos los servicios; registro centralizado y observabilidad【431450688115606†L4025-L4034】.
+| Cumple
+
+| **CON‑5 (Operación)**
+| La estrategia de observabilidad se complementa con **trazabilidad** de cada operación (actor, timestamp, entidad, antes/después) mediante el ID de correlación y logging centralizado【431450688115606†L4025-L4034】.  Esto satisface la restricción de registrar operaciones con evidencias auditables.
+| Infraestructura de logging y traza distribuida; políticas de auditoría【431450688115606†L4025-L4034】.
+| Cumple
+
+| **CRN‑4 (Disponibilidad)**
+| Se definen **endpoints de health‑check** por módulo de dominio, aplicando tácticas de **Ping/Echo** y **Heartbeat**.  Los orquestadores o balanceadores utilizan estos endpoints para retirar instancias defectuosas y mejorar la resiliencia del sistema【431450688115606†L4037-L4043】.
+| Servicios de todos los dominios; monitorización activa en la Vista de Despliegue (futuro Hito 4)【431450688115606†L4037-L4043】.
+| Cumple
+
+| **CRN‑1 (Negocio)**
+| La preocupación por maximizar ocupación/ingresos aparece en los impulsores【431450688115606†L3788-L3790】.  El diseño se orienta a modularidad y flexibilidad, lo que facilita introducir políticas de pricing dinámico, pero no se detallan tácticas específicas de optimización de ingresos.  Se marca **Parcial**.
+| Módulo *Pricing* y capacidad de aplicar nuevas políticas (Impulsor CRN‑8)【431450688115606†L3871-L3881】.
+| Parcial
+
+| **CON‑7 (Regional/Legal)**
+| Requiere manejo de zonas horarias y moneda local, así como cumplimiento fiscal【431450688115606†L3767-L3773】.  La versión actual no describe decisiones para internacionalización ni manejo fiscal; se designa **Pendiente** para iteraciones futuras.
+| Deberá abordarse en la vista de internacionalización y en los servicios de facturación.
+| Pendiente
+
+| **CON‑4 (Overbooking máximo)**
+| Define un límite de sobreventa de 10 %.  Aunque el módulo de políticas permite configurar este parámetro, el diseño no describe mecanismos para hacer cumplir el tope ni para su auditoría; se considera **Parcial**【431450688115606†L3759-L3762】.
+| Módulo *Policies* en el dominio y servicios de Inventory/Reservations.
+| Parcial
+
+| **CON‑10 (Precio mostrado)**
+| Establece que el precio mostrado al iniciar la reserva debe mantenerse hasta la confirmación【431450688115606†L3783-L3786】.  La arquitectura actual no indica cómo se gestiona la fijación de precios durante la sesión; se marca **Pendiente**.
+| Deberá implementarse en el módulo de *Pricing* y en la capa de Aplicación.
+| Pendiente
+
+| **CRN‑10 (Seguridad y Cumplimiento)**
+| Propone proteger datos personales y mantener evidencias auditables【431450688115606†L3812-L3816】.  El diseño considera observabilidad y registros, pero no detalla control de acceso ni cifrado de datos en reposo; se clasifica como **Parcial**.
+| Requiere políticas de autorización, cifrado en base de datos y gestión de secretos.
+| Parcial
+
+| **CRN‑11 (Gobernanza de Configuración)**
+| Se refiere al control de cambios en tarifas y políticas con bitácora【431450688115606†L3816-L3818】.  La arquitectura modular facilita la configuración, pero no se documentan mecanismos de gobernanza ni bitácoras de cambio; se designa **Pendiente**.
+| Futuras iteraciones deberán incluir control de versiones y auditoría de configuraciones.
+| Pendiente
+|===
+
+==== Descripción General
+
+La matriz presenta la trazabilidad de los principales **impulsores arquitectónicos** identificados en el Hito 3 del *Sistema de Gestión de una Cadena Hotelera*.  Por cada restricción (CON), preocupación (CRN) o escenario de calidad se indican las tácticas y patrones aplicados, los elementos del diseño afectados y el grado de cumplimiento.
+
+* **Por qué:** Las filas de la primera columna enumeran los drivers que motivan el diseño (restricciones de negocio/técnica, preocupaciones de calidad o requisitos de seguridad y operación).
+* **Cómo:** La segunda columna describe las tácticas y patrones utilizados (Arquitectura en capas, Domain‑Driven Design, CQRS, Adapter, API Gateway, health‑checks, etc.) para responder a cada driver.
+* **Qué:** La tercera columna apunta a los artefactos donde se evidencia la decisión: vistas lógicas, módulos de dominio, servicios, adaptadores y mecanismos de observabilidad.
+
+La cuarta columna permite distinguir entre drivers **cumplidos** (las decisiones satisfacen por completo el requerimiento), **parciales** (se aborda parcialmente o se requiere mayor detalle) y **pendientes** (no hay decisiones documentadas en Hito 3).  Esta trazabilidad facilita identificar mejoras para el Hito 4 y confirma que la arquitectura responde a los requisitos críticos del sistema.
