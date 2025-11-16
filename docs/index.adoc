@@ -84,3 +84,6 @@ include::decisions.adoc[leveloffset=+1]
 == Arquitectura
 include::views/architecture.adoc[leveloffset=+1]
 include::appendix.adoc[]
+
+== Trazabilidad
+include::traceability.adoc[leveloffset=+1]

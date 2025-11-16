@@ -1,4 +1,4 @@
-== Trazabilidad
+== Matriz de Trazabilidad Arquitectónica
 
 La siguiente matriz muestra la relación entre los drivers arquitectónicos (ASR: CU, QAS, CON, CRN),
 las tácticas/patrones aplicados y los artefactos concretos de los hitos trabajados anteriormente.
@@ -10,7 +10,7 @@ las tácticas/patrones aplicados y los artefactos concretos de los hitos trabaja
 | Artefactos Afectados (vistas / elementos)
 | Estado
 
-| CRN-7 – Mantenibilidad 
+| CRN-7 – Mantenibilidad
 | Arquitectura en capas (Layered Architecture).
 Tácticas de modificabilidad: Reducir acoplamiento, Aumentar cohesión y
 Restringir dependencias entre capas, separando Presentation, Application, Domain e Infrastructure.
@@ -20,7 +20,7 @@ servicios de dominio y repositorios SQL.
 Vista de implementación 5.4 con nodos separados por capa.
 | Cumple
 
-| CRN-8 – Evolución 
+| CRN-8 – Evolución
 | Descomposición por dominios usando DDD.
 Cada subdominio (Reservations, Inventory, Payments, Pricing, Identity, Catalogs)
 define contratos propios que encapsulan reglas de negocio, facilitando agregar nuevas políticas
@@ -31,7 +31,7 @@ Interfaces de dominio: IReservationService, IInventoryService, IPaymentService,
 IPricingPolicy, IUserRepository, ICatalogService.
 | Cumple
 
-| CON-2 – Base de datos relacional obligatoria 
+| CON-2 – Base de datos relacional obligatoria
 | Uso de un RDBMS como almacén transaccional único, con repositorios especializados por agregado
 (patrón Repository). Aísla el acceso a datos y centraliza la consistencia.
 | Capa Infrastructure: SqlReservationRepository, SqlInventoryRepository, SqlUserRepository.
@@ -39,7 +39,7 @@ Vista de implementación 5.4: nodo RDBMS central y conexiones desde los reposito
 Diagramas de componentes <comp spec> donde los repositorios se ubican en Infrastructure.
 | Cumple
 
-| CON-6 – Canales Web y App móvil 
+| CON-6 – Canales Web y App móvil
 | Separación de la capa de presentación de la lógica de negocio; los clientes (web y móvil)
 consumen exclusivamente el API Gateway (patrón Client–Server + Facade).
 Táctica: Restringir dependencias desde Presentation hacia Application.
@@ -49,7 +49,7 @@ Diagramas de componentes <comp spec> donde WebApp/MobileApp llaman a API Gateway
 sin acceder directamente al dominio ni a la base de datos.
 | Cumple
 
-| CRN-5 – Rendimiento (latencia en búsquedas y confirmación) 
+| CRN-5 – Rendimiento (latencia en búsquedas y confirmación)
 | Variación de CQRS para inventario: modelo de escritura sobre el RDBMS y modelo de lectura
 en réplica/caché desnormalizada (táctica de rendimiento “Mantener múltiples copias de datos”).
 Separa consultas intensivas (CheckAvailability) de comandos (CreateReservation).
@@ -60,7 +60,7 @@ donde se invoca CheckAvailability sobre el modelo de lectura y CreateReservation
 | Cumple
 
 | CRN-3 – Consistencia de datos (inventario/tarifas)  +
-CON-8 – Consistencia transaccional 
+CON-8 – Consistencia transaccional
 | Escrituras de reservaciones, cancelaciones y actualizaciones de tarifas sobre el RDBMS aplicando
 transacciones ACID; confirmación de reserva solo si la transacción completa es exitosa.
 Táctica de disponibilidad: “Transacciones (ACID)” sobre un único origen de verdad.
@@ -72,7 +72,7 @@ por operación de negocio (confirmar/cancelar).
 | Cumple
 
 | CON-3 – Pagos vía pasarela externa  +
-CRN-9 – Idempotencia en pagos/confirmaciones 
+CRN-9 – Idempotencia en pagos/confirmaciones
 | Patrón Adapter en el módulo Payments (PaymentGatewayAdapter) para encapsular la pasarela externa
 (táctica de modificabilidad “Usar un intermediario”) y manejo de tokens idempotentes de transacción
 para evitar cobros duplicados (idempotent receiver).
@@ -83,7 +83,7 @@ Diagramas de comunicación de CU-03 Realizar el pago de la reservación y de CU-
 donde se reutiliza el token de transacción en reintentos sin duplicar cargos.
 | Cumple
 
-| CRN-2 – Experiencia de reserva ≤5 pasos 
+| CRN-2 – Experiencia de reserva ≤5 pasos
 | API Gateway en la capa Application actuando como Facade:
 concentra múltiples llamadas a los módulos de dominio en una sola operación de alto nivel
 por flujo de reserva (táctica “Usar un intermediario”), reduciendo pasos visibles al usuario.
@@ -93,7 +93,7 @@ Diagramas de comunicación para CU-01 a CU-04 que muestran ≤5 interacciones pr
 | Cumple
 
 | CRN-6 – Operabilidad (observabilidad end-to-end)  +
-CON-5 – Trazabilidad de operaciones 
+CON-5 – Trazabilidad de operaciones
 | Instrumentación estandarizada con ID de correlación end-to-end:
 cada petición que entra por API Gateway recibe un CorrelationId que se propaga a todos los servicios,
 aplicando las tácticas “Detectar fallos hacia Supervisar” y “Registrar el fallo” para diagnósticos y auditoría.
@@ -103,9 +103,9 @@ Escenarios de casos de uso donde las operaciones criticas (altas, bajas, cambios
 se registran en bitácoras de auditoría con actor, timestamp y entidad afectada.
 | Parcial
 
-| CRN-4 – Disponibilidad con degradación controlada 
+| CRN-4 – Disponibilidad con degradación controlada
 | Diseño orientado a habilitar degradación controlada mediante circuit breakers, colas y límites por ruta
-en picos de carga (lineamiento marcado en los impulsos arquitectónicos); la táctica aún no se refleja
+en picos de carga (lineamiento marcado en los impulsos arquitectónicos). La táctica aún no se refleja
 por completo en componentes específicos.
 | A futuro: puntos de integración en API Gateway, servicios de dominio de Reservaciones e Inventario
 y adaptadores externos (pagos, notificaciones).
@@ -115,7 +115,7 @@ ni escenarios de diseño detallados.
 
 | CU-02 – Reservar una habitación  +
 CU-03 Realizar el pago de la reservación  +
-CU-04 Cancelar reservación 
+CU-04 Cancelar reservación
 | Descomposición del flujo de reserva “de punta a punta” en componentes CBSD:
 orquestación en ReservationAppService, lógica en ReservationService/InventoryService/
 PricingService/PaymentService y repositorios especializados.
@@ -128,7 +128,7 @@ Diagramas de comunicación de CU-01–CU-04 que muestran la colaboración entre 
 (Application, Domain, Infrastructure) y la pasarela de pagos.
 | Cumple
 
-| CU-16 – Actualizar tarifa 
+| CU-16 – Actualizar tarifa
 | Encapsulamiento de reglas de tarifas en el módulo Pricing mediante la interfaz IPricingPolicy
 y el servicio PricingService; las operaciones de administración de tarifas actúan sobre estos contratos
 manteniendo auditoría y consistencia sobre el catálogo de precios.
@@ -149,12 +149,12 @@ atributos de calidad y escenarios de los atributos de calidad y las decisiones t
 
 La matriz conecta tres dimensiones del diseño:
 
-* El *por qué, representado por los *drivers (CU, CON, CRN y QAS) que capturan necesidades de negocio,
+* El por qué, representado por los *drivers* (CU, CON, CRN y QAS) que capturan necesidades de negocio,
   restricciones tecnológicas y atributos de calidad que se consideran arquitectónicamente significativos.
-* El *cómo, expresado mediante las *tácticas y patrones arquitectónicos seleccionados
+* El cómo, expresado mediante las *tácticas* y patrones arquitectónicos seleccionados
   (arquitectura en capas, DDD, repositorios, API Gateway como fachada, Adapter para pagos, variación de CQRS,
   instrumentación y monitoreo, etcétera).
-* El *qué, vinculado con los *artefactos arquitectónicos concretos: vistas lógicas, vistas de implementación,
+* El qué, vinculado con los *artefactos arquitectónicos* concretos: vistas lógicas, vistas de implementación,
   componentes CBSD, interfaces/contratos y diagramas de comunicación elaborados en el Hito 3.
 
 El propósito de la matriz es mostrar que el diseño arquitectónico no es arbitrario, sino que responde de forma

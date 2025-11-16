@@ -117,9 +117,24 @@ LIC. INGENIERÍA DE SOFTWARE
 | Añadir Interfaces y Diagramas de Comunicación (De Miguel Eduardo Escobar Ladrón de Guevara).
 
 | 3.0
-| 02/12/2025
+| 02/11/2025
 | Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
 | Entrega Hito 3: Elaboración de Diagramas de Componentes (`<comp spec>`), Diagramas de Especificación de Interfaces (`<interface type>`) y Diagramas de Comunicación para todos los Casos de Uso.
+
+| 3.1
+| 15/11/2025
+| Miguel Eduardo Escobar Ladrón de Guevara
+| Análisis y elaboración de la Matriz de Trazabilidad, así como su descripción.
+
+| 3.2
+| 16/11/2025
+| Uriel Cendón Díaz
+| Análisis y refinamiento de la vista de implementación en las Interfaces, así como la corrección y modificación del Modelo de Tipos de Negocio.
+
+| 4.0
+| 16/11/2025
+| Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara
+| Entrega Hito 4: Elaboración de la Matriz de Trazabilidad Arquitectónica, refinamiento del Modelo de Tipos de Negocio y corrección de la Vista de Implementación en las Interfaces.
 |===
 
 :sectnums:

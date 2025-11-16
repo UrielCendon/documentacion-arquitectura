@@ -177,12 +177,12 @@ image::Conceptos-Tipos-Negocio/Conceptos_Negocio.png[Modelo de Conceptos de Nego
 
 === Relaciones y cardinalidades clave
 
-* *CadenaHoteles* es el agregado raíz que contiene uno o más *Hotel(es)* (`1..*`) y se relaciona con uno o más *Administrador(es)* (`1..*`), así como con cero o más *Politica(s)* (`0..*`), *Tarifa(s)* (`0..*`) y un *Auditor* (`1`).
-* Cada *Hotel* pertenece a una única *CadenaHoteles* (`1`), tiene exactamente un *Gerente* (`1`), un *MapaHotel* (`1`) y puede contar con múltiples *Recepcionista(s)* (`0..*`) y *Habitacion(es)* (`0..*`).
+* *CadenaHoteles* es el agregado raíz que contiene uno o más *Hotel(es)* (`1..*`) y se relaciona con uno o más Administrador(es) (`1..*`), así como con cero o más *Politica(s)* (`0..*`), Tarifa(s) (`0..*`) y un *Auditor* (`1`).
+* Cada *Hotel* pertenece a una única *CadenaHoteles* (`1`), tiene exactamente un *Gerente* (`1`), un *MapaHotel* (`1`) y puede contar con múltiples *Recepcionista(s)* (`0..*`) y Habitacion(es)* (`0..*`).
 * Cada *Habitacion* está asociada a un *TipoHabitacion* (`1`), pertenece a un *Hotel* (`1`), y puede tener múltiples *Reservacion(es)* (`0..*`).
 * Cada *Reservacion* se asocia a una *Habitacion* (`1`), es realizada por un *Huesped* (`1`), y puede tener vinculados los procesos *RegistrarEntrada* (`1`) y *RegistrarSalida* (`1`).
 * Una *Reservacion* genera una única *Estancia* (`1`).
-* Cada *Estancia* puede acumular uno o varios *Consumo/servicio(s)* (`0..*`) y produce exactamente un *Recibo* (`1`).
+* Cada *Estancia* puede acumular uno o varios *Consumo/servicio(s)* (`0..*`) y produce exactamente un Recibo* (`1`).
 * El *Recibo* se procesa a través de una *PasarelaPagos* (`1`), encargada de ejecutar la transacción externa de pago.
 
 === Justificación y clarificaciones del modelo
