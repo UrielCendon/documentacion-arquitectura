@@ -12,83 +12,71 @@ image::Arquitectura/Arquitectura_en_Capas.png[Arquitectura en Capas - Alto Nivel
 
 *Capas Principales (Paquetes de primer nivel):*
 
+Aquí tienes la tabla traducida y actualizada con los nombres exactos que aparecen en tu diagrama de arquitectura:
+
 [cols="1,3"]
 |===
 | **Capa / Estereotipo** | **Descripción**
 
-| «layer» *Presentation*
+| «capa» Presentación
 | Contiene los componentes de la interfaz de usuario para la aplicación web y la aplicación móvil, los cuales interactúan con el sistema únicamente a través del API Gateway.
 Su estructura es la siguiente: +
----- +
-Presentation +
- ├─ Aplicación Web +
- └─ Aplicación Móvil +
-----
-
-| «layer» *Application*
-| Contiene el «gateway» API Gateway y los Application Services que orquestan los flujos de trabajo y exponen la funcionalidad a la capa de presentación.
+Presentación +
+ ├─ Aplicación web +
+ └─ Aplicación móvil +
+| «capa» Aplicación
+| Contiene el «gateway» API Gateway y los servicios de aplicación (App Services) que orquestan los flujos de trabajo y exponen la funcionalidad a la capa de presentación.
 Su estructura es la siguiente: +
----- +
-Application +
- ├─ «gateway» API Gateway +
- ├─ «service» ReservationAppService +
- ├─ «service» UserAppService +
- └─ «service» HotelAppService +
-----
-
-| «layer» *Domain*
-| Contiene el núcleo de la lógica de negocio, descompuesto en subdominios cohesivos identificados mediante DDD.
-Cada subdominio define sus propias interfaces (contratos) y servicios internos, agrupando la lógica correspondiente.
+Aplicación +
+├─ «gateway» API Gateway +
+├─ «service» AppReservacionServicio +
+├─ «service» AppUsuarioServicio +
+└─ «service» AppHotelServicio +
+| «capa» Dominio
+| Contiene el núcleo de la lógica de negocio, descompuesto en subdominios cohesivos identificados mediante DDD. Cada subdominio define sus propias interfaces (contratos) y servicios internos, agrupando la lógica correspondiente. Su estructura es la siguiente: +
+Dominio +
+├─ Reservaciones +
+│ ├─ «interface» IReservacionServicio +
+│ └─ ReservacionServicio +
+├─ Inventario +
+│ ├─ «interface» IInventarioRepositorio +
+│ ├─ InventarioRepositorio +
+│ ├─ «interface» IInventarioServicio +
+│ └─ InventarioServicio +
+├─ Pagos +
+│ ├─ «interface» IPagosServicio +
+│ └─ PagosServicios +
+├─ Precios +
+│ ├─ «interface» IPoliticaPrecios +
+│ └─ PreciosServicio +
+├─ Identidad +
+│ ├─ «interface» IUsuarioRepositorio +
+│ └─ UsuarioServicio +
+└─ Catalogos +
+      ├─ «interface» ICatalogosServicio +
+      └─ CatalogoServicio +
+| «capa» Infraestructura
+| Contiene las implementaciones técnicas y servicios transversales. Agrupa los repositorios de persistencia (RDBMS), los adaptadores externos y los servicios de soporte.
 Su estructura es la siguiente: +
----- +
-Domain +
- ├─ Reservations +
- │   ├─ «interface» IReservationService +
- │   └─ ReservationService +
- ├─ Inventory +
- │   ├─ «interface» IInventoryService +
- │   ├─ «interface» IInventoryRepository +
- │   └─ InventoryService +
- ├─ Payments +
- │   ├─ «interface» IPaymentService +
- │   └─ PaymentService +
- ├─ Pricing +
- │   ├─ «interface» IPricingPolicy +
- │   └─ PricingService +
- ├─ Identity +
- │   ├─ «interface» IUserRepository +
- │   └─ UserService +
- └─ Catalogs +
-     ├─ «interface» ICatalogService +
-     └─ CatalogService +
-----
-
-| «layer» *Infrastructure*
-| Contiene las implementaciones técnicas y servicios transversales.
-Agrupa los repositorios de persistencia (RDBMS), los adaptadores externos y los servicios de soporte.
-Su estructura es la siguiente: +
----- +
-Infrastructure +
- ├─ «repository» SqlReservationRepository +
- ├─ «repository» SqlInventoryRepository +
- ├─ «repository» SqlUserRepository +
- ├─ «adapter» PaymentGatewayAdapter +
- ├─ «transversal» SessionService +
- └─ «transversal» MonitoreoService +
----- +
+Infraestructura +
+├─ «repositorio» SqlReservacionRepositorio +
+├─ «repositorio» SqlInventarioRepositorio +
+├─ «repositorio» SqlUsuarioRepositorio +
+├─ «adaptador» PagosGatewayAdapter +
+├─ «transversal» SesionServicio +
+└─ «transversal» MonitoreoServicio +
 |===
-
 === Dependencias entre capas
 
 Las dependencias (representadas con flechas de dependencia `--->`) se organizan de la siguiente manera:
 
-* Presentation ---> Application
+* Presentación ---> Aplicación
   (Las aplicaciones web y móvil consumen el API Gateway)
-* Application ---> Domain
+* Aplicación ---> Dominio
   (Los servicios de aplicación orquestan la lógica de negocio a través de las interfaces del dominio)
-* Domain ---> Infrastructure
+* Dominio ---> Infraestructura
   (Las implementaciones concretas de repositorios y adaptadores residen en la capa de infraestructura)
-* Application ---> Infrastructure
+* Aplicación ---> Infraestructura
   (Para servicios transversales como sesión, monitoreo y métricas)
 
 === Justificación de la arquitectura en capas
@@ -103,9 +91,9 @@ En particular, se implementó la táctica Restringir Dependencias, que define un
 
 *Patrón / Decisión:*
 Se implementó el patrón Layered Architecture. +
-- La capa Domain contiene la lógica de negocio pura, sin dependencias directas de presentación o persistencia. +
-- La capa Infrastructure encapsula los detalles técnicos, como las implementaciones SQL (CON-2). +
-- La capa Presentation se limita a la interacción con el usuario (CON-6).
+- La capa Dominio contiene la lógica de negocio pura, sin dependencias directas de presentación o persistencia. +
+- La capa Infraestructura encapsula los detalles técnicos, como las implementaciones SQL (CON-2). +
+- La capa Presentación se limita a la interacción con el usuario (CON-6).
 Esto permite incorporar nuevos canales (como quioscos o apps externas) sin modificar las capas inferiores.
 
 *Trade-offs:*
@@ -143,8 +131,8 @@ Una separación incorrecta puede generar duplicación o alto acoplamiento, por l
 La táctica de modificabilidad Usar un Intermediario aísla la lógica de negocio del sistema externo.
 
 *Patrón / Decisión:*
-El módulo Payments implementa el patrón Adapter.
-Define la interfaz interna `IPaymentService`, utilizada por el módulo Reservations, y una implementación concreta `PaymentGatewayAdapter` en la capa de infraestructura que traduce las llamadas hacia la API del proveedor externo certificado.
+El módulo Pagos implementa el patrón Adapter.
+Define la interfaz interna `IPagosServicio`, utilizada por el módulo Reservaciones, y una implementación concreta `PagosGatewayAdapter` en la capa de infraestructura que traduce las llamadas hacia la API del proveedor externo certificado.
 
 *Trade-offs:*
 El uso del adaptador introduce una capa adicional de indirección, pero aporta flexibilidad y reduce el riesgo de acoplamiento con servicios externos.
