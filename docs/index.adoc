@@ -70,7 +70,6 @@ include::views/use-cases/CU-38-Dar-de-baja-recepcionista.adoc[leveloffset=+2]
 include::stakeholders.adoc[]
 include::views/information.adoc[]
 include::views/concurrency.adoc[]
-include::views/deployment.adoc[]
 include::views/development.adoc[]
 include::views/operational.adoc[]
 
@@ -83,7 +82,11 @@ include::decisions.adoc[leveloffset=+1]
 
 == Arquitectura
 include::views/architecture.adoc[leveloffset=+1]
+include::views/sequence.adoc[leveloffset=+2]
+include::views/deployment.adoc[leveloffset=+2]
 include::appendix.adoc[]
+
+include::views/crossCuttingConcerns.adoc[leveloffset=+1]
 
 == Trazabilidad
 include::traceability.adoc[leveloffset=+1]

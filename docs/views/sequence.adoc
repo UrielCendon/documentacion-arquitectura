@@ -1,6 +1,10 @@
-= Descripcion de CU-02, CU-03 y CU-04
+= Vista de Proceso
 
-== CU-02 Reservar una habitacion
+La vista de proceso representa cómo se orquestan los flujos críticos sobre la arquitectura en capas (Presentación, Aplicación, Dominio e Infraestructura) y el estilo DDD. El modelo de concurrencia es principalmente *orientado a servicios sin estado*, donde cada petición HTTP abre un hilo de ejecución independiente en los App Services. Las operaciones sensibles usan transacciones ACID en la capa de Dominio con consistencia fuerte, las interacciones externas se aíslan con adaptadores que definen *timeouts*, reintentos acotados e idempotencia. Los diagramas de secuencia muestran llamadas sincrónicas (líneas continuas) y callbacks asincrónicos (líneas punteadas) y explican dónde hay paralelismo controlado.
+
+== CU-02 Reservar una habitación
+
+image::Secuencia/CU-02 Reservar una habitación.png[Diagrama de secuencia CU-02, width=900, align="center"]
 
 En el primer diagrama, el huesped inicia CU-02 desde la Web/App movil. El API Gateway delega en AppReservacionServicio, que primero consulta disponibilidad mediante IConsultarDisponibilidadHabitacion: se invoca a InventarioServicio, el cual consulta a SqlInventarioRepositorio y devuelve una lista de habitaciones disponibles.
 
@@ -18,15 +22,19 @@ En este caso de uso todas las llamadas son sincronas y no se ejecutan pasos en p
 
 == CU-03 Realizar el pago de la reservacion
 
+image::Secuencia/CU-03 Realizar el pago de la reservacion.png[Diagrama de secuencia CU-03, width=900, align="center"]
+
 CU-03 describe a detalle el pago, normalmente como caso extendido invocado desde CU-02 o desde otros flujos. AppReservacionServicio llama a PagosServicios (IPagosServicio), que registra primero un intento de pago en la base (token idempotente, importe, folio), y despues delega en PagosGatewayAdapter.
 
 La interaccion con la pasarela es sincrona en la creacion de la orden (PagosGatewayAdapter -> PasarelaPagos) y tipicamente se configura con timeout y reintentos limitados, tal como exige la dependencia de una pasarela confiable con reintentos e idempotencia.
 
-Una vez creada la orden, el sistema redirige al cliente a la interfaz de la pasarela; aqui el cliente interactua directamente con el proveedor externo.
+Una vez creada la orden, el sistema redirige al cliente a la interfaz de la pasarela, en donde el cliente interactua directamente con el proveedor externo.
 
 El resultado vuelve al backend via callback asincrono: la pasarela notifica al adaptador el estado (aprobado, pendiente de autenticacion, cancelado por el usuario, rechazado), y PagosServicios actualiza la reservacion en una unica transaccion (marcar “Pagada”, “En verificacion” o “Pendiente”) segun corresponda. Esto respeta el driver de consistencia transaccional primero: evitar dobles cobros es mas importante que exprimir milisegundos.
 
 == CU-04 Cancelar reservacion
+
+image::Secuencia/CU-04 Cancelar reservacion.png[Diagrama de secuencia CU-04, width=900, align="center"]
 
 En CU-04, el huesped inicia la cancelacion capturando folio y nombre. AppReservacionServicio delega en ReservacionServicio, que consulta SqlReservacionRepositorio. Si no se encuentra la reservacion, se devuelve el mensaje “reservacion no encontrada” (FA 3.1) y el flujo termina.
 
@@ -40,7 +48,7 @@ Cuando la politica indica que procede un reembolso, ReservacionServicio pide a P
 
 La estructura de los tres diagramas refleja de forma directa el estilo arquitectonico en capas + DDD. La capa de Presentacion nunca accede a la base de datos ni a servicios de dominio, sino exclusivamente al API Gateway, cumpliendo la restriccion de dependencias y permitiendo agregar nuevos canales sin tocar la logica central.
 
-La capa Application (AppReservacionServicio) concentra la orquestacion, mientras que los servicios de Dominio encapsulan las reglas de negocio (CrearReservacion, CancelarReservacion, procesar pago) y la capa Infrastructure provee repositorios SQL y el adaptador de pagos.
+La capa de Aplicacion (AppReservacionServicio) concentra la orquestacion, mientras que los servicios de Dominio encapsulan las reglas de negocio (CrearReservacion, CancelarReservacion, procesar pago) y la capa Infrastructure provee repositorios SQL y el adaptador de pagos.
 
 Esta separacion mejora mantenibilidad y evolucion, ya que cambiar la pasarela o ajustar reglas de penalizacion implica modificar modulos acotados.
 
