@@ -1,0 +1,41 @@
+= Explicacion del diagrama y patron de despliegue
+
+El diagrama representa la vista de despliegue del Sistema de Gestion de una Cadena Hotelera, alineada con la arquitectura en capas (Presentacion, Aplicacion, Dominio e Infraestructura) y la descomposicion por dominios que ya definiste en la vista logica.
+
+En la topologia elegida cada capa principal se materializa en al menos un nodo de despliegue distinto, lo que permite escalar y operar cada responsabilidad de forma independiente.
+
+En la parte superior se modelan los clientes: el navegador web y la app movil oficial de la cadena. Ambos consumen exclusivamente el API Gateway via HTTPS, siguiendo la restriccion de que los canales soportados son web y app movil.
+
+El trafico entra primero por un balanceador de carga HTTPS, que distribuye las peticiones entre las instancias de la capa de Presentacion y de Aplicacion; esta es la principal tactica de redundancia y escalamiento horizontal.
+
+La capa de Presentacion se despliega en un nodo de front-end web (por ejemplo, un servidor de contenido estatico o CDN) que sirve la SPA web y actua como cliente del API Gateway.
+
+La app movil se ejecuta en los dispositivos de los huespedes, pero a efectos del diagrama se modela solo como nodo cliente que habla por HTTPS con el balanceador. Este patron mantiene la capa de Presentacion ligera y facilmente reemplazable sin impactar la logica central.
+
+En la capa de Aplicacion se agrupan el API Gateway y los App Services (AppReservacionServicio, AppUsuarioServicio, AppHotelServicio) dentro de un cluster de nodos.
+
+Estos nodos son stateless por diseño: concentran y orquestan los flujos de reserva, pago, cancelacion y administracion, exponiendo APIs de alto nivel para que el usuario complete la reserva en ≤5 pasos. El API Gateway implementa el patron Facade, reduciendo el chattiness entre cliente y backend y ayudando a cumplir el escenario de experiencia (CRN-2).
+
+La capa de Dominio se despliega en un cluster propio de servicios de negocio, donde viven los modulos Reservaciones, Inventario, Precios, Pagos, Identidad  y Catalogos, tal como se definieron con DDD.
+
+Esta separacion fisica refleja la decision de modularidad por subdominios y soporta los drivers de mantenibilidad y evolucion (CRN-7, CRN-8), porque permite escalar o versionar de forma diferente, por ejemplo, Inventory ante picos de consultas sin tocar Payments.
+
+La comunicacion entre Aplicacion y Dominio se hace mediante HTTP/REST interno, respetando la direccion de dependencias Presentacion → Aplicacion → Dominio.
+
+La capa de Infraestructura se concretiza en el nodo de datos, que incluye el RDBMS transaccional (cumpliendo la restriccion de usar un RDBMS) y las implementaciones de repositorio SQL. Desde la perspectiva de despliegue, todos los comandos criticos (confirmar/cancelar reserva, registrar consumos, actualizar tarifas) escriben solo en esta base central aplicando transacciones ACID para garantizar consistencia e impedir dobles reservas o dobles cargos (CON-8, CRN-3).
+
+Para resolver el conflicto entre latencia en consultas de disponibilidad y consistencia de las escrituras, el diagrama incluye una replica de lectura / cache desnormalizada, que representa el modelo de lectura del patron CQRS descrito en el capitulo 4.
+
+El dominio escribe en el RDBMS y un proceso de replicacion/ETL mantiene el modelo de lectura casi en tiempo real; las consultas de disponibilidad de CU-01 y CU-02 se dirigen a este nodo, aplicando la tactica de rendimiento “Mantener multiples copias de datos” (CRN-5) sin sacrificar la consistencia fuerte de las reservas.
+
+Los servicios transversales internos (SesionServicio y MonitoreoServicio) se despliegan en un nodo separado pero accesible desde Aplicacion y Dominio.
+
+Estos componentes instrumentan cada peticion con un CorrelationId y envian metricas, logs y trazas a una plataforma de monitoreo externa, siguiendo las tacticas “Detectar fallos hacia Supervisar” y “Registrar el fallo”.
+
+Este diseño atiende los escenarios de operabilidad y trazabilidad (CRN-6, CON-5) donde toda operacion relevante debe quedar auditada.
+
+Finalmente, la topologia incorpora los sistemas externos definidos en el alcance: la pasarela de pago, el servicio de notificaciones y un gestor de secretos.
+
+El PagosGatewayAdapter, desplegado en la capa de Infraestructura, encapsula la comunicacion con la pasarela via HTTPS, aplicando el patron Adapter y la tactica “Usar un intermediario” para aislar cambios en la API externa y soportar tokens idempotentes que evitan cobros duplicados (CRN-9, CON-3). El uso de un gestor de secretos y el hecho de que los datos sensibles de tarjeta no se almacenen en el sistema contribuyen a los escenarios de seguridad y cumplimiento.
+
+En conjunto, esta configuracion corresponde a un patron de despliegue en capas (n-tier) en la nube, con nodos separados por capa, un RDBMS transaccional central mas un modelo de lectura escalable, integraciones externas encapsuladas y servicios transversales de observabilidad. Esta topologia refleja fielmente el estilo arquitectonico elegido (Layered Architecture + DDD) y contribuye directamente a los atributos de calidad clave del sistema: mantenibilidad, evolucion, rendimiento en consultas, disponibilidad con degradacion controlada, seguridad e inspeccionabilidad end-to-end.

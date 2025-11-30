@@ -1,0 +1,41 @@
+= Aspectos Transversales (Cross-Cutting Concerns)
+
+== Observabilidad y trazabilidad de punta a punta
+
+La operacion diaria de la cadena exige entender que ocurre en el sistema ante cualquier reclamo o incidente; por ello CRN-6 y CON-5 piden observabilidad end-to-end y trazabilidad de operaciones. La tactica central es la instrumentacion estandarizada con ID de correlacion: cada peticion que entra por el API Gateway recibe un CorrelationId unico, que se propaga en todas las llamadas a App Services, servicios de dominio y adaptadores.
+
+En la practica, esto se implementa con middleware o filtros en el API Gateway que generan o validan el CorrelationId y lo anaden a headers HTTP y al contexto de logging. Los servicios internos leen este contexto mediante SesionServicio, y MonitoreoServicio envia logs estructurados, metricas y trazas a la plataforma corporativa de observabilidad (APM).
+
+Se aplican las tacticas “Detectar fallos hacia Supervisar” y “Registrar el fallo”: todas las operaciones criticas (creacion/cancelacion de reservas, cambios de tarifa, cobros, reembolsos) generan eventos de auditoria con actor, timestamp, entidad afectada y antes/despues.
+
+A nivel de diseño se usa una libreria de logging transversal (por ejemplo, basada en interceptores ASP.NET Core o filtros en un framework similar) que se registra una sola vez en la capa de Aplicacion y se hereda en todos los controladores y handlers. En Dominio, los servicios no conocen detalles del proveedor de logs; solo dependen de una interfaz simplificada expuesta por MonitoreoServicio. Esto mantiene la modularidad (CRN-7) y permite cambiar de plataforma de observabilidad sin reescribir la logica de negocio.
+
+== Seguridad y cumplimiento de datos
+
+La proteccion de datos personales y de pago es un driver transversal (CRN-10) que afecta a Presentacion, Aplicacion, Dominio e Infraestructura, y es especialmente relevante para los interesados de Seguridad, Legal y Finanzas. La estrategia se apoya en tres pilares: perimetro seguro, minimos privilegios y no almacenar datos sensibles de tarjetas.
+
+En el perimetro, todo el trafico hacia el API Gateway viaja por HTTPS y se autentica con tokens (por ejemplo JWT) emitidos por el proveedor corporativo de identidad. Los App Services validan el token y extraen el sujeto de seguridad, que SesionServicio expone como HuespedSesion o UsuarioSesion. Esto alimenta tanto la autorizacion por rol (huesped, recepcion, administrador) como los eventos de auditoria.
+
+En Dominio se aplica el principio de minimo privilegio: los repositorios SQL utilizan cuentas de base de datos con permisos solo sobre los esqemas que necesitan, y los App Services jamas acceden directamente a credenciales; las obtienen a traves de un componente de gestion de secretos integrado como servicio de infraestructura.
+
+Un cambio de password o de cadena de conexion se hace por configuracion central (CRN-11) y queda registrado, sin requerir cambios de codigo.
+
+Respecto a pagos, el sistema solo almacena referencias y tokens de la pasarela, nunca datos crudos de tarjeta, como se define en el alcance de datos.
+
+El modulo Payments usa el patron Adapter (PaymentGatewayAdapter) y tokens idempotentes para encapsular la pasarela y cumplir CON-3, CRN-9 y CON-8: incluso bajo reintentos o fallos de comunicacion, no se generan dobles cargos.
+
+En los logs se aplica enmascaramiento selectivo: los valores sensibles (correos, ultimos digitos de tarjeta, identificadores internos) se registran recortados o hashados, de forma que la auditoria tenga evidencia suficiente sin exponer informacion que no deberia estar en texto plano.
+
+== Resiliencia y degradacion controlada
+
+La disponibilidad con degradacion controlada (CRN-4) es otro concern transversal: afecta al comportamiento del API Gateway, de los modulos de dominio y de los adaptadores externos.
+
+La arquitectura se diseña para tolerar fallos parciales y picos de carga sin perder consistencia en las operaciones sensibles.
+
+En el borde, el API Gateway aplica limites por ruta y por cliente para proteger a los servicios internos durante picos de trafico (por ejemplo, campañas de marketing). Unido a un pool de conexiones configurado correctamente y a un esquema de prioridades por endpoint, esto evita que consultas no criticas saturen el sistema en detrimento de reservas y pagos.
+
+En la comunicacion con la pasarela de pagos y otros servicios externos se usan timeouts, reintentos con backoff y circuit breakers. Cuando la pasarela se degrada o cae, PaymentGatewayAdapter abre el breaker tras cierto numero de fallos, y el sistema responde con mensajes claros al usuario (“la pasarela no esta disponible, intente mas tarde”), en lugar de colgarse. La idempotencia garantizada por los tokens de transaccion permite reintentar sin riesgo de cobros duplicados, integrando de forma natural la gestion de errores con los requisitos de negocio.
+
+Finalmente, todos los modulos de dominio exponen endpoints de health-check que el orquestador y el balanceador utilizan para retirar instancias defectuosas, aplicando la tactica “Ping/Echo”.
+
+Combinado con los dashboards de MonitoreoServicio, esto permite detectar tendencias (aumento de latencias, tasa de errores, caida de nodos) y actuar antes de que afecten de manera critica la experiencia del huesped.

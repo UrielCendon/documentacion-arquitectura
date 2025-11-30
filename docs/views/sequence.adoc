@@ -1,0 +1,51 @@
+= Descripcion de CU-02, CU-03 y CU-04
+
+== CU-02 Reservar una habitacion
+
+En el primer diagrama, el huesped inicia CU-02 desde la Web/App movil. El API Gateway delega en AppReservacionServicio, que primero consulta disponibilidad mediante IConsultarDisponibilidadHabitacion: se invoca a InventarioServicio, el cual consulta a SqlInventarioRepositorio y devuelve una lista de habitaciones disponibles.
+
+Si no hay disponibilidad, el flujo alterno FA 3.1 muestra un mensaje y posibles alternativas, cerrando el caso de uso sin crear reservacion.
+
+Cuando hay cupo, AppReservacionServicio solicita al cliente elegir un metodo de pago y, una vez confirmados los datos, ejecuta CrearReservacionHotel(ReservacionDetalle) en ReservacionServicio. Esta operacion corresponde a la pre/post condicion del modelo de tipos: con inventario disponible, se crea una reservacion en estado “Pendiente”.
+
+La escritura en SqlReservacionRepositorio se hace en una unica transaccion, lo que garantiza consistencia fuerte: no se generan dos reservaciones distintas con el mismo folio en condiciones de concurrencia.
+
+El pago no se detalla en CU-02: el diagrama lo modela como una llamada a la interfaz IRealizarPagoReservacion (CU-03). Esto coincide con la vista de implementacion, donde para CU-02 existen tres interacciones: consultar disponibilidad, crear reservacion y realizar pago, este ultimo cubierto por CU-03.
+
+Si el pago es aprobado, AppReservacionServicio confirma la reservacion (estado “Pagada”) y muestra al huesped el folio y la politica de cancelacion; si no se completa, la reservacion queda pendiente de pago y se ofrece reintentar o cancelar, como indican los flujos alternos de CU-02.
+
+En este caso de uso todas las llamadas son sincronas y no se ejecutan pasos en paralelo: prioridad a claridad y tiempos cortos para cumplir la experiencia de reserva en ≤ 5 pasos, apoyada por el API Gateway actuando como Facade.
+
+== CU-03 Realizar el pago de la reservacion
+
+CU-03 describe a detalle el pago, normalmente como caso extendido invocado desde CU-02 o desde otros flujos. AppReservacionServicio llama a PagosServicios (IPagosServicio), que registra primero un intento de pago en la base (token idempotente, importe, folio), y despues delega en PagosGatewayAdapter.
+
+La interaccion con la pasarela es sincrona en la creacion de la orden (PagosGatewayAdapter -> PasarelaPagos) y tipicamente se configura con timeout y reintentos limitados, tal como exige la dependencia de una pasarela confiable con reintentos e idempotencia.
+
+Una vez creada la orden, el sistema redirige al cliente a la interfaz de la pasarela; aqui el cliente interactua directamente con el proveedor externo.
+
+El resultado vuelve al backend via callback asincrono: la pasarela notifica al adaptador el estado (aprobado, pendiente de autenticacion, cancelado por el usuario, rechazado), y PagosServicios actualiza la reservacion en una unica transaccion (marcar “Pagada”, “En verificacion” o “Pendiente”) segun corresponda. Esto respeta el driver de consistencia transaccional primero: evitar dobles cobros es mas importante que exprimir milisegundos.
+
+== CU-04 Cancelar reservacion
+
+En CU-04, el huesped inicia la cancelacion capturando folio y nombre. AppReservacionServicio delega en ReservacionServicio, que consulta SqlReservacionRepositorio. Si no se encuentra la reservacion, se devuelve el mensaje “reservacion no encontrada” (FA 3.1) y el flujo termina.
+
+Si la reservacion existe, se muestra al usuario la informacion y la multa aplicable segun la politica vigente. Si el huesped confirma, se invoca CancelarReservacion(string), cuya postcondicion es marcar la reservacion como “Cancelada” y liberar el inventario.
+
+En el diagrama esto se refleja en dos pasos dentro de la misma operacion de dominio: ReservacionServicio actualiza el estado y registra la penalizacion en SqlReservacionRepositorio, y a continuacion InventarioServicio llama a SqlInventarioRepositorio para liberar la habitacion. De esta forma se mantiene consistencia fuerte entre reservacion e inventario, evitando que queden habitaciones bloqueadas tras una cancelacion.
+
+Cuando la politica indica que procede un reembolso, ReservacionServicio pide a PagosServicios ejecutar ReembolsarPago, que a su vez usa PagosGatewayAdapter para comunicarse con la pasarela. Esta parte se modela como flujo paralelo respecto a la respuesta al usuario: la transaccion que cancela y libera inventario se completa primero, y el reembolso puede tener reintentos propios usando el mismo token idempotente para no duplicar devoluciones.
+
+== Relacion con la arquitectura y atributos de calidad
+
+La estructura de los tres diagramas refleja de forma directa el estilo arquitectonico en capas + DDD. La capa de Presentacion nunca accede a la base de datos ni a servicios de dominio, sino exclusivamente al API Gateway, cumpliendo la restriccion de dependencias y permitiendo agregar nuevos canales sin tocar la logica central.
+
+La capa Application (AppReservacionServicio) concentra la orquestacion, mientras que los servicios de Dominio encapsulan las reglas de negocio (CrearReservacion, CancelarReservacion, procesar pago) y la capa Infrastructure provee repositorios SQL y el adaptador de pagos.
+
+Esta separacion mejora mantenibilidad y evolucion, ya que cambiar la pasarela o ajustar reglas de penalizacion implica modificar modulos acotados.
+
+Respecto a los atributos de calidad, los diagramas se centran en rendimiento, consistencia, disponibilidad, experiencia de usuario y operabilidad. Para rendimiento (CRN-5), el flujo de reserva se apoya en la variacion de CQRS: las consultas de disponibilidad se resuelven sobre un modelo de lectura en replica/cache, mientras que la confirmacion de la reserva y la cancelacion operan sobre el RDBMS transaccional, evitando bloqueos y permitiendo latencias P95 alineadas a los objetivos (<2.5 s para confirmar, <500 ms en alta demanda)
+
+La consistencia (CRN-3, CON-8) se logra porque en CU-02, CU-03 y CU-04 las escrituras de reserva, pago y cancelacion se encapsulan en una unica transaccion ACID sobre el repositorio de reservaciones; solo se confirma al usuario cuando la transaccion completa ha sido exitosa.
+
+Idempotencia y seguridad en pagos (CRN-9, CON-3) se reflejan en el uso del PagosGatewayAdapter y los tokens de transaccion, que evitan dobles cargos ante reintentos o fallos de red.
