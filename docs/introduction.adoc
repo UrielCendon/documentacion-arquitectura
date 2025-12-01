@@ -135,6 +135,21 @@ LIC. INGENIERÍA DE SOFTWARE
 | 16/11/2025
 | Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara
 | Entrega Hito 4: Elaboración de la Matriz de Trazabilidad Arquitectónica, refinamiento del Modelo de Tipos de Negocio y corrección de la Vista de Implementación en las Interfaces.
+
+| 4.1
+| 30/11/2025
+| Alan Raziel Filobello Aguilar, Miguel Eduardo Escobar Ladrón de Guevara
+| Realización de los diagramas de secuencia, despliegue y aspectos transversales.
+
+| 4.2
+| 30/11/2025
+| Miguel Eduardo Escobar Ladrón de Guevara, Uriel Cendón Díaz
+| Actualización de la Matriz de trazabilidad.
+
+| 5.0
+| 30/11/2025
+| Uriel Cendón Díaz, Miguel Eduardo Escobar Ladrón de Guevara, Alan Raziel Filobello Aguilar
+| Entrega Hito 5 Proyecto final: Realizar la Integración, el diagrama de despliegue despliegue, así como los transversales y la trazabilidad.
 |===
 
 :sectnums:
