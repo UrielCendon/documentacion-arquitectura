@@ -1,6 +1,9 @@
-= Explicacion del diagrama y patron de despliegue
+= Vista de Despliegue
 
 El diagrama representa la vista de despliegue del Sistema de Gestion de una Cadena Hotelera, alineada con la arquitectura en capas (Presentacion, Aplicacion, Dominio e Infraestructura) y la descomposicion por dominios que ya definiste en la vista logica.
+
+.Diagrama de Despliegue
+image::Despliegue/Diagrama de Despliegue.png[Vista de despliegue, width=900, align="center"]
 
 En la topologia elegida cada capa principal se materializa en al menos un nodo de despliegue distinto, lo que permite escalar y operar cada responsabilidad de forma independiente.
 
